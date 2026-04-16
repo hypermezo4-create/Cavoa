@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _logoSlide = Tween<Offset>(
-      begin: const Offset(0, 0.10),
+      begin: const Offset(0, 0.08),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
@@ -66,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _textSlide = Tween<Offset>(
-      begin: const Offset(0, 0.12),
+      begin: const Offset(0, 0.10),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
@@ -75,7 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    _glowPulse = Tween<double>(begin: 0.88, end: 1.08).animate(
+    _glowPulse = Tween<double>(begin: 0.96, end: 1.04).animate(
       CurvedAnimation(
         parent: _loaderController,
         curve: Curves.easeInOut,
@@ -144,96 +144,99 @@ class _SplashScreenState extends State<SplashScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 28),
                 child: Column(
                   children: [
-                    const Spacer(),
-                    SlideTransition(
-                      position: _logoSlide,
-                      child: FadeTransition(
-                        opacity: _logoFade,
-                        child: ScaleTransition(
-                          scale: _logoScale,
-                          child: AnimatedBuilder(
-                            animation: _glowPulse,
-                            builder: (context, child) {
-                              return Transform.scale(
-                                scale: _glowPulse.value,
-                                child: child,
-                              );
-                            },
-                            child: Container(
-                              width: 170,
-                              height: 170,
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CavoColors.gold.withValues(alpha: 0.20),
-                                    blurRadius: 55,
-                                    spreadRadius: 3,
+                    Expanded(
+                      child: Center(
+                        child: FadeTransition(
+                          opacity: _textFade,
+                          child: SlideTransition(
+                            position: _textSlide,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SlideTransition(
+                                  position: _logoSlide,
+                                  child: FadeTransition(
+                                    opacity: _logoFade,
+                                    child: ScaleTransition(
+                                      scale: _logoScale,
+                                      child: AnimatedBuilder(
+                                        animation: _glowPulse,
+                                        builder: (context, child) {
+                                          return Transform.scale(
+                                            scale: _glowPulse.value,
+                                            child: child,
+                                          );
+                                        },
+                                        child: Container(
+                                          width: 178,
+                                          height: 178,
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: CavoColors.gold.withValues(alpha: 0.22),
+                                                blurRadius: 60,
+                                                spreadRadius: 4,
+                                              ),
+                                              BoxShadow(
+                                                color: CavoColors.goldLight.withValues(alpha: 0.08),
+                                                blurRadius: 95,
+                                                spreadRadius: 8,
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipOval(
+                                            child: Image.asset(
+                                              'assets/branding/cavo_logo_circle.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                  BoxShadow(
-                                    color: CavoColors.goldLight.withValues(alpha: 0.08),
-                                    blurRadius: 90,
-                                    spreadRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'assets/branding/cavo_logo_circle.png',
-                                  fit: BoxFit.cover,
                                 ),
-                              ),
+                                const SizedBox(height: 30),
+                                const Text(
+                                  'CAVO',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: CavoColors.gold,
+                                    fontSize: 46,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 2.2,
+                                    height: 1,
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                const Text(
+                                  'Mirror Original',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: CavoColors.textPrimary,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                    height: 1.1,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Premium Footwear',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: CavoColors.textSecondary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 34),
-                    SlideTransition(
-                      position: _textSlide,
-                      child: FadeTransition(
-                        opacity: _textFade,
-                        child: Column(
-                          children: const [
-                            Text(
-                              'CAVO',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: CavoColors.gold,
-                                fontSize: 42,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 2.2,
-                                height: 1,
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Mirror Original',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: CavoColors.textPrimary,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w800,
-                                height: 1.1,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Premium Footwear',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: CavoColors.textSecondary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const Spacer(),
                     FadeTransition(
                       opacity: _textFade,
                       child: Column(

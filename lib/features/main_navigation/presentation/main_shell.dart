@@ -26,12 +26,12 @@ class _MainShellState extends State<MainShell> {
     LinksScreen(),
   ];
 
-  final List<_NavItemData> _items = const [
-    _NavItemData(icon: Icons.home_rounded, label: 'Home'),
-    _NavItemData(icon: Icons.grid_view_rounded, label: 'Categories'),
-    _NavItemData(icon: Icons.shopping_bag_outlined, label: 'Cart'),
-    _NavItemData(icon: Icons.person_outline_rounded, label: 'Profile'),
-    _NavItemData(icon: Icons.link_rounded, label: 'Links'),
+  final List<_NavItem> _items = const [
+    _NavItem(icon: Icons.home_rounded, label: 'Home'),
+    _NavItem(icon: Icons.grid_view_rounded, label: 'Browse'),
+    _NavItem(icon: Icons.shopping_bag_outlined, label: 'Cart'),
+    _NavItem(icon: Icons.person_outline_rounded, label: 'Profile'),
+    _NavItem(icon: Icons.link_rounded, label: 'Links'),
   ];
 
   @override
@@ -46,18 +46,18 @@ class _MainShellState extends State<MainShell> {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(30),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: CavoColors.surface.withValues(alpha: 0.84),
-                borderRadius: BorderRadius.circular(28),
+                color: CavoColors.surface.withValues(alpha: 0.85),
+                borderRadius: BorderRadius.circular(30),
                 border: Border.all(color: CavoColors.border),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
+                    color: Colors.black.withValues(alpha: 0.26),
                     blurRadius: 28,
                     offset: const Offset(0, 14),
                   ),
@@ -81,9 +81,9 @@ class _MainShellState extends State<MainShell> {
                         ),
                         decoration: BoxDecoration(
                           color: active
-                              ? CavoColors.gold.withValues(alpha: 0.14)
+                              ? CavoColors.gold.withValues(alpha: 0.16)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(22),
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -124,11 +124,11 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-class _NavItemData {
+class _NavItem {
   final IconData icon;
   final String label;
 
-  const _NavItemData({
+  const _NavItem({
     required this.icon,
     required this.label,
   });

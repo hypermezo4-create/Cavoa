@@ -26,7 +26,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1100),
+      duration: const Duration(milliseconds: 1050),
     );
 
     _fade = CurvedAnimation(
@@ -35,22 +35,22 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
     );
 
     _contentSlide = Tween<Offset>(
-      begin: const Offset(0, 0.10),
+      begin: const Offset(0, 0.08),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.00, 0.75, curve: Curves.easeOutCubic),
+        curve: const Interval(0.00, 0.72, curve: Curves.easeOutCubic),
       ),
     );
 
     _buttonsSlide = Tween<Offset>(
-      begin: const Offset(0, 0.18),
+      begin: const Offset(0, 0.14),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.25, 1.00, curve: Curves.easeOutCubic),
+        curve: const Interval(0.28, 1.00, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -108,7 +108,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
             const _GlowOrb(
               alignment: Alignment.center,
               color: Color(0x10D4AF37),
-              size: 260,
+              size: 250,
             ),
             const _GlowOrb(
               alignment: Alignment.bottomCenter,
@@ -134,118 +134,135 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                       ),
                       Expanded(
                         child: Center(
-                          child: SlideTransition(
-                            position: _contentSlide,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                ScaleTransition(
-                                  scale: _logoScale,
-                                  child: Container(
-                                    width: 155,
-                                    height: 155,
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: CavoColors.gold.withValues(alpha: 0.18),
-                                          blurRadius: 40,
-                                          spreadRadius: 2,
-                                        ),
-                                        BoxShadow(
-                                          color: CavoColors.goldLight.withValues(alpha: 0.06),
-                                          blurRadius: 80,
-                                          spreadRadius: 8,
-                                        ),
-                                      ],
-                                    ),
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        'assets/branding/cavo_logo_circle.png',
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: SlideTransition(
+                              position: _contentSlide,
+                              child: Center(
+                                child: ConstrainedBox(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 360,
                                   ),
-                                ),
-                                const SizedBox(height: 28),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: CavoColors.surface.withValues(alpha: 0.92),
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: CavoColors.border),
-                                  ),
-                                  child: const Text(
-                                    'CAVO',
-                                    style: TextStyle(
-                                      color: CavoColors.gold,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: 1.4,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 22),
-                                const Text(
-                                  'Mirror Original',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: CavoColors.textPrimary,
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.w900,
-                                    height: 1.05,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 12),
-                                  child: Text(
-                                    'Premium Footwear designed to stand apart.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: CavoColors.textSecondary,
-                                      fontSize: 15,
-                                      height: 1.55,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 22),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: CavoColors.surface.withValues(alpha: 0.88),
-                                    borderRadius: BorderRadius.circular(22),
-                                    border: Border.all(color: CavoColors.border),
-                                  ),
-                                  child: const Row(
+                                  child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
-                                        Icons.auto_awesome_rounded,
-                                        color: CavoColors.gold,
-                                        size: 18,
+                                      ScaleTransition(
+                                        scale: _logoScale,
+                                        child: Container(
+                                          width: 150,
+                                          height: 150,
+                                          padding: const EdgeInsets.all(6),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: CavoColors.gold.withValues(alpha: 0.18),
+                                                blurRadius: 40,
+                                                spreadRadius: 2,
+                                              ),
+                                              BoxShadow(
+                                                color: CavoColors.goldLight.withValues(alpha: 0.06),
+                                                blurRadius: 82,
+                                                spreadRadius: 8,
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipOval(
+                                            child: Image.asset(
+                                              'assets/branding/cavo_logo_circle.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      SizedBox(width: 10),
-                                      Text(
-                                        'Mirror Original  •  Premium Footwear',
+                                      const SizedBox(height: 26),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 10,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: CavoColors.surface.withValues(alpha: 0.92),
+                                          borderRadius: BorderRadius.circular(18),
+                                          border: Border.all(
+                                            color: CavoColors.border,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'CAVO',
+                                          style: TextStyle(
+                                            color: CavoColors.gold,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w800,
+                                            letterSpacing: 1.4,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 22),
+                                      const Text(
+                                        'Mirror Original',
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: CavoColors.textSecondary,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
+                                          color: CavoColors.textPrimary,
+                                          fontSize: 34,
+                                          fontWeight: FontWeight.w900,
+                                          height: 1.05,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8),
+                                        child: Text(
+                                          'Premium Footwear designed to stand apart.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: CavoColors.textSecondary,
+                                            fontSize: 15,
+                                            height: 1.55,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 22),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 14,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: CavoColors.surface.withValues(alpha: 0.88),
+                                          borderRadius: BorderRadius.circular(22),
+                                          border: Border.all(
+                                            color: CavoColors.border,
+                                          ),
+                                        ),
+                                        child: const Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.auto_awesome_rounded,
+                                              color: CavoColors.gold,
+                                              size: 18,
+                                            ),
+                                            SizedBox(width: 10),
+                                            Flexible(
+                                              child: Text(
+                                                'Mirror Original  •  Premium Footwear',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  color: CavoColors.textSecondary,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
