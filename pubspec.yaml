@@ -11,7 +11,18 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: any
+
 flutter:
   uses-material-design: true
   assets:
     - assets/branding/
+
+flutter_launcher_icons:
+  android: true
+  image_path: assets/branding/cavo_logo_circle.png
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: assets/branding/cavo_logo_circle.png

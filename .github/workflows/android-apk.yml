@@ -30,8 +30,29 @@ jobs:
       - name: Create missing platform files
         run: flutter create .
 
+      - name: Set app name to CAVO
+        run: |
+          mkdir -p android/app/src/main/res/values
+          cat > android/app/src/main/res/values/strings.xml <<'EOF'
+          <resources>
+              <string name="app_name">CAVO</string>
+          </resources>
+          EOF
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+          s = s.replace('android:label="cavoa"', 'android:label="@string/app_name"')
+          s = s.replace('android:label="Cavoa"', 'android:label="@string/app_name"')
+          s = s.replace('android:label="cavo"', 'android:label="@string/app_name"')
+          p.write_text(s)
+          PY
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
 
       - name: Analyze project
         run: flutter analyze
