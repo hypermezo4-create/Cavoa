@@ -20,6 +20,7 @@ class _SplashScreenState extends State<SplashScreen>
   late final Animation<Offset> _logoSlide;
   late final Animation<double> _textFade;
   late final Animation<Offset> _textSlide;
+  late final Animation<double> _glowPulse;
 
   Timer? _navigationTimer;
 
@@ -29,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _introController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1700),
     );
 
     _loaderController = AnimationController(
@@ -39,10 +40,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     _logoFade = CurvedAnimation(
       parent: _introController,
-      curve: const Interval(0.00, 0.50, curve: Curves.easeOut),
+      curve: const Interval(0.00, 0.45, curve: Curves.easeOut),
     );
 
-    _logoScale = Tween<double>(begin: 0.90, end: 1.00).animate(
+    _logoScale = Tween<double>(begin: 0.86, end: 1.00).animate(
       CurvedAnimation(
         parent: _introController,
         curve: const Interval(0.00, 0.55, curve: Curves.easeOutCubic),
@@ -50,37 +51,44 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _logoSlide = Tween<Offset>(
-      begin: const Offset(0, 0.16),
+      begin: const Offset(0, 0.10),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _introController,
-        curve: const Interval(0.00, 0.60, curve: Curves.easeOutCubic),
+        curve: const Interval(0.00, 0.55, curve: Curves.easeOutCubic),
       ),
     );
 
     _textFade = CurvedAnimation(
       parent: _introController,
-      curve: const Interval(0.25, 0.80, curve: Curves.easeOut),
+      curve: const Interval(0.22, 0.82, curve: Curves.easeOut),
     );
 
     _textSlide = Tween<Offset>(
-      begin: const Offset(0, 0.22),
+      begin: const Offset(0, 0.12),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _introController,
-        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+        curve: const Interval(0.20, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _glowPulse = Tween<double>(begin: 0.88, end: 1.08).animate(
+      CurvedAnimation(
+        parent: _loaderController,
+        curve: Curves.easeInOut,
       ),
     );
 
     _introController.forward();
 
-    _navigationTimer = Timer(const Duration(milliseconds: 2900), () {
+    _navigationTimer = Timer(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
+          transitionDuration: const Duration(milliseconds: 450),
           pageBuilder: (_, animation, __) => FadeTransition(
             opacity: animation,
             child: const WelcomePlaceholderScreen(),
@@ -106,9 +114,9 @@ class _SplashScreenState extends State<SplashScreen>
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF050505),
-              Color(0xFF090909),
-              Color(0xFF0D0B08),
+              Color(0xFF020202),
+              Color(0xFF070707),
+              Color(0xFF0D0A06),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -118,12 +126,17 @@ class _SplashScreenState extends State<SplashScreen>
           children: [
             const _BackgroundGlow(
               alignment: Alignment.topCenter,
-              color: Color(0x22D4AF37),
+              color: Color(0x18D4AF37),
+              size: 320,
+            ),
+            const _BackgroundGlow(
+              alignment: Alignment.center,
+              color: Color(0x10D4AF37),
               size: 260,
             ),
             const _BackgroundGlow(
               alignment: Alignment.bottomCenter,
-              color: Color(0x11F1D27A),
+              color: Color(0x12F1D27A),
               size: 300,
             ),
             SafeArea(
@@ -138,31 +151,45 @@ class _SplashScreenState extends State<SplashScreen>
                         opacity: _logoFade,
                         child: ScaleTransition(
                           scale: _logoScale,
-                          child: Container(
-                            width: 132,
-                            height: 132,
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CavoColors.gold.withOpacity(0.10),
-                                  blurRadius: 38,
-                                  spreadRadius: 1,
+                          child: AnimatedBuilder(
+                            animation: _glowPulse,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _glowPulse.value,
+                                child: child,
+                              );
+                            },
+                            child: Container(
+                              width: 170,
+                              height: 170,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: CavoColors.gold.withValues(alpha: 0.20),
+                                    blurRadius: 55,
+                                    spreadRadius: 3,
+                                  ),
+                                  BoxShadow(
+                                    color: CavoColors.goldLight.withValues(alpha: 0.08),
+                                    blurRadius: 90,
+                                    spreadRadius: 8,
+                                  ),
+                                ],
+                              ),
+                              child: ClipOval(
+                                child: Image.asset(
+                                  'assets/branding/cavo_logo_circle.png',
+                                  fit: BoxFit.cover,
                                 ),
-                              ],
-                            ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/branding/cavo_logo_circle.png',
-                                fit: BoxFit.contain,
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 34),
                     SlideTransition(
                       position: _textSlide,
                       child: FadeTransition(
@@ -171,30 +198,35 @@ class _SplashScreenState extends State<SplashScreen>
                           children: const [
                             Text(
                               'CAVO',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: CavoColors.gold,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 3,
+                                fontSize: 42,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 2.2,
+                                height: 1,
                               ),
                             ),
-                            SizedBox(height: 14),
+                            SizedBox(height: 16),
                             Text(
                               'Mirror Original',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: CavoColors.textPrimary,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                                height: 1.1,
                               ),
                             ),
-                            SizedBox(height: 6),
+                            SizedBox(height: 8),
                             Text(
                               'Premium Footwear',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: CavoColors.textSecondary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.2,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ],
@@ -206,18 +238,19 @@ class _SplashScreenState extends State<SplashScreen>
                       opacity: _textFade,
                       child: Column(
                         children: [
-                          _LoadingBar(controller: _loaderController),
-                          const SizedBox(height: 16),
+                          _PremiumLoadingBar(controller: _loaderController),
+                          const SizedBox(height: 18),
                           const Text(
                             'Crafted for distinction.',
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               color: CavoColors.textMuted,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
                               letterSpacing: 0.3,
                             ),
                           ),
-                          const SizedBox(height: 26),
+                          const SizedBox(height: 28),
                         ],
                       ),
                     ),
@@ -232,21 +265,21 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-class _LoadingBar extends StatelessWidget {
+class _PremiumLoadingBar extends StatelessWidget {
   final AnimationController controller;
 
-  const _LoadingBar({required this.controller});
+  const _PremiumLoadingBar({required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 148,
-      height: 6,
+      width: 170,
+      height: 7,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.06),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(99),
         border: Border.all(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.05),
         ),
       ),
       child: ClipRRect(
@@ -257,21 +290,22 @@ class _LoadingBar extends StatelessWidget {
             return Align(
               alignment: Alignment(-1 + (controller.value * 2), 0),
               child: Container(
-                width: 72,
-                height: 6,
+                width: 82,
+                height: 7,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
                       CavoColors.goldSoft,
+                      CavoColors.gold,
                       CavoColors.goldLight,
                     ],
                   ),
                   borderRadius: BorderRadius.circular(99),
                   boxShadow: [
                     BoxShadow(
-                      color: CavoColors.gold.withOpacity(0.45),
-                      blurRadius: 12,
-                      spreadRadius: 0.4,
+                      color: CavoColors.gold.withValues(alpha: 0.40),
+                      blurRadius: 14,
+                      spreadRadius: 0.6,
                     ),
                   ],
                 ),

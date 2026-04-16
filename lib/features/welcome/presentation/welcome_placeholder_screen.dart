@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../main_navigation/presentation/main_shell.dart';
 
 class WelcomePlaceholderScreen extends StatefulWidget {
   const WelcomePlaceholderScreen({super.key});
@@ -13,10 +14,9 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
-  late final Animation<Offset> _logoSlide;
-  late final Animation<Offset> _titleSlide;
-  late final Animation<Offset> _cardSlide;
-  late final Animation<Offset> _buttonSlide;
+  late final Animation<Offset> _contentSlide;
+  late final Animation<Offset> _buttonsSlide;
+  late final Animation<double> _logoScale;
 
   String _selectedLanguage = 'EN';
 
@@ -34,43 +34,33 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
       curve: Curves.easeOutCubic,
     );
 
-    _logoSlide = Tween<Offset>(
+    _contentSlide = Tween<Offset>(
+      begin: const Offset(0, 0.10),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.00, 0.75, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _buttonsSlide = Tween<Offset>(
       begin: const Offset(0, 0.18),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.00, 0.45, curve: Curves.easeOutCubic),
+        curve: const Interval(0.25, 1.00, curve: Curves.easeOutCubic),
       ),
     );
 
-    _titleSlide = Tween<Offset>(
-      begin: const Offset(0, 0.24),
-      end: Offset.zero,
+    _logoScale = Tween<double>(
+      begin: 0.92,
+      end: 1.00,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.12, 0.62, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _cardSlide = Tween<Offset>(
-      begin: const Offset(0, 0.28),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.22, 0.78, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _buttonSlide = Tween<Offset>(
-      begin: const Offset(0, 0.34),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.34, 1.00, curve: Curves.easeOutCubic),
+        curve: const Interval(0.00, 0.55, curve: Curves.easeOutBack),
       ),
     );
 
@@ -83,19 +73,10 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
     super.dispose();
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: CavoColors.surface,
-        behavior: SnackBarBehavior.floating,
-        content: const Text(
-          'Next step: Home screen and bottom navigation.',
-          style: TextStyle(color: CavoColors.textPrimary),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: CavoColors.border),
-        ),
+  void _goToApp() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const MainShell(),
       ),
     );
   }
@@ -103,12 +84,13 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: CavoColors.background,
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Color(0xFF050505),
+              Color(0xFF040404),
               Color(0xFF090909),
               Color(0xFF0D0B08),
             ],
@@ -121,16 +103,16 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
             const _GlowOrb(
               alignment: Alignment.topCenter,
               color: Color(0x18D4AF37),
-              size: 280,
+              size: 300,
             ),
             const _GlowOrb(
-              alignment: Alignment.centerLeft,
-              color: Color(0x10F1D27A),
-              size: 220,
+              alignment: Alignment.center,
+              color: Color(0x10D4AF37),
+              size: 260,
             ),
             const _GlowOrb(
               alignment: Alignment.bottomCenter,
-              color: Color(0x10D4AF37),
+              color: Color(0x10F1D27A),
               size: 300,
             ),
             SafeArea(
@@ -139,9 +121,8 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                 child: FadeTransition(
                   opacity: _fade,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
                       Align(
                         alignment: Alignment.centerRight,
                         child: _LanguageSwitcher(
@@ -151,154 +132,145 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                           },
                         ),
                       ),
-                      const SizedBox(height: 22),
-                      SlideTransition(
-                        position: _logoSlide,
+                      Expanded(
                         child: Center(
-                          child: Container(
-                            width: 126,
-                            height: 126,
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: CavoColors.gold.withValues(alpha: 0.14),
-                                  blurRadius: 34,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/branding/cavo_logo_circle.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      SlideTransition(
-                        position: _titleSlide,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            _BadgeLabel(text: 'CAVO'),
-                            SizedBox(height: 18),
-                            Text(
-                              'Mirror Original',
-                              style: TextStyle(
-                                color: CavoColors.textPrimary,
-                                fontSize: 34,
-                                fontWeight: FontWeight.w800,
-                                height: 1.05,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Premium Footwear designed to stand apart.',
-                              style: TextStyle(
-                                color: CavoColors.textSecondary,
-                                fontSize: 15,
-                                height: 1.55,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 28),
-                      SlideTransition(
-                        position: _cardSlide,
-                        child: _FeatureCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Made for a refined shopping experience',
-                                style: TextStyle(
-                                  color: CavoColors.textPrimary,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              const SizedBox(height: 18),
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 10,
-                                children: const [
-                                  _InfoChip(
-                                    icon: Icons.workspace_premium_rounded,
-                                    label: 'Premium Finish',
-                                  ),
-                                  _InfoChip(
-                                    icon: Icons.local_mall_outlined,
-                                    label: 'Men / Women / Kids',
-                                  ),
-                                  _InfoChip(
-                                    icon: Icons.flash_on_rounded,
-                                    label: 'Smooth Experience',
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 18),
-                              Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.03),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: CavoColors.border),
-                                ),
-                                child: Row(
-                                  children: const [
-                                    Icon(
-                                      Icons.auto_awesome_rounded,
-                                      color: CavoColors.gold,
-                                      size: 20,
+                          child: SlideTransition(
+                            position: _contentSlide,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ScaleTransition(
+                                  scale: _logoScale,
+                                  child: Container(
+                                    width: 155,
+                                    height: 155,
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: CavoColors.gold.withValues(alpha: 0.18),
+                                          blurRadius: 40,
+                                          spreadRadius: 2,
+                                        ),
+                                        BoxShadow(
+                                          color: CavoColors.goldLight.withValues(alpha: 0.06),
+                                          blurRadius: 80,
+                                          spreadRadius: 8,
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Mirror Original • Premium Footwear',
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        'assets/branding/cavo_logo_circle.png',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: CavoColors.surface.withValues(alpha: 0.92),
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(color: CavoColors.border),
+                                  ),
+                                  child: const Text(
+                                    'CAVO',
+                                    style: TextStyle(
+                                      color: CavoColors.gold,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.4,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+                                const Text(
+                                  'Mirror Original',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: CavoColors.textPrimary,
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.05,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 12),
+                                  child: Text(
+                                    'Premium Footwear designed to stand apart.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: CavoColors.textSecondary,
+                                      fontSize: 15,
+                                      height: 1.55,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: CavoColors.surface.withValues(alpha: 0.88),
+                                    borderRadius: BorderRadius.circular(22),
+                                    border: Border.all(color: CavoColors.border),
+                                  ),
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.auto_awesome_rounded,
+                                        color: CavoColors.gold,
+                                        size: 18,
+                                      ),
+                                      SizedBox(width: 10),
+                                      Text(
+                                        'Mirror Original  •  Premium Footwear',
                                         style: TextStyle(
                                           color: CavoColors.textSecondary,
                                           fontSize: 13,
-                                          fontWeight: FontWeight.w600,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      const Spacer(),
                       SlideTransition(
-                        position: _buttonSlide,
+                        position: _buttonsSlide,
                         child: Column(
                           children: [
                             ElevatedButton(
-                              onPressed: _showComingSoon,
+                              onPressed: _goToApp,
                               child: const Text('Explore Collection'),
                             ),
                             const SizedBox(height: 14),
                             OutlinedButton(
-                              onPressed: _showComingSoon,
+                              onPressed: _goToApp,
                               child: const Text('Continue as Guest'),
                             ),
                             const SizedBox(height: 18),
-                            const Center(
-                              child: Text(
-                                'Refined by CAVO',
-                                style: TextStyle(
-                                  color: CavoColors.textMuted,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.25,
-                                ),
+                            const Text(
+                              'Refined by CAVO',
+                              style: TextStyle(
+                                color: CavoColors.textMuted,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.25,
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -331,7 +303,7 @@ class _LanguageSwitcher extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.90),
+        color: CavoColors.surface.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: CavoColors.border),
       ),
@@ -393,97 +365,6 @@ class _LangChip extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _BadgeLabel extends StatelessWidget {
-  final String text;
-
-  const _BadgeLabel({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.90),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: CavoColors.border),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: CavoColors.gold,
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.3,
-        ),
-      ),
-    );
-  }
-}
-
-class _FeatureCard extends StatelessWidget {
-  final Widget child;
-
-  const _FeatureCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: CavoColors.border),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.22),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
-      ),
-      child: child,
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: CavoColors.border),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: CavoColors.gold, size: 18),
-          const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(
-              color: CavoColors.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }
