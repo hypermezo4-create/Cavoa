@@ -19,11 +19,11 @@ class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
   late final List<Widget> _pages = [
-  const HomeScreen(),
-  const CategoriesScreen(),
-  const CartScreen(),
-  const ProfileScreen(),
-  const LinksScreen(),
+  HomeScreen(),
+  CategoriesScreen(),
+  CartScreen(),
+  ProfileScreen(),
+  LinksScreen(),
 ];
 
   final List<_NavItem> _items = const [
