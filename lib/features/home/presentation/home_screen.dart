@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/mock/cavo_catalog.dart';
 import '../../../data/models/product.dart';
@@ -17,11 +18,7 @@ class HomeScreen extends StatelessWidget {
     final showcase = CavoCatalog.homeShowcase();
     final offers = CavoCatalog.offers();
     final videos = CavoCatalog.videos;
-    final brands = CavoCatalog.products
-        .map((e) => e.brand)
-        .toSet()
-        .take(8)
-        .toList();
+    final brands = CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
 
     return Scaffold(
       backgroundColor: CavoColors.background,
@@ -95,8 +92,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: CavoColors.surface.withValues(alpha: 0.90),
                   borderRadius: BorderRadius.circular(22),
@@ -243,7 +239,7 @@ class HomeScreen extends StatelessWidget {
               _VideoHighlightCard(video: CavoCatalog.homeVideo),
               const SizedBox(height: 14),
               SizedBox(
-                height: 120,
+                height: 138,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: videos.length,
@@ -298,8 +294,7 @@ class _HeroBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: CavoColors.gold.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(16),
@@ -342,8 +337,7 @@ class _HeroBanner extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  ProductDetailsScreen(product: product),
+                              builder: (_) => ProductDetailsScreen(product: product),
                             ),
                           );
                         },
@@ -356,8 +350,7 @@ class _HeroBanner extends StatelessWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) =>
-                                ProductDetailsScreen(product: product),
+                            builder: (_) => ProductDetailsScreen(product: product),
                           ),
                         );
                       },
@@ -560,83 +553,202 @@ class _OfferCard extends StatelessWidget {
   }
 }
 
-class _VideoHighlightCard extends StatelessWidget {
+class _VideoHighlightCard extends StatefulWidget {
   final CavoPromoVideo video;
 
   const _VideoHighlightCard({required this.video});
 
   @override
+  State<_VideoHighlightCard> createState() => _VideoHighlightCardState();
+}
+
+class _VideoHighlightCardState extends State<_VideoHighlightCard> {
+  VideoPlayerController? _controller;
+  bool _ready = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _setup();
+  }
+
+  Future<void> _setup() async {
+    try {
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.video.videoUrl),
+      );
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.setVolume(0);
+      await controller.play();
+      if (!mounted) return;
+      setState(() {
+        _controller = controller;
+        _ready = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _failed = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    final controller = _controller;
+    if (controller == null) return;
+    if (controller.value.isPlaying) {
+      controller.pause();
+    } else {
+      controller.play();
+    }
+    setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: CavoColors.border),
-        gradient: LinearGradient(
-          colors: [
-            CavoColors.surface.withValues(alpha: 0.95),
-            const Color(0xFF15100A),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    final controller = _controller;
+
+    return GestureDetector(
+      onTap: _ready ? _toggle : null,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: CavoColors.border),
+          gradient: LinearGradient(
+            colors: [
+              CavoColors.surface.withValues(alpha: 0.95),
+              const Color(0xFF15100A),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 74,
-            height: 74,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: CavoColors.gold.withValues(alpha: 0.12),
-              border: Border.all(
-                color: CavoColors.gold.withValues(alpha: 0.25),
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: AspectRatio(
+                aspectRatio: controller?.value.aspectRatio ?? (16 / 9),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (_ready && controller != null)
+                      VideoPlayer(controller)
+                    else
+                      Container(
+                        color: CavoColors.surfaceSoft,
+                        child: Center(
+                          child: _failed
+                              ? const Icon(
+                                  Icons.videocam_off_rounded,
+                                  color: CavoColors.textMuted,
+                                  size: 34,
+                                )
+                              : const CircularProgressIndicator(
+                                  color: CavoColors.gold,
+                                ),
+                        ),
+                      ),
+                    Container(
+                      width: 68,
+                      height: 68,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withValues(alpha: 0.35),
+                        border: Border.all(
+                          color: CavoColors.gold.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Icon(
+                        !_ready
+                            ? Icons.hourglass_bottom_rounded
+                            : (controller!.value.isPlaying
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded),
+                        color: CavoColors.gold,
+                        size: 34,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            child: const Icon(
-              Icons.play_arrow_rounded,
-              color: CavoColors.gold,
-              size: 34,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 14),
+            Row(
               children: [
-                Text(
-                  video.brand,
-                  style: const TextStyle(
-                    color: CavoColors.gold,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.video.brand,
+                        style: const TextStyle(
+                          color: CavoColors.gold,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.video.title,
+                        style: const TextStyle(
+                          color: CavoColors.textPrimary,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Tap video card to play or pause',
+                        style: TextStyle(
+                          color: CavoColors.textMuted,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  video.title,
-                  style: const TextStyle(
-                    color: CavoColors.textPrimary,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  video.videoUrl,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: CavoColors.textMuted,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => _VideoShowcaseScreen(video: widget.video),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 54,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: CavoColors.gold.withValues(alpha: 0.12),
+                      border: Border.all(
+                        color: CavoColors.gold.withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.open_in_full_rounded,
+                      color: CavoColors.gold,
+                      size: 24,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -649,53 +761,173 @@ class _VideoMiniCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 170,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.94),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: CavoColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 54,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: CavoColors.gold.withValues(alpha: 0.10),
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.play_circle_fill_rounded,
-                color: CavoColors.gold,
-                size: 28,
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => _VideoShowcaseScreen(video: video),
+          ),
+        );
+      },
+      child: Container(
+        width: 176,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: CavoColors.surface.withValues(alpha: 0.94),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: CavoColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 58,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: CavoColors.gold.withValues(alpha: 0.10),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: CavoColors.gold,
+                  size: 30,
+                ),
               ),
             ),
-          ),
-          const Spacer(),
-          Text(
-            video.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: CavoColors.textPrimary,
-              fontSize: 13,
-              fontWeight: FontWeight.w800,
-              height: 1.2,
+            const SizedBox(height: 12),
+            Text(
+              video.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: CavoColors.textPrimary,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                height: 1.2,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            video.brand,
-            style: const TextStyle(
-              color: CavoColors.textSecondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+            const SizedBox(height: 4),
+            Text(
+              video.brand,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: CavoColors.textSecondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _VideoShowcaseScreen extends StatefulWidget {
+  final CavoPromoVideo video;
+
+  const _VideoShowcaseScreen({required this.video});
+
+  @override
+  State<_VideoShowcaseScreen> createState() => _VideoShowcaseScreenState();
+}
+
+class _VideoShowcaseScreenState extends State<_VideoShowcaseScreen> {
+  VideoPlayerController? _controller;
+  bool _ready = false;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _setup();
+  }
+
+  Future<void> _setup() async {
+    try {
+      final controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.video.videoUrl),
+      );
+      await controller.initialize();
+      await controller.setLooping(true);
+      await controller.play();
+      if (!mounted) return;
+      setState(() {
+        _controller = controller;
+        _ready = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _failed = true;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  void _toggle() {
+    final controller = _controller;
+    if (controller == null) return;
+    if (controller.value.isPlaying) {
+      controller.pause();
+    } else {
+      controller.play();
+    }
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = _controller;
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        title: Text(widget.video.title),
+      ),
+      body: Center(
+        child: _failed
+            ? const Text(
+                'Video failed to load',
+                style: TextStyle(color: Colors.white),
+              )
+            : !_ready || controller == null
+                ? const CircularProgressIndicator(color: CavoColors.gold)
+                : GestureDetector(
+                    onTap: _toggle,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: controller.value.aspectRatio,
+                          child: VideoPlayer(controller),
+                        ),
+                        Container(
+                          width: 70,
+                          height: 70,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black.withValues(alpha: 0.35),
+                          ),
+                          child: Icon(
+                            controller.value.isPlaying
+                                ? Icons.pause_rounded
+                                : Icons.play_arrow_rounded,
+                            color: Colors.white,
+                            size: 36,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
       ),
     );
   }
