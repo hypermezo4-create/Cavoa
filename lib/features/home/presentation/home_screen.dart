@@ -221,7 +221,7 @@ class _HeroBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 310,
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: CavoColors.border),
@@ -241,102 +241,95 @@ class _HeroBanner extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: -10,
-            top: 22,
-            bottom: 18,
-            width: 160,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: CavoColors.gold.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'NEW COLLECTION',
+                    style: TextStyle(
+                      color: CavoColors.gold,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                const Text(
+                  'Premium Footwear\nDesigned to Stand\nApart',
+                  style: TextStyle(
+                    color: CavoColors.textPrimary,
+                    fontSize: 26,
+                    height: 1.08,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Mirror Original pieces with a refined dark luxury feel.',
+                  style: TextStyle(
+                    color: CavoColors.textSecondary,
+                    fontSize: 14,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ProductDetailsScreen(product: product),
+                            ),
+                          );
+                        },
+                        child: const Text('Shop Now'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    _CircleIconButton(
+                      icon: Icons.arrow_forward_rounded,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ProductDetailsScreen(product: product),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 14),
+          SizedBox(
+            width: 130,
+            height: 220,
             child: Hero(
               tag: 'product-${product.id}',
               child: CavoNetworkImage(
                 imageUrl: product.coverUrl,
                 fit: BoxFit.contain,
-                borderRadius: BorderRadius.circular(26),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: CavoColors.gold.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text(
-                      'NEW COLLECTION',
-                      style: TextStyle(
-                        color: CavoColors.gold,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1.0,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  const SizedBox(
-                    width: 250,
-                    child: Text(
-                      'Premium Footwear Designed to Stand Apart',
-                      style: TextStyle(
-                        color: CavoColors.textPrimary,
-                        fontSize: 28,
-                        height: 1.1,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const SizedBox(
-                    width: 250,
-                    child: Text(
-                      'Mirror Original pieces with a refined dark luxury feel.',
-                      style: TextStyle(
-                        color: CavoColors.textSecondary,
-                        fontSize: 14,
-                        height: 1.5,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => ProductDetailsScreen(product: product),
-                              ),
-                            );
-                          },
-                          child: const Text('Shop Now'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      _CircleIconButton(
-                        icon: Icons.arrow_forward_rounded,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => ProductDetailsScreen(product: product),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                borderRadius: BorderRadius.circular(24),
               ),
             ),
           ),
