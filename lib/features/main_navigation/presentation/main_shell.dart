@@ -18,13 +18,13 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  late final List<Widget> _pages = const [
-    HomeScreen(),
-    CategoriesScreen(),
-    CartScreen(),
-    ProfileScreen(),
-    LinksScreen(),
-  ];
+  late final List<Widget> _pages = [
+  const HomeScreen(),
+  const CategoriesScreen(),
+  const CartScreen(),
+  const ProfileScreen(),
+  const LinksScreen(),
+];
 
   final List<_NavItem> _items = const [
     _NavItem(icon: Icons.home_rounded, label: 'Home'),
