@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../welcome/presentation/welcome_placeholder_screen.dart';
+import '../../welcome/presentation/welcome_placeholder_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
