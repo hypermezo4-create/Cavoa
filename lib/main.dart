@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_mode_controller.dart';
 import 'features/splash/presentation/splash_screen.dart';
 
 Future<void> main() async {
@@ -25,11 +26,18 @@ class CavoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CAVO',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark(),
-      home: const SplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: ThemeModeController.instance,
+      builder: (context, themeMode, _) {
+        return MaterialApp(
+          title: 'CAVO',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          themeMode: themeMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

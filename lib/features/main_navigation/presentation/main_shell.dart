@@ -36,8 +36,25 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
+
+    final navBackground =
+        isLight ? CavoColors.bottomBarLight : CavoColors.bottomBarDark;
+    final navBorder =
+        isLight ? CavoColors.lightBorder : CavoColors.border;
+    final shadowColor =
+        isLight ? CavoColors.lightShadow : Colors.black.withValues(alpha: 0.26);
+    final selectedBg = isLight
+        ? CavoColors.gold.withValues(alpha: 0.12)
+        : CavoColors.gold.withValues(alpha: 0.16);
+    final activeText =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final inactiveText =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+
     return Scaffold(
-      backgroundColor: CavoColors.background,
+      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
@@ -52,12 +69,12 @@ class _MainShellState extends State<MainShell> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: CavoColors.surface.withValues(alpha: 0.85),
+                color: navBackground,
                 borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: CavoColors.border),
+                border: Border.all(color: navBorder),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.26),
+                    color: shadowColor,
                     blurRadius: 28,
                     offset: const Offset(0, 14),
                   ),
@@ -80,9 +97,7 @@ class _MainShellState extends State<MainShell> {
                           horizontal: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: active
-                              ? CavoColors.gold.withValues(alpha: 0.16)
-                              : Colors.transparent,
+                          color: active ? selectedBg : Colors.transparent,
                           borderRadius: BorderRadius.circular(22),
                         ),
                         child: Column(
@@ -91,9 +106,7 @@ class _MainShellState extends State<MainShell> {
                             Icon(
                               item.icon,
                               size: 22,
-                              color: active
-                                  ? CavoColors.gold
-                                  : CavoColors.textMuted,
+                              color: active ? CavoColors.gold : inactiveText,
                             ),
                             const SizedBox(height: 5),
                             Text(
@@ -101,9 +114,7 @@ class _MainShellState extends State<MainShell> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: active
-                                    ? CavoColors.textPrimary
-                                    : CavoColors.textMuted,
+                                color: active ? activeText : inactiveText,
                                 fontSize: 11,
                                 fontWeight:
                                     active ? FontWeight.w700 : FontWeight.w500,

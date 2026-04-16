@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract final class CavoColors {
+  // Existing dark palette
   static const Color background = Color(0xFF070707);
   static const Color backgroundSecondary = Color(0xFF0E0E0E);
   static const Color surface = Color(0xFF141414);
@@ -19,4 +20,49 @@ abstract final class CavoColors {
 
   static const Color success = Color(0xFF3DDC97);
   static const Color error = Color(0xFFE35D5D);
+
+  // New light palette
+  static const Color lightBackground = Color(0xFFF6F4EF);
+  static const Color lightBackgroundSecondary = Color(0xFFEDE8DE);
+  static const Color lightSurface = Color(0xFFFFFFFF);
+  static const Color lightSurfaceSoft = Color(0xFFF1EEE7);
+  static const Color lightSurfaceMuted = Color(0xFFE7E2D7);
+
+  static const Color lightTextPrimary = Color(0xFF171717);
+  static const Color lightTextSecondary = Color(0xFF5F5A50);
+  static const Color lightTextMuted = Color(0xFF8C8578);
+
+  static const Color lightBorder = Color(0xFFE1DACA);
+  static const Color lightDivider = Color(0xFFD9D1C1);
+
+  // Glass / blur helpers
+  static const Color glassLight = Color(0xCCFFFFFF);
+  static const Color glassDark = Color(0x99121212);
+  static const Color glassStrokeLight = Color(0xB3FFFFFF);
+  static const Color glassStrokeDark = Color(0x33F1D27A);
+
+  // Extra UI helpers for the upcoming redesign
+  static const Color black = Color(0xFF000000);
+  static const Color white = Color(0xFFFFFFFF);
+
+  static const Color heroDarkGlow = Color(0x1AD4AF37);
+  static const Color heroLightGlow = Color(0x26D4AF37);
+
+  static const Color darkShadow = Color(0x40000000);
+  static const Color lightShadow = Color(0x14000000);
+
+  static const Color productImageLight = Color(0xFFF4F1EA);
+  static const Color productImageDark = Color(0xFF111111);
+
+  static const Color selectedChipLight = Color(0xFFF1E5BE);
+  static const Color selectedChipDark = Color(0x33D4AF37);
+
+  static const Color quantityLight = Color(0xFFF8F5EE);
+  static const Color quantityDark = Color(0xFF171717);
+
+  static const Color pillLight = Color(0xFFF3EFE5);
+  static const Color pillDark = Color(0xFF181818);
+
+  static const Color bottomBarLight = Color(0xF2FFFFFF);
+  static const Color bottomBarDark = Color(0xF2181818);
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/mock/cavo_catalog.dart';
 import '../../../data/models/product.dart';
@@ -18,18 +17,38 @@ class HomeScreen extends StatelessWidget {
     final showcase = CavoCatalog.homeShowcase();
     final offers = CavoCatalog.offers();
     final videos = CavoCatalog.videos;
-    final brands = CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
+    final brands =
+        CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
+
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final surfaceSoft =
+        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final primaryText =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondaryText =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final mutedText =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
     return Scaffold(
-      backgroundColor: CavoColors.background,
+      backgroundColor: bg,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF050505),
-              Color(0xFF080808),
-              Color(0xFF0D0A06),
-            ],
+            colors: isLight
+                ? const [
+                    Color(0xFFF8F6F1),
+                    Color(0xFFF2EEE5),
+                    Color(0xFFECE6DA),
+                  ]
+                : const [
+                    Color(0xFF050505),
+                    Color(0xFF080808),
+                    Color(0xFF0D0A06),
+                  ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -41,14 +60,17 @@ class HomeScreen extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 48,
-                    height: 48,
+                    width: 52,
+                    height: 52,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: CavoColors.border),
+                      color: surface,
+                      border: Border.all(color: border),
                       boxShadow: [
                         BoxShadow(
-                          color: CavoColors.gold.withValues(alpha: 0.10),
+                          color: isLight
+                              ? CavoColors.lightShadow.withValues(alpha: 0.10)
+                              : CavoColors.gold.withValues(alpha: 0.10),
                           blurRadius: 20,
                         ),
                       ],
@@ -61,23 +83,23 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'CAVO',
                           style: TextStyle(
-                            color: CavoColors.textPrimary,
+                            color: primaryText,
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
                           'Mirror Original',
                           style: TextStyle(
-                            color: CavoColors.textMuted,
+                            color: mutedText,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                           ),
@@ -85,38 +107,48 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const _CircleIconButton(
+                  _CircleIconButton(
                     icon: Icons.notifications_none_rounded,
+                    isLight: isLight,
                   ),
                 ],
               ),
               const SizedBox(height: 22),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
-                  color: CavoColors.surface.withValues(alpha: 0.90),
+                  color: surface.withValues(alpha: isLight ? 0.96 : 0.90),
                   borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: CavoColors.border),
+                  border: Border.all(color: border),
+                  boxShadow: [
+                    if (isLight)
+                      BoxShadow(
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                  ],
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(
                       Icons.search_rounded,
-                      color: CavoColors.textMuted,
+                      color: mutedText,
                       size: 22,
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         'Search products, brands...',
                         style: TextStyle(
-                          color: CavoColors.textMuted,
+                          color: mutedText,
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.tune_rounded,
                       color: CavoColors.gold,
                       size: 20,
@@ -125,11 +157,15 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              _HeroBanner(product: heroProduct),
+              _HeroBanner(
+                product: heroProduct,
+                isLight: isLight,
+              ),
               const SizedBox(height: 28),
               _SectionHeader(
                 title: 'Shop by Category',
                 action: 'View All',
+                isLight: isLight,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -145,6 +181,7 @@ class HomeScreen extends StatelessWidget {
                     child: _CategoryCard(
                       title: 'Men',
                       icon: Icons.man_rounded,
+                      isLight: isLight,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -161,6 +198,7 @@ class HomeScreen extends StatelessWidget {
                     child: _CategoryCard(
                       title: 'Women',
                       icon: Icons.woman_rounded,
+                      isLight: isLight,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -177,6 +215,7 @@ class HomeScreen extends StatelessWidget {
                     child: _CategoryCard(
                       title: 'Kids',
                       icon: Icons.child_care_rounded,
+                      isLight: isLight,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -191,32 +230,40 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 28),
-              const _SectionHeader(
+              _SectionHeader(
                 title: 'Top Brands',
                 action: 'Curated',
+                isLight: isLight,
               ),
               const SizedBox(height: 14),
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
-                children: brands.map((brand) => _BrandChip(label: brand)).toList(),
+                children: brands
+                    .map((brand) => _BrandChip(label: brand, isLight: isLight))
+                    .toList(),
               ),
               const SizedBox(height: 28),
-              const _SectionHeader(
+              _SectionHeader(
                 title: 'Featured Collection',
                 action: 'Premium',
+                isLight: isLight,
               ),
               const SizedBox(height: 14),
               ...showcase.take(4).map(
                 (product) => Padding(
                   padding: const EdgeInsets.only(bottom: 14),
-                  child: _FeaturedProductCard(product: product),
+                  child: _FeaturedProductCard(
+                    product: product,
+                    isLight: isLight,
+                  ),
                 ),
               ),
               const SizedBox(height: 28),
-              const _SectionHeader(
+              _SectionHeader(
                 title: 'Offers',
                 action: 'Selected',
+                isLight: isLight,
               ),
               const SizedBox(height: 14),
               SizedBox(
@@ -226,26 +273,36 @@ class HomeScreen extends StatelessWidget {
                   itemCount: offers.length.clamp(0, 8),
                   separatorBuilder: (_, __) => const SizedBox(width: 14),
                   itemBuilder: (context, index) {
-                    return _OfferCard(product: offers[index]);
+                    return _OfferCard(
+                      product: offers[index],
+                      isLight: isLight,
+                    );
                   },
                 ),
               ),
               const SizedBox(height: 28),
-              const _SectionHeader(
+              _SectionHeader(
                 title: 'Videos',
-                action: 'Motion',
+                action: 'Soon',
+                isLight: isLight,
               ),
               const SizedBox(height: 14),
-              _VideoHighlightCard(video: CavoCatalog.homeVideo),
+              _VideoHighlightCard(
+                video: CavoCatalog.homeVideo,
+                isLight: isLight,
+              ),
               const SizedBox(height: 14),
               SizedBox(
-                height: 138,
+                height: 132,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: videos.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
-                    return _VideoMiniCard(video: videos[index]);
+                    return _VideoMiniCard(
+                      video: videos[index],
+                      isLight: isLight,
+                    );
                   },
                 ),
               ),
@@ -259,28 +316,45 @@ class HomeScreen extends StatelessWidget {
 
 class _HeroBanner extends StatelessWidget {
   final CavoProduct product;
+  final bool isLight;
 
-  const _HeroBanner({required this.product});
+  const _HeroBanner({
+    required this.product,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: CavoColors.border),
+        borderRadius: BorderRadius.circular(32),
+        border: Border.all(color: border),
         gradient: LinearGradient(
-          colors: [
-            CavoColors.surface.withValues(alpha: 0.95),
-            const Color(0xFF1A1408),
-          ],
+          colors: isLight
+              ? const [
+                  Color(0xFFFFFFFF),
+                  Color(0xFFF1ECE2),
+                ]
+              : [
+                  CavoColors.surface.withValues(alpha: 0.95),
+                  const Color(0xFF1A1408),
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.28),
+            color: isLight
+                ? CavoColors.lightShadow.withValues(alpha: 0.12)
+                : Colors.black.withValues(alpha: 0.28),
             blurRadius: 30,
             offset: const Offset(0, 14),
           ),
@@ -294,7 +368,8 @@ class _HeroBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: CavoColors.gold.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(16),
@@ -310,20 +385,20 @@ class _HeroBanner extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
+                Text(
                   'Premium Footwear\nDesigned to Stand\nApart',
                   style: TextStyle(
-                    color: CavoColors.textPrimary,
+                    color: titleColor,
                     fontSize: 26,
                     height: 1.08,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Mirror Original pieces with a refined dark luxury feel.',
+                Text(
+                  'Mirror Original pieces with a refined luxury feel.',
                   style: TextStyle(
-                    color: CavoColors.textSecondary,
+                    color: bodyColor,
                     fontSize: 14,
                     height: 1.5,
                     fontWeight: FontWeight.w500,
@@ -337,7 +412,8 @@ class _HeroBanner extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => ProductDetailsScreen(product: product),
+                              builder: (_) =>
+                                  ProductDetailsScreen(product: product),
                             ),
                           );
                         },
@@ -347,10 +423,12 @@ class _HeroBanner extends StatelessWidget {
                     const SizedBox(width: 10),
                     _CircleIconButton(
                       icon: Icons.arrow_forward_rounded,
+                      isLight: isLight,
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => ProductDetailsScreen(product: product),
+                            builder: (_) =>
+                                ProductDetailsScreen(product: product),
                           ),
                         );
                       },
@@ -381,11 +459,24 @@ class _HeroBanner extends StatelessWidget {
 
 class _FeaturedProductCard extends StatelessWidget {
   final CavoProduct product;
+  final bool isLight;
 
-  const _FeaturedProductCard({required this.product});
+  const _FeaturedProductCard({
+    required this.product,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final surfaceSoft =
+        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -398,9 +489,17 @@ class _FeaturedProductCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.94),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: CavoColors.border),
+          border: Border.all(color: border),
+          boxShadow: [
+            if (isLight)
+              BoxShadow(
+                color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+          ],
         ),
         child: Row(
           children: [
@@ -413,8 +512,8 @@ class _FeaturedProductCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(22),
                   gradient: LinearGradient(
                     colors: [
-                      CavoColors.gold.withValues(alpha: 0.22),
-                      CavoColors.surfaceSoft,
+                      CavoColors.gold.withValues(alpha: 0.18),
+                      surfaceSoft,
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -432,6 +531,9 @@ class _FeaturedProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const Text(
+                    '',
+                  ),
                   Text(
                     product.brand,
                     style: const TextStyle(
@@ -443,8 +545,8 @@ class _FeaturedProductCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     product.title,
-                    style: const TextStyle(
-                      color: CavoColors.textPrimary,
+                    style: TextStyle(
+                      color: titleColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                     ),
@@ -454,8 +556,8 @@ class _FeaturedProductCard extends StatelessWidget {
                     product.shortDescription,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: CavoColors.textSecondary,
+                    style: TextStyle(
+                      color: bodyColor,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       height: 1.4,
@@ -464,9 +566,11 @@ class _FeaturedProductCard extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.favorite_border_rounded,
-              color: CavoColors.textMuted,
+              color: isLight
+                  ? CavoColors.lightTextMuted
+                  : CavoColors.textMuted,
               size: 22,
             ),
           ],
@@ -478,11 +582,22 @@ class _FeaturedProductCard extends StatelessWidget {
 
 class _OfferCard extends StatelessWidget {
   final CavoProduct product;
+  final bool isLight;
 
-  const _OfferCard({required this.product});
+  const _OfferCard({
+    required this.product,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -495,9 +610,9 @@ class _OfferCard extends StatelessWidget {
         width: 190,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.94),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: CavoColors.border),
+          border: Border.all(color: border),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +621,9 @@ class _OfferCard extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: CavoColors.surfaceSoft,
+                  color: isLight
+                      ? CavoColors.lightSurfaceSoft
+                      : CavoColors.surfaceSoft,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: CavoNetworkImage(
@@ -530,18 +647,18 @@ class _OfferCard extends StatelessWidget {
               product.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: CavoColors.textPrimary,
+              style: TextStyle(
+                color: titleColor,
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
                 height: 1.2,
               ),
             ),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Offer selected for premium showcase',
               style: TextStyle(
-                color: CavoColors.textSecondary,
+                color: bodyColor,
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
@@ -553,202 +670,109 @@ class _OfferCard extends StatelessWidget {
   }
 }
 
-class _VideoHighlightCard extends StatefulWidget {
+class _VideoHighlightCard extends StatelessWidget {
   final CavoPromoVideo video;
+  final bool isLight;
 
-  const _VideoHighlightCard({required this.video});
-
-  @override
-  State<_VideoHighlightCard> createState() => _VideoHighlightCardState();
-}
-
-class _VideoHighlightCardState extends State<_VideoHighlightCard> {
-  VideoPlayerController? _controller;
-  bool _ready = false;
-  bool _failed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _setup();
-  }
-
-  Future<void> _setup() async {
-    try {
-      final controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.video.videoUrl),
-      );
-      await controller.initialize();
-      await controller.setLooping(true);
-      await controller.setVolume(0);
-      await controller.play();
-      if (!mounted) return;
-      setState(() {
-        _controller = controller;
-        _ready = true;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _failed = true;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    final controller = _controller;
-    if (controller == null) return;
-    if (controller.value.isPlaying) {
-      controller.pause();
-    } else {
-      controller.play();
-    }
-    setState(() {});
-  }
+  const _VideoHighlightCard({
+    required this.video,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final controller = _controller;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final mutedText =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
-    return GestureDetector(
-      onTap: _ready ? _toggle : null,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: CavoColors.border),
-          gradient: LinearGradient(
-            colors: [
-              CavoColors.surface.withValues(alpha: 0.95),
-              const Color(0xFF15100A),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: border),
+        gradient: LinearGradient(
+          colors: isLight
+              ? const [
+                  Color(0xFFFFFFFF),
+                  Color(0xFFF1ECE2),
+                ]
+              : [
+                  CavoColors.surface.withValues(alpha: 0.95),
+                  const Color(0xFF15100A),
+                ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: AspectRatio(
-                aspectRatio: controller?.value.aspectRatio ?? (16 / 9),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (_ready && controller != null)
-                      VideoPlayer(controller)
-                    else
-                      Container(
-                        color: CavoColors.surfaceSoft,
-                        child: Center(
-                          child: _failed
-                              ? const Icon(
-                                  Icons.videocam_off_rounded,
-                                  color: CavoColors.textMuted,
-                                  size: 34,
-                                )
-                              : const CircularProgressIndicator(
-                                  color: CavoColors.gold,
-                                ),
-                        ),
-                      ),
-                    Container(
-                      width: 68,
-                      height: 68,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black.withValues(alpha: 0.35),
-                        border: Border.all(
-                          color: CavoColors.gold.withValues(alpha: 0.35),
-                        ),
-                      ),
-                      child: Icon(
-                        !_ready
-                            ? Icons.hourglass_bottom_rounded
-                            : (controller!.value.isPlaying
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded),
-                        color: CavoColors.gold,
-                        size: 34,
-                      ),
-                    ),
-                  ],
-                ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 74,
+            height: 74,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: CavoColors.gold.withValues(alpha: 0.12),
+              border: Border.all(
+                color: CavoColors.gold.withValues(alpha: 0.25),
               ),
             ),
-            const SizedBox(height: 14),
-            Row(
+            child: const Icon(
+              Icons.play_arrow_rounded,
+              color: CavoColors.gold,
+              size: 34,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.video.brand,
-                        style: const TextStyle(
-                          color: CavoColors.gold,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        widget.video.title,
-                        style: const TextStyle(
-                          color: CavoColors.textPrimary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Tap video card to play or pause',
-                        style: TextStyle(
-                          color: CavoColors.textMuted,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                Text(
+                  video.brand,
+                  style: const TextStyle(
+                    color: CavoColors.gold,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
-                const SizedBox(width: 12),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => _VideoShowcaseScreen(video: widget.video),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: CavoColors.gold.withValues(alpha: 0.12),
-                      border: Border.all(
-                        color: CavoColors.gold.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.open_in_full_rounded,
-                      color: CavoColors.gold,
-                      size: 24,
-                    ),
+                const SizedBox(height: 6),
+                Text(
+                  video.title,
+                  style: TextStyle(
+                    color: titleColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Video section is prepared and will be polished next.',
+                  style: TextStyle(
+                    color: bodyColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  video.videoUrl,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: mutedText,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -756,178 +780,71 @@ class _VideoHighlightCardState extends State<_VideoHighlightCard> {
 
 class _VideoMiniCard extends StatelessWidget {
   final CavoPromoVideo video;
+  final bool isLight;
 
-  const _VideoMiniCard({required this.video});
+  const _VideoMiniCard({
+    required this.video,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => _VideoShowcaseScreen(video: video),
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
+    return Container(
+      width: 176,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surface.withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 58,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: CavoColors.gold.withValues(alpha: 0.10),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.play_circle_fill_rounded,
+                color: CavoColors.gold,
+                size: 30,
+              ),
+            ),
           ),
-        );
-      },
-      child: Container(
-        width: 176,
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.94),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: CavoColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 58,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: CavoColors.gold.withValues(alpha: 0.10),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.play_circle_fill_rounded,
-                  color: CavoColors.gold,
-                  size: 30,
-                ),
-              ),
+          const SizedBox(height: 12),
+          Text(
+            video.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: titleColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              height: 1.2,
             ),
-            const SizedBox(height: 12),
-            Text(
-              video.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: CavoColors.textPrimary,
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-                height: 1.2,
-              ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            video.brand,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: bodyColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
             ),
-            const SizedBox(height: 4),
-            Text(
-              video.brand,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: CavoColors.textSecondary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _VideoShowcaseScreen extends StatefulWidget {
-  final CavoPromoVideo video;
-
-  const _VideoShowcaseScreen({required this.video});
-
-  @override
-  State<_VideoShowcaseScreen> createState() => _VideoShowcaseScreenState();
-}
-
-class _VideoShowcaseScreenState extends State<_VideoShowcaseScreen> {
-  VideoPlayerController? _controller;
-  bool _ready = false;
-  bool _failed = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _setup();
-  }
-
-  Future<void> _setup() async {
-    try {
-      final controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.video.videoUrl),
-      );
-      await controller.initialize();
-      await controller.setLooping(true);
-      await controller.play();
-      if (!mounted) return;
-      setState(() {
-        _controller = controller;
-        _ready = true;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _failed = true;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    final controller = _controller;
-    if (controller == null) return;
-    if (controller.value.isPlaying) {
-      controller.pause();
-    } else {
-      controller.play();
-    }
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = _controller;
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        title: Text(widget.video.title),
-      ),
-      body: Center(
-        child: _failed
-            ? const Text(
-                'Video failed to load',
-                style: TextStyle(color: Colors.white),
-              )
-            : !_ready || controller == null
-                ? const CircularProgressIndicator(color: CavoColors.gold)
-                : GestureDetector(
-                    onTap: _toggle,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        AspectRatio(
-                          aspectRatio: controller.value.aspectRatio,
-                          child: VideoPlayer(controller),
-                        ),
-                        Container(
-                          width: 70,
-                          height: 70,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black.withValues(alpha: 0.35),
-                          ),
-                          child: Icon(
-                            controller.value.isPlaying
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 36,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+          ),
+        ],
       ),
     );
   }
@@ -935,26 +852,33 @@ class _VideoShowcaseScreenState extends State<_VideoShowcaseScreen> {
 
 class _CircleIconButton extends StatelessWidget {
   final IconData icon;
+  final bool isLight;
   final VoidCallback? onTap;
 
   const _CircleIconButton({
     required this.icon,
+    required this.isLight,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final iconColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.90),
+          color: surface.withValues(alpha: 0.92),
           shape: BoxShape.circle,
-          border: Border.all(color: CavoColors.border),
+          border: Border.all(color: border),
         ),
-        child: Icon(icon, color: CavoColors.textPrimary, size: 22),
+        child: Icon(icon, color: iconColor, size: 22),
       ),
     );
   }
@@ -963,23 +887,28 @@ class _CircleIconButton extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String title;
   final String action;
+  final bool isLight;
   final VoidCallback? onTap;
 
   const _SectionHeader({
     required this.title,
     required this.action,
+    required this.isLight,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+
     return Row(
       children: [
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(
-              color: CavoColors.textPrimary,
+            style: TextStyle(
+              color: titleColor,
               fontSize: 20,
               fontWeight: FontWeight.w800,
             ),
@@ -989,7 +918,7 @@ class _SectionHeader extends StatelessWidget {
           onTap: onTap,
           child: Text(
             action,
-            style: const TextStyle(
+            style: TextStyle(
               color: CavoColors.gold,
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -1001,27 +930,36 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+
+
 class _CategoryCard extends StatelessWidget {
   final String title;
   final IconData icon;
+  final bool isLight;
   final VoidCallback onTap;
 
   const _CategoryCard({
     required this.title,
     required this.icon,
+    required this.isLight,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final textColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.92),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: CavoColors.border),
+          border: Border.all(color: border),
         ),
         child: Column(
           children: [
@@ -1029,8 +967,8 @@ class _CategoryCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               title,
-              style: const TextStyle(
-                color: CavoColors.textPrimary,
+              style: TextStyle(
+                color: textColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
               ),
@@ -1044,22 +982,33 @@ class _CategoryCard extends StatelessWidget {
 
 class _BrandChip extends StatelessWidget {
   final String label;
+  final bool isLight;
 
-  const _BrandChip({required this.label});
+  const _BrandChip({
+    required this.label,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final bg = isLight
+        ? CavoColors.lightSurfaceSoft.withValues(alpha: 0.95)
+        : CavoColors.surface.withValues(alpha: 0.92);
+    final textColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.92),
+        color: bg,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: CavoColors.border),
+        border: Border.all(color: border),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: CavoColors.textSecondary,
+        style: TextStyle(
+          color: textColor,
           fontSize: 13,
           fontWeight: FontWeight.w700,
         ),

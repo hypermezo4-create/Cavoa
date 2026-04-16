@@ -40,16 +40,35 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       brand: _selectedBrand,
     );
 
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final surfaceSoft =
+        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final primaryText =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondaryText =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final mutedText =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+
     return Scaffold(
-      backgroundColor: CavoColors.background,
+      backgroundColor: bg,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF050505),
-              Color(0xFF080808),
-              Color(0xFF0D0A06),
-            ],
+            colors: isLight
+                ? const [
+                    Color(0xFFF8F6F1),
+                    Color(0xFFF2EEE5),
+                    Color(0xFFECE6DA),
+                  ]
+                : const [
+                    Color(0xFF050505),
+                    Color(0xFF080808),
+                    Color(0xFF0D0A06),
+                  ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -60,23 +79,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             children: [
               Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'Browse Collection',
                           style: TextStyle(
-                            color: CavoColors.textPrimary,
+                            color: primaryText,
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        SizedBox(height: 6),
+                        const SizedBox(height: 6),
                         Text(
                           'Mirror Original • Premium Footwear',
                           style: TextStyle(
-                            color: CavoColors.textMuted,
+                            color: mutedText,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -90,9 +109,17 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: CavoColors.surface.withValues(alpha: 0.90),
+                      color: surface.withValues(alpha: 0.94),
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: CavoColors.border),
+                      border: Border.all(color: border),
+                      boxShadow: [
+                        if (isLight)
+                          BoxShadow(
+                            color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                      ],
                     ),
                     child: Text(
                       '${products.length} items',
@@ -128,21 +155,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           decoration: BoxDecoration(
                             color: active
                                 ? CavoColors.gold.withValues(alpha: 0.14)
-                                : CavoColors.surface.withValues(alpha: 0.88),
+                                : surface.withValues(alpha: 0.92),
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
                               color: active
                                   ? CavoColors.gold.withValues(alpha: 0.35)
-                                  : CavoColors.border,
+                                  : border,
                             ),
+                            boxShadow: [
+                              if (isLight && active)
+                                BoxShadow(
+                                  color: CavoColors.lightShadow.withValues(alpha: 0.06),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
+                                ),
+                            ],
                           ),
                           child: Center(
                             child: Text(
                               category.label,
                               style: TextStyle(
-                                color: active
-                                    ? CavoColors.textPrimary
-                                    : CavoColors.textSecondary,
+                                color: active ? primaryText : secondaryText,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w800,
                               ),
@@ -158,17 +191,25 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: CavoColors.surface.withValues(alpha: 0.90),
+                  color: surface.withValues(alpha: 0.94),
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: CavoColors.border),
+                  border: Border.all(color: border),
+                  boxShadow: [
+                    if (isLight)
+                      BoxShadow(
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Brands',
                       style: TextStyle(
-                        color: CavoColors.textPrimary,
+                        color: primaryText,
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
                       ),
@@ -195,21 +236,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               decoration: BoxDecoration(
                                 color: active
                                     ? CavoColors.gold.withValues(alpha: 0.14)
-                                    : CavoColors.surfaceSoft.withValues(alpha: 0.90),
+                                    : surfaceSoft.withValues(alpha: 0.95),
                                 borderRadius: BorderRadius.circular(18),
                                 border: Border.all(
                                   color: active
                                       ? CavoColors.gold.withValues(alpha: 0.35)
-                                      : CavoColors.border,
+                                      : border,
                                 ),
                               ),
                               child: Center(
                                 child: Text(
                                   brand,
                                   style: TextStyle(
-                                    color: active
-                                        ? CavoColors.textPrimary
-                                        : CavoColors.textSecondary,
+                                    color: active ? primaryText : secondaryText,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -228,23 +267,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: CavoColors.surface.withValues(alpha: 0.92),
+                    color: surface.withValues(alpha: 0.94),
                     borderRadius: BorderRadius.circular(26),
-                    border: Border.all(color: CavoColors.border),
+                    border: Border.all(color: border),
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.auto_awesome_outlined,
                         color: CavoColors.gold,
                         size: 34,
                       ),
-                      SizedBox(height: 14),
+                      const SizedBox(height: 14),
                       Text(
                         'New products are being prepared for this section.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: CavoColors.textSecondary,
+                          color: secondaryText,
                           fontSize: 14,
                           height: 1.5,
                           fontWeight: FontWeight.w600,
@@ -267,7 +306,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   ),
                   itemBuilder: (context, index) {
                     final product = products[index];
-                    return _CatalogCard(product: product);
+                    return _CatalogCard(
+                      product: product,
+                      isLight: isLight,
+                    );
                   },
                 ),
             ],
@@ -280,11 +322,24 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
 class _CatalogCard extends StatelessWidget {
   final CavoProduct product;
+  final bool isLight;
 
-  const _CatalogCard({required this.product});
+  const _CatalogCard({
+    required this.product,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final surfaceSoft =
+        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
+    final primaryText =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondaryText =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(
@@ -295,9 +350,17 @@ class _CatalogCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: CavoColors.surface.withValues(alpha: 0.94),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: CavoColors.border),
+          border: Border.all(color: border),
+          boxShadow: [
+            if (isLight)
+              BoxShadow(
+                color: CavoColors.lightShadow.withValues(alpha: 0.06),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
+              ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +373,7 @@ class _CatalogCard extends StatelessWidget {
                   margin: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: CavoColors.surfaceSoft,
+                    color: surfaceSoft,
                   ),
                   child: CavoNetworkImage(
                     imageUrl: product.coverUrl,
@@ -337,8 +400,8 @@ class _CatalogCard extends StatelessWidget {
                 product.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: CavoColors.textPrimary,
+                style: TextStyle(
+                  color: primaryText,
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                   height: 1.2,
@@ -351,8 +414,8 @@ class _CatalogCard extends StatelessWidget {
                 product.shortDescription,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: CavoColors.textSecondary,
+                style: TextStyle(
+                  color: secondaryText,
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
                   height: 1.35,

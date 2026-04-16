@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen>
       curve: const Interval(0.00, 0.45, curve: Curves.easeOut),
     );
 
-    _logoScale = Tween<double>(begin: 0.86, end: 1.00).animate(
+    _logoScale = Tween<double>(begin: 0.88, end: 1.00).animate(
       CurvedAnimation(
         parent: _introController,
         curve: const Interval(0.00, 0.55, curve: Curves.easeOutCubic),
@@ -108,35 +108,58 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final subtitleColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final mutedColor =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+
     return Scaffold(
+      backgroundColor:
+          isLight ? CavoColors.lightBackground : CavoColors.background,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF020202),
-              Color(0xFF070707),
-              Color(0xFF0D0A06),
-            ],
+            colors: isLight
+                ? const [
+                    Color(0xFFF8F6F1),
+                    Color(0xFFF1ECE2),
+                    Color(0xFFE9E2D5),
+                  ]
+                : const [
+                    Color(0xFF020202),
+                    Color(0xFF070707),
+                    Color(0xFF0D0A06),
+                  ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Stack(
           children: [
-            const _BackgroundGlow(
+            _BackgroundGlow(
               alignment: Alignment.topCenter,
-              color: Color(0x18D4AF37),
+              color: isLight
+                  ? CavoColors.heroLightGlow
+                  : const Color(0x18D4AF37),
               size: 320,
             ),
-            const _BackgroundGlow(
+            _BackgroundGlow(
               alignment: Alignment.center,
-              color: Color(0x10D4AF37),
+              color: isLight
+                  ? const Color(0x14D4AF37)
+                  : const Color(0x10D4AF37),
               size: 260,
             ),
-            const _BackgroundGlow(
+            _BackgroundGlow(
               alignment: Alignment.bottomCenter,
-              color: Color(0x12F1D27A),
+              color: isLight
+                  ? const Color(0x12F1D27A)
+                  : const Color(0x12F1D27A),
               size: 300,
             ),
             SafeArea(
@@ -175,13 +198,15 @@ class _SplashScreenState extends State<SplashScreen>
                                             shape: BoxShape.circle,
                                             boxShadow: [
                                               BoxShadow(
-                                                color: CavoColors.gold.withValues(alpha: 0.22),
-                                                blurRadius: 60,
-                                                spreadRadius: 4,
+                                                color: CavoColors.gold
+                                                    .withValues(alpha: isLight ? 0.16 : 0.22),
+                                                blurRadius: isLight ? 42 : 60,
+                                                spreadRadius: isLight ? 2 : 4,
                                               ),
                                               BoxShadow(
-                                                color: CavoColors.goldLight.withValues(alpha: 0.08),
-                                                blurRadius: 95,
+                                                color: CavoColors.goldLight
+                                                    .withValues(alpha: isLight ? 0.05 : 0.08),
+                                                blurRadius: isLight ? 72 : 95,
                                                 spreadRadius: 8,
                                               ),
                                             ],
@@ -210,22 +235,22 @@ class _SplashScreenState extends State<SplashScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 14),
-                                const Text(
+                                Text(
                                   'Mirror Original',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: CavoColors.textPrimary,
+                                    color: titleColor,
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
                                     height: 1.1,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
+                                Text(
                                   'Premium Footwear',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    color: CavoColors.textSecondary,
+                                    color: subtitleColor,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0.3,
@@ -241,13 +266,16 @@ class _SplashScreenState extends State<SplashScreen>
                       opacity: _textFade,
                       child: Column(
                         children: [
-                          _PremiumLoadingBar(controller: _loaderController),
+                          _PremiumLoadingBar(
+                            controller: _loaderController,
+                            isLight: isLight,
+                          ),
                           const SizedBox(height: 18),
-                          const Text(
+                          Text(
                             'Crafted for distinction.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: CavoColors.textMuted,
+                              color: mutedColor,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.3,
@@ -270,20 +298,29 @@ class _SplashScreenState extends State<SplashScreen>
 
 class _PremiumLoadingBar extends StatelessWidget {
   final AnimationController controller;
+  final bool isLight;
 
-  const _PremiumLoadingBar({required this.controller});
+  const _PremiumLoadingBar({
+    required this.controller,
+    required this.isLight,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final barBg = isLight
+        ? CavoColors.lightSurface.withValues(alpha: 0.75)
+        : Colors.white.withValues(alpha: 0.05);
+    final barBorder = isLight
+        ? CavoColors.lightBorder.withValues(alpha: 0.80)
+        : Colors.white.withValues(alpha: 0.05);
+
     return Container(
       width: 170,
       height: 7,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: barBg,
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.05),
-        ),
+        border: Border.all(color: barBorder),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(99),
@@ -306,7 +343,7 @@ class _PremiumLoadingBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(99),
                   boxShadow: [
                     BoxShadow(
-                      color: CavoColors.gold.withValues(alpha: 0.40),
+                      color: CavoColors.gold.withValues(alpha: 0.32),
                       blurRadius: 14,
                       spreadRadius: 0.6,
                     ),

@@ -83,36 +83,62 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+
+    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
+    final cardBg = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final softBg =
+        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final bodyColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final mutedColor =
+        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+
     return Scaffold(
-      backgroundColor: CavoColors.background,
+      backgroundColor: bg,
       body: Container(
         width: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF040404),
-              Color(0xFF090909),
-              Color(0xFF0D0B08),
-            ],
+            colors: isLight
+                ? const [
+                    Color(0xFFF8F6F1),
+                    Color(0xFFF2EEE5),
+                    Color(0xFFECE6DA),
+                  ]
+                : const [
+                    Color(0xFF040404),
+                    Color(0xFF090909),
+                    Color(0xFF0D0B08),
+                  ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Stack(
           children: [
-            const _GlowOrb(
+            _GlowOrb(
               alignment: Alignment.topCenter,
-              color: Color(0x18D4AF37),
+              color: isLight
+                  ? CavoColors.heroLightGlow
+                  : const Color(0x18D4AF37),
               size: 300,
             ),
-            const _GlowOrb(
+            _GlowOrb(
               alignment: Alignment.center,
-              color: Color(0x10D4AF37),
+              color: isLight
+                  ? const Color(0x10D4AF37)
+                  : const Color(0x10D4AF37),
               size: 250,
             ),
-            const _GlowOrb(
+            _GlowOrb(
               alignment: Alignment.bottomCenter,
-              color: Color(0x10F1D27A),
+              color: isLight
+                  ? const Color(0x10F1D27A)
+                  : const Color(0x10F1D27A),
               size: 300,
             ),
             SafeArea(
@@ -127,6 +153,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                         alignment: Alignment.centerRight,
                         child: _LanguageSwitcher(
                           selected: _selectedLanguage,
+                          isLight: isLight,
                           onChanged: (value) {
                             setState(() => _selectedLanguage = value);
                           },
@@ -156,13 +183,18 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                             shape: BoxShape.circle,
                                             boxShadow: [
                                               BoxShadow(
-                                                color: CavoColors.gold.withValues(alpha: 0.18),
-                                                blurRadius: 40,
+                                                color: CavoColors.gold.withValues(
+                                                  alpha: isLight ? 0.16 : 0.18,
+                                                ),
+                                                blurRadius: isLight ? 34 : 40,
                                                 spreadRadius: 2,
                                               ),
                                               BoxShadow(
-                                                color: CavoColors.goldLight.withValues(alpha: 0.06),
-                                                blurRadius: 82,
+                                                color:
+                                                    CavoColors.goldLight.withValues(
+                                                  alpha: isLight ? 0.05 : 0.06,
+                                                ),
+                                                blurRadius: isLight ? 64 : 82,
                                                 spreadRadius: 8,
                                               ),
                                             ],
@@ -182,11 +214,21 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                           vertical: 10,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: CavoColors.surface.withValues(alpha: 0.92),
-                                          borderRadius: BorderRadius.circular(18),
+                                          color: cardBg.withValues(alpha: 0.92),
+                                          borderRadius:
+                                              BorderRadius.circular(18),
                                           border: Border.all(
-                                            color: CavoColors.border,
+                                            color: border,
                                           ),
+                                          boxShadow: [
+                                            if (isLight)
+                                              BoxShadow(
+                                                color: CavoColors.lightShadow
+                                                    .withValues(alpha: 0.08),
+                                                blurRadius: 14,
+                                                offset: const Offset(0, 8),
+                                              ),
+                                          ],
                                         ),
                                         child: const Text(
                                           'CAVO',
@@ -199,24 +241,25 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                         ),
                                       ),
                                       const SizedBox(height: 22),
-                                      const Text(
+                                      Text(
                                         'Mirror Original',
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: CavoColors.textPrimary,
+                                          color: titleColor,
                                           fontSize: 34,
                                           fontWeight: FontWeight.w900,
                                           height: 1.05,
                                         ),
                                       ),
                                       const SizedBox(height: 12),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8),
                                         child: Text(
                                           'Premium Footwear designed to stand apart.',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            color: CavoColors.textSecondary,
+                                            color: bodyColor,
                                             fontSize: 15,
                                             height: 1.55,
                                             fontWeight: FontWeight.w600,
@@ -230,27 +273,37 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                           vertical: 14,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: CavoColors.surface.withValues(alpha: 0.88),
-                                          borderRadius: BorderRadius.circular(22),
+                                          color: softBg.withValues(alpha: 0.90),
+                                          borderRadius:
+                                              BorderRadius.circular(22),
                                           border: Border.all(
-                                            color: CavoColors.border,
+                                            color: border,
                                           ),
+                                          boxShadow: [
+                                            if (isLight)
+                                              BoxShadow(
+                                                color: CavoColors.lightShadow
+                                                    .withValues(alpha: 0.06),
+                                                blurRadius: 12,
+                                                offset: const Offset(0, 6),
+                                              ),
+                                          ],
                                         ),
-                                        child: const Row(
+                                        child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.auto_awesome_rounded,
                                               color: CavoColors.gold,
                                               size: 18,
                                             ),
-                                            SizedBox(width: 10),
+                                            const SizedBox(width: 10),
                                             Flexible(
                                               child: Text(
                                                 'Mirror Original  •  Premium Footwear',
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  color: CavoColors.textSecondary,
+                                                  color: bodyColor,
                                                   fontSize: 13,
                                                   fontWeight: FontWeight.w700,
                                                 ),
@@ -281,10 +334,10 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                               child: const Text('Continue as Guest'),
                             ),
                             const SizedBox(height: 18),
-                            const Text(
+                            Text(
                               'Refined by CAVO',
                               style: TextStyle(
-                                color: CavoColors.textMuted,
+                                color: mutedColor,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.25,
@@ -308,21 +361,34 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
 
 class _LanguageSwitcher extends StatelessWidget {
   final String selected;
+  final bool isLight;
   final ValueChanged<String> onChanged;
 
   const _LanguageSwitcher({
     required this.selected,
+    required this.isLight,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bg = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: CavoColors.surface.withValues(alpha: 0.92),
+        color: bg.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: CavoColors.border),
+        border: Border.all(color: border),
+        boxShadow: [
+          if (isLight)
+            BoxShadow(
+              color: CavoColors.lightShadow.withValues(alpha: 0.08),
+              blurRadius: 14,
+              offset: const Offset(0, 8),
+            ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -330,12 +396,14 @@ class _LanguageSwitcher extends StatelessWidget {
           _LangChip(
             label: 'EN',
             active: selected == 'EN',
+            isLight: isLight,
             onTap: () => onChanged('EN'),
           ),
           const SizedBox(width: 6),
           _LangChip(
             label: 'AR',
             active: selected == 'AR',
+            isLight: isLight,
             onTap: () => onChanged('AR'),
           ),
         ],
@@ -347,16 +415,21 @@ class _LanguageSwitcher extends StatelessWidget {
 class _LangChip extends StatelessWidget {
   final String label;
   final bool active;
+  final bool isLight;
   final VoidCallback onTap;
 
   const _LangChip({
     required this.label,
     required this.active,
+    required this.isLight,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final inactiveText =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
@@ -374,7 +447,7 @@ class _LangChip extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: active ? Colors.black : CavoColors.textSecondary,
+                color: active ? Colors.black : inactiveText,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.4,
