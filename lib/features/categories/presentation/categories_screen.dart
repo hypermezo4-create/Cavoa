@@ -34,6 +34,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     if (!brands.contains(_selectedBrand)) {
       _selectedBrand = 'All';
     }
+
     final products = CavoCatalog.filtered(
       category: _selectedCategory,
       brand: _selectedBrand,
@@ -60,13 +61,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               Row(
                 children: [
                   const Expanded(
-                    child: Text(
-                      'Browse Collection',
-                      style: TextStyle(
-                        color: CavoColors.textPrimary,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Browse Collection',
+                          style: TextStyle(
+                            color: CavoColors.textPrimary,
+                            fontSize: 28,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          'Mirror Original • Premium Footwear',
+                          style: TextStyle(
+                            color: CavoColors.textMuted,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -90,7 +105,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
               Row(
                 children: ProductCategory.values.map((category) {
                   final active = _selectedCategory == category;
@@ -139,60 +154,73 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Brands',
-                style: TextStyle(
-                  color: CavoColors.textPrimary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
+              const SizedBox(height: 22),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: CavoColors.surface.withValues(alpha: 0.90),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: CavoColors.border),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                height: 48,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: brands.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final brand = brands[index];
-                    final active = brand == _selectedBrand;
-                    return GestureDetector(
-                      onTap: () => setState(() => _selectedBrand = brand),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 220),
-                        curve: Curves.easeOutCubic,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: active
-                              ? CavoColors.gold.withValues(alpha: 0.14)
-                              : CavoColors.surface.withValues(alpha: 0.90),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                            color: active
-                                ? CavoColors.gold.withValues(alpha: 0.35)
-                                : CavoColors.border,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            brand,
-                            style: TextStyle(
-                              color: active
-                                  ? CavoColors.textPrimary
-                                  : CavoColors.textSecondary,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Brands',
+                      style: TextStyle(
+                        color: CavoColors.textPrimary,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 48,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: brands.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 10),
+                        itemBuilder: (context, index) {
+                          final brand = brands[index];
+                          final active = brand == _selectedBrand;
+                          return GestureDetector(
+                            onTap: () => setState(() => _selectedBrand = brand),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 220),
+                              curve: Curves.easeOutCubic,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: active
+                                    ? CavoColors.gold.withValues(alpha: 0.14)
+                                    : CavoColors.surfaceSoft.withValues(alpha: 0.90),
+                                borderRadius: BorderRadius.circular(18),
+                                border: Border.all(
+                                  color: active
+                                      ? CavoColors.gold.withValues(alpha: 0.35)
+                                      : CavoColors.border,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  brand,
+                                  style: TextStyle(
+                                    color: active
+                                        ? CavoColors.textPrimary
+                                        : CavoColors.textSecondary,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 22),
@@ -235,7 +263,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     crossAxisCount: 2,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
-                    childAspectRatio: 0.66,
+                    childAspectRatio: 0.64,
                   ),
                   itemBuilder: (context, index) {
                     final product = products[index];
@@ -293,7 +321,7 @@ class _CatalogCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
               child: Text(
                 product.brand,
                 style: const TextStyle(
@@ -320,11 +348,14 @@ class _CatalogCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
               child: Text(
-                '${product.price} EGP',
+                product.shortDescription,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: CavoColors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 1.35,
                 ),
               ),
             ),

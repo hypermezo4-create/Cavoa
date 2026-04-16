@@ -1,5 +1,19 @@
 import '../models/product.dart';
 
+class CavoPromoVideo {
+  final String id;
+  final String title;
+  final String brand;
+  final String videoUrl;
+
+  const CavoPromoVideo({
+    required this.id,
+    required this.title,
+    required this.brand,
+    required this.videoUrl,
+  });
+}
+
 class CavoCatalog {
   static const String _base = 'https://ik.imagekit.io/luivuvevia/cavo';
 
@@ -1148,4 +1162,77 @@ class CavoCatalog {
     if (brand == 'All') return base;
     return base.where((e) => e.brand == brand).toList();
   }
+
+  static final Set<String> _offerIds = {
+    'men-alexander-mcqueen-white-black',
+    'men-jordan-4-black-cat',
+    'men-new-balance-530-blue',
+    'men-air-force-beige-brown',
+    'women-alexander-mcqueen-white-black',
+    'women-samba-white',
+    'women-jordan-4-black-cat',
+    'women-new-balance-530-blue',
+  };
+
+  static List<CavoProduct> offers() =>
+      products.where((e) => _offerIds.contains(e.id)).toList();
+
+  static List<CavoProduct> homeShowcase() {
+    const ids = [
+      'men-air-force-beige-brown',
+      'women-samba-white',
+      'men-jordan-4-black-cat',
+      'women-alexander-mcqueen-white-black',
+      'men-new-balance-530-blue',
+      'women-air-force-beige-brown',
+    ];
+
+    return ids
+        .map((id) => products.firstWhere(
+              (product) => product.id == id,
+              orElse: () => products.first,
+            ))
+        .toList();
+  }
+
+  static final List<CavoPromoVideo> videos = [
+    CavoPromoVideo(
+      id: 'video-cavo',
+      title: 'CAVO Showcase',
+      brand: 'CAVO',
+      videoUrl: _asset('products/video/cavo.mp4'),
+    ),
+    CavoPromoVideo(
+      id: 'video-air-force',
+      title: 'Air Force Motion',
+      brand: 'Air Force',
+      videoUrl: _asset('products/video/Air_force.mp4'),
+    ),
+    CavoPromoVideo(
+      id: 'video-travis-scott',
+      title: 'Travis Scott Motion',
+      brand: 'Travis Scott',
+      videoUrl: _asset('products/video/Travis_Scott.mp4'),
+    ),
+    CavoPromoVideo(
+      id: 'video-asics',
+      title: 'ASICS Motion',
+      brand: 'ASICS',
+      videoUrl: _asset('products/video/asics.mp4'),
+    ),
+    CavoPromoVideo(
+      id: 'video-new-balance-9060',
+      title: 'New Balance 9060 Motion',
+      brand: 'New Balance 9060',
+      videoUrl: _asset('products/video/new_balance9060.mp4'),
+    ),
+    CavoPromoVideo(
+      id: 'video-samba',
+      title: 'Samba Motion',
+      brand: 'Samba',
+      videoUrl: _asset('products/video/sumba.mp4'),
+    ),
+  ];
+
+  static CavoPromoVideo get homeVideo => videos.first;
 }
