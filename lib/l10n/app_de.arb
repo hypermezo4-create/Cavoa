@@ -126,5 +126,7 @@
   "details": "Details",
   "addToCart": "In den Warenkorb",
   "addedToCart": "zum Warenkorb hinzugefügt.",
-  "offersTitle": "Angebote"
+  "offersTitle": "Angebote",
+  "logout": "Abmelden",
+  "size": "Größe"
 }

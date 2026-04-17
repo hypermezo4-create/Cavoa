@@ -126,5 +126,7 @@
   "details": "Details",
   "addToCart": "Add to Cart",
   "addedToCart": "added to cart.",
-  "offersTitle": "Offers"
+  "offersTitle": "Offers",
+  "logout": "Logout",
+  "size": "Size"
 }

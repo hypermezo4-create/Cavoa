@@ -126,5 +126,7 @@
   "details": "التفاصيل",
   "addToCart": "أضف إلى السلة",
   "addedToCart": "تمت إضافته إلى السلة.",
-  "offersTitle": "العروض"
+  "offersTitle": "العروض",
+  "logout": "تسجيل الخروج",
+  "size": "المقاس"
 }

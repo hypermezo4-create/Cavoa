@@ -351,8 +351,8 @@ class _HeroBanner extends StatelessWidget {
                     color: CavoColors.gold.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
-                    l10n.newCollection.toUpperCase(),
+                  child: Text(
+  l10n.newCollection.toUpperCase(),
                     style: TextStyle(
                       color: CavoColors.gold,
                       fontSize: 11,

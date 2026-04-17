@@ -126,5 +126,7 @@
   "details": "Детали",
   "addToCart": "Добавить в корзину",
   "addedToCart": "добавлено в корзину.",
-  "offersTitle": "Предложения"
+  "offersTitle": "Предложения",
+  "logout": "Выйти",
+  "size": "Размер"
 }
