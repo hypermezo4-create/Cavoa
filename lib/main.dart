@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_controller.dart';
-import 'features/splash/presentation/splash_screen.dart';
+import 'features/welcome/presentation/welcome_placeholder_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,7 @@ class CavoApp extends StatelessWidget {
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
           themeMode: themeMode,
-          home: const SplashScreen(),
+          home: const WelcomePlaceholderScreen(),
         );
       },
     );
