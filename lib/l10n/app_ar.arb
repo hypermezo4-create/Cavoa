@@ -49,5 +49,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "men": "رجالي",
+  "women": "حريمي",
+  "kids": "أطفال",
+  "offerSelectedForPremiumShowcase": "عرض مختار للواجهة المميزة"
 }

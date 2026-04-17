@@ -49,5 +49,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "men": "Мужское",
+  "women": "Женское",
+  "kids": "Детское",
+  "offerSelectedForPremiumShowcase": "Предложение выбрано для премиальной витрины"
 }

@@ -49,5 +49,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "men": "Men",
+  "women": "Women",
+  "kids": "Kids",
+  "offerSelectedForPremiumShowcase": "Offer selected for premium showcase"
 }
