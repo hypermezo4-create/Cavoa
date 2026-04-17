@@ -1,4 +1,4 @@
-name: Build Signed Android Release APK
+name: Build Android APK
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-release:
+  build-debug:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,71 +41,14 @@ jobs:
           APP_FILE="android/app/src/main/AndroidManifest.xml"
           sed -i 's/android:label="[^"]*"/android:label="CAVO"/' "$APP_FILE"
 
-      - name: Decode keystore from GitHub secret
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        run: |
-          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
-            echo "ANDROID_KEYSTORE_BASE64 secret is missing"
-            exit 1
-          fi
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/cavo-release.jks
-          ls -lh android/app/cavo-release.jks
+      - name: Generate launcher icons
+        run: dart run flutter_launcher_icons
 
-      - name: Validate keystore
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-        run: |
-          keytool -list \
-            -storetype PKCS12 \
-            -keystore android/app/cavo-release.jks \
-            -storepass "$KEYSTORE_PASSWORD" > /dev/null
+      - name: Build debug APK
+        run: flutter build apk --debug
 
-      - name: Build unsigned release APK
-        run: |
-          cd android
-          chmod +x gradlew
-          ./gradlew assembleRelease
-
-      - name: Locate apksigner
-        id: apksigner
-        run: |
-          APKSIGNER_PATH=$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner | sort | tail -n 1)
-          echo "path=$APKSIGNER_PATH" >> "$GITHUB_OUTPUT"
-
-      - name: Sign APK with V1 + V2 + V3
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: |
-          UNSIGNED_APK="android/app/build/outputs/apk/release/app-release-unsigned.apk"
-          SIGNED_APK="android/app/build/outputs/apk/release/CAVO-release-signed.apk"
-
-          "${{ steps.apksigner.outputs.path }}" sign \
-            --ks android/app/cavo-release.jks \
-            --ks-type PKCS12 \
-            --ks-key-alias "$KEY_ALIAS" \
-            --ks-pass pass:"$KEYSTORE_PASSWORD" \
-            --key-pass pass:"$KEYSTORE_PASSWORD" \
-            --v1-signing-enabled true \
-            --v2-signing-enabled true \
-            --v3-signing-enabled true \
-            --out "$SIGNED_APK" \
-            "$UNSIGNED_APK"
-
-      - name: Verify APK signatures
-        run: |
-          SIGNED_APK="android/app/build/outputs/apk/release/CAVO-release-signed.apk"
-          "${{ steps.apksigner.outputs.path }}" verify --verbose --print-certs "$SIGNED_APK" | tee apksigner-verify.txt
-
-      - name: Upload signed APK artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cavo-release-signed-apk
-          path: android/app/build/outputs/apk/release/CAVO-release-signed.apk
-
-      - name: Upload signature report
-        uses: actions/upload-artifact@v4
-        with:
-          name: cavo-signature-report
-          path: apksigner-verify.txt
+          name: cavo-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
