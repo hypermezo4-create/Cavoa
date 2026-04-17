@@ -49,7 +49,17 @@ jobs:
             echo "ANDROID_KEYSTORE_BASE64 secret is missing"
             exit 1
           fi
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/cavo-release.jks
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/app/cavo-release.jks
+          ls -lh android/app/cavo-release.jks
+
+      - name: Validate keystore
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          keytool -list \
+            -storetype PKCS12 \
+            -keystore android/app/cavo-release.jks \
+            -storepass "$KEYSTORE_PASSWORD" > /dev/null
 
       - name: Build unsigned release APK
         run: |
@@ -67,16 +77,16 @@ jobs:
         env:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           UNSIGNED_APK="android/app/build/outputs/apk/release/app-release-unsigned.apk"
           SIGNED_APK="android/app/build/outputs/apk/release/CAVO-release-signed.apk"
 
           "${{ steps.apksigner.outputs.path }}" sign \
             --ks android/app/cavo-release.jks \
+            --ks-type PKCS12 \
             --ks-key-alias "$KEY_ALIAS" \
             --ks-pass pass:"$KEYSTORE_PASSWORD" \
-            --key-pass pass:"$KEY_PASSWORD" \
+            --key-pass pass:"$KEYSTORE_PASSWORD" \
             --v1-signing-enabled true \
             --v2-signing-enabled true \
             --v3-signing-enabled true \
