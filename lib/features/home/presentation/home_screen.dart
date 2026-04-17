@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/mock/cavo_catalog.dart';
 import '../../../data/models/product.dart';
@@ -298,6 +299,7 @@ class _HeroBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final titleColor =
         isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
@@ -441,6 +443,7 @@ class _FeaturedProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final surfaceSoft =
@@ -508,7 +511,7 @@ class _FeaturedProductCard extends StatelessWidget {
                     '',
                   ),
                   Text(
-                    product.brand,
+                    product.localizedBrand(context),
                     style: const TextStyle(
                       color: CavoColors.gold,
                       fontSize: 11,
@@ -517,7 +520,7 @@ class _FeaturedProductCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    product.title,
+                    product.localizedTitle(context),
                     style: TextStyle(
                       color: titleColor,
                       fontSize: 16,
@@ -564,6 +567,7 @@ class _OfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final titleColor =
@@ -608,7 +612,7 @@ class _OfferCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              product.brand,
+              product.localizedBrand(context),
               style: const TextStyle(
                 color: CavoColors.gold,
                 fontSize: 11,
@@ -617,7 +621,7 @@ class _OfferCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              product.title,
+              product.localizedTitle(context),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -629,7 +633,7 @@ class _OfferCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Offer selected for premium showcase',
+              l10n.offerSelectedForPremiumShowcase,
               style: TextStyle(
                 color: bodyColor,
                 fontSize: 12,
@@ -656,6 +660,7 @@ class _CircleIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final iconColor =
@@ -740,6 +745,7 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final textColor =
@@ -784,6 +790,7 @@ class _BrandChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final bg = isLight
         ? CavoColors.lightSurfaceSoft.withValues(alpha: 0.95)

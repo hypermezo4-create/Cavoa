@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'core/localization/app_locale_controller.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_mode_controller.dart';
 import 'features/welcome/presentation/welcome_placeholder_screen.dart';
+import 'l10n/app_localizations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,13 +31,21 @@ class CavoApp extends StatelessWidget {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: ThemeModeController.instance,
       builder: (context, themeMode, _) {
-        return MaterialApp(
-          title: 'CAVO',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light(),
-          darkTheme: AppTheme.dark(),
-          themeMode: themeMode,
-          home: const WelcomePlaceholderScreen(),
+        return ValueListenableBuilder<Locale>(
+          valueListenable: AppLocaleController.instance,
+          builder: (context, locale, __) {
+            return MaterialApp(
+              title: 'CAVO',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light(),
+              darkTheme: AppTheme.dark(),
+              themeMode: themeMode,
+              locale: locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: const WelcomePlaceholderScreen(),
+            );
+          },
         );
       },
     );

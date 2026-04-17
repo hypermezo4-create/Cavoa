@@ -72,7 +72,7 @@ class CartController extends ValueNotifier<List<CartItem>> {
     );
   }
 
-  int get delivery => value.isEmpty ? 0 : 75;
+  int get delivery => 0;
 
   int get total => subtotal + delivery;
 }

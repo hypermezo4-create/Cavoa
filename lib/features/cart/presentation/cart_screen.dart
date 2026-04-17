@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
 import '../data/cart_controller.dart';
+import '../../checkout/presentation/checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -76,7 +77,11 @@ class CartScreen extends StatelessWidget {
                       mutedText: mutedText,
                       surface: surface,
                       border: border,
-                      onContinue: () => _showSoon(context, 'Browse'),
+                      onContinue: () {
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                      },
                     )
                   : Column(
                       children: [
@@ -151,9 +156,8 @@ class CartScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 10),
                                     _SummaryRow(
-                                      label: 'Delivery',
-                                      value:
-                                          '${CartController.instance.delivery} EGP',
+                                      label: 'Store Pickup',
+                                      value: '0 EGP',
                                       textColor: secondaryText,
                                     ),
                                     Padding(
@@ -187,14 +191,20 @@ class CartScreen extends StatelessWidget {
                           child: Column(
                             children: [
                               ElevatedButton(
-                                onPressed: () =>
-                                    _showSoon(context, 'Checkout'),
+                                onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (_) => const CheckoutScreen(),
+                                      ),
+                                    );
+                                  },
                                 child: const Text('Proceed to Checkout'),
                               ),
                               const SizedBox(height: 12),
                               OutlinedButton(
-                                onPressed: () =>
-                                    _showSoon(context, 'Continue Shopping'),
+                                onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
                                 child: const Text('Continue Shopping'),
                               ),
                             ],

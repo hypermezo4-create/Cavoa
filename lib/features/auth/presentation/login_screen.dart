@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import 'register_screen.dart';
 
@@ -23,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showSoon(String title) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
@@ -34,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: surface,
         behavior: SnackBarBehavior.floating,
         content: Text(
-          '$title will be connected in the next step.',
+          l10n.comingNextStep(title),
           style: TextStyle(color: primaryText),
         ),
         shape: RoundedRectangleBorder(
@@ -47,6 +50,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -103,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -118,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 22),
               Text(
-                'Welcome Back',
+                l10n.welcomeBack,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 30,
@@ -127,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Sign in to access your cart, saved preferences, and future orders.',
+                l10n.signInToAccessCart,
                 style: TextStyle(
                   color: secondaryText,
                   fontSize: 14,
@@ -139,13 +143,13 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
+                  color: surface.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -158,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       keyboardType: TextInputType.emailAddress,
                       style: TextStyle(color: primaryText),
                       decoration: InputDecoration(
-                        hintText: 'Email address',
+                        hintText: l10n.emailAddress,
                         prefixIcon: const Icon(Icons.mail_outline_rounded),
                         filled: true,
                         fillColor: soft,
@@ -168,8 +172,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide:
-                              const BorderSide(color: CavoColors.gold, width: 1.2),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
                         ),
                       ),
                     ),
@@ -179,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       obscureText: _obscurePassword,
                       style: TextStyle(color: primaryText),
                       decoration: InputDecoration(
-                        hintText: 'Password',
+                        hintText: l10n.password,
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
                           onPressed: () {
@@ -201,28 +207,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
-                          borderSide:
-                              const BorderSide(color: CavoColors.gold, width: 1.2),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
-                        onPressed: () => _showSoon('Forgot password'),
-                        child: const Text('Forgot password?'),
+                        onPressed: () => _showSoon(l10n.forgotPassword),
+                        child: Text(l10n.forgotPassword),
                       ),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: () => _showSoon('Login'),
-                      child: const Text('Login'),
+                      onPressed: () => _showSoon(l10n.login),
+                      child: Text(l10n.login),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Continue as Guest'),
+                      child: Text(l10n.continueAsGuest),
                     ),
                   ],
                 ),
@@ -231,14 +239,14 @@ class _LoginScreenState extends State<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
+                  color: surface.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: border),
                 ),
                 child: Column(
                   children: [
                     Text(
-                      'New to CAVO?',
+                      l10n.newToCavo,
                       style: TextStyle(
                         color: primaryText,
                         fontSize: 16,
@@ -247,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Create your account to save your style preferences and manage your future orders.',
+                      l10n.createAccountDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: secondaryText,
@@ -266,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         );
                       },
-                      child: const Text('Create Account'),
+                      child: Text(l10n.createAccount),
                     ),
                   ],
                 ),
@@ -274,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 18),
               Center(
                 child: Text(
-                  'Mirror Original • Premium Footwear',
+                  l10n.mirrorOriginalPremiumFootwear,
                   style: TextStyle(
                     color: mutedText,
                     fontSize: 12,
@@ -314,7 +322,7 @@ class _CircleButton extends StatelessWidget {
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
+          color: surface.withValues(alpha: 0.96),
           shape: BoxShape.circle,
           border: Border.all(color: border),
         ),

@@ -1,0 +1,53 @@
+{
+  "@@locale": "en",
+  "mirrorOriginal": "Mirror Original",
+  "chooseHowToContinue": "Choose how you want to continue with CAVO.",
+  "languageSupportSummary": "English default • Arabic • Russian • German",
+  "login": "Login",
+  "register": "Register",
+  "continueAsGuest": "Continue as Guest",
+  "refinedByCavo": "Refined by CAVO",
+  "welcomeBack": "Welcome Back",
+  "signInToAccessCart": "Sign in to access your cart, saved preferences, and future orders.",
+  "emailAddress": "Email address",
+  "password": "Password",
+  "forgotPassword": "Forgot password?",
+  "newToCavo": "New to CAVO?",
+  "createAccountDescription": "Create your account to save your style preferences and manage your future orders.",
+  "createAccount": "Create Account",
+  "mirrorOriginalPremiumFootwear": "Mirror Original • Premium Footwear",
+  "fullName": "Full name",
+  "phoneNumber": "Phone number",
+  "confirmPassword": "Confirm password",
+  "joinCavoToSave": "Join CAVO to save your cart, preferences, and future orders.",
+  "alreadyHaveAccount": "Already have an account?",
+  "signInAndContinue": "Sign in and continue shopping with your saved preferences.",
+  "goToLogin": "Go to Login",
+  "profile": "Profile",
+  "personalizeCavoExperience": "Personalize the CAVO experience",
+  "cavoMember": "CAVO Member",
+  "guestModeSignInForFullAccess": "Guest mode • Sign in for full access",
+  "account": "Account",
+  "createAccountToSaveCartManageOrders": "Create an account to save your cart, manage orders, and sync your preferences.",
+  "quickAccess": "Quick Access",
+  "cart": "Cart",
+  "orders": "Orders",
+  "links": "Links",
+  "appearance": "Appearance",
+  "more": "More",
+  "language": "Language",
+  "savedAddresses": "Saved Addresses",
+  "manageDeliveryDetails": "Manage delivery details",
+  "helpSupport": "Help & Support",
+  "reachCavoSupportQuickly": "Reach CAVO support quickly",
+  "light": "Light",
+  "dark": "Dark",
+  "comingNextStep": "{title} will be connected in the next step.",
+  "@comingNextStep": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
+}

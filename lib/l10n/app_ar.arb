@@ -1,0 +1,53 @@
+{
+  "@@locale": "ar",
+  "mirrorOriginal": "ميرور أوريجنال",
+  "chooseHowToContinue": "اختر كيف تريد المتابعة داخل CAVO.",
+  "languageSupportSummary": "الإنجليزية افتراضيًا • العربية • الروسية • الألمانية",
+  "login": "تسجيل الدخول",
+  "register": "إنشاء حساب",
+  "continueAsGuest": "الدخول كضيف",
+  "refinedByCavo": "بتوقيع CAVO",
+  "welcomeBack": "مرحبًا بعودتك",
+  "signInToAccessCart": "سجّل الدخول للوصول إلى السلة والتفضيلات والطلبات المستقبلية.",
+  "emailAddress": "البريد الإلكتروني",
+  "password": "كلمة المرور",
+  "forgotPassword": "هل نسيت كلمة المرور؟",
+  "newToCavo": "جديد في CAVO؟",
+  "createAccountDescription": "أنشئ حسابك لحفظ تفضيلاتك وإدارة طلباتك المستقبلية.",
+  "createAccount": "إنشاء حساب",
+  "mirrorOriginalPremiumFootwear": "ميرور أوريجنال • أحذية فاخرة",
+  "fullName": "الاسم الكامل",
+  "phoneNumber": "رقم الهاتف",
+  "confirmPassword": "تأكيد كلمة المرور",
+  "joinCavoToSave": "انضم إلى CAVO لحفظ السلة والتفضيلات والطلبات المستقبلية.",
+  "alreadyHaveAccount": "لديك حساب بالفعل؟",
+  "signInAndContinue": "سجّل الدخول وأكمل التسوق باستخدام تفضيلاتك المحفوظة.",
+  "goToLogin": "الانتقال لتسجيل الدخول",
+  "profile": "الملف الشخصي",
+  "personalizeCavoExperience": "خصّص تجربة CAVO بالطريقة التي تناسبك",
+  "cavoMember": "عضو CAVO",
+  "guestModeSignInForFullAccess": "وضع الضيف • سجّل الدخول للوصول الكامل",
+  "account": "الحساب",
+  "createAccountToSaveCartManageOrders": "أنشئ حسابًا لحفظ السلة وإدارة الطلبات ومزامنة تفضيلاتك.",
+  "quickAccess": "وصول سريع",
+  "cart": "السلة",
+  "orders": "الطلبات",
+  "links": "الروابط",
+  "appearance": "المظهر",
+  "more": "المزيد",
+  "language": "اللغة",
+  "savedAddresses": "العناوين المحفوظة",
+  "manageDeliveryDetails": "إدارة بيانات التوصيل",
+  "helpSupport": "المساعدة والدعم",
+  "reachCavoSupportQuickly": "تواصل مع دعم CAVO بسرعة",
+  "light": "فاتح",
+  "dark": "داكن",
+  "comingNextStep": "سيتم ربط {title} في الخطوة التالية.",
+  "@comingNextStep": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
+}

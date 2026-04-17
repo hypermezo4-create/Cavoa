@@ -1,3 +1,7 @@
+import 'package:flutter/widgets.dart';
+
+import '../../core/localization/l10n_ext.dart';
+
 enum ProductCategory { men, women, kids }
 
 extension ProductCategoryX on ProductCategory {
@@ -20,6 +24,18 @@ extension ProductCategoryX on ProductCategory {
         return 'women';
       case ProductCategory.kids:
         return 'kids';
+    }
+  }
+
+  String localizedLabel(BuildContext context) {
+    final l10n = context.l10n;
+    switch (this) {
+      case ProductCategory.men:
+        return l10n.men;
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
     }
   }
 }
@@ -54,4 +70,9 @@ class CavoProduct {
     required this.description,
     this.featured = false,
   });
+
+  String localizedBrand(BuildContext context) => brand;
+  String localizedTitle(BuildContext context) => title;
+  String localizedShortDescription(BuildContext context) => shortDescription;
+  String localizedDescription(BuildContext context) => description;
 }

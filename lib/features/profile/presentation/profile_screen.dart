@@ -1,5 +1,8 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
 import '../../auth/presentation/login_screen.dart';
@@ -12,6 +15,7 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -31,7 +35,7 @@ class ProfileScreen extends StatelessWidget {
           backgroundColor: surface,
           behavior: SnackBarBehavior.floating,
           content: Text(
-            '$title will be connected in the next step.',
+            l10n.comingNextStep(title),
             style: TextStyle(color: primaryText),
           ),
           shape: RoundedRectangleBorder(
@@ -67,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
             children: [
               Text(
-                'Profile',
+                l10n.profile,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 30,
@@ -76,7 +80,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'Personalize the CAVO experience',
+                l10n.personalizeCavoExperience,
                 style: TextStyle(
                   color: mutedText,
                   fontSize: 13,
@@ -87,13 +91,13 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
+                  color: surface.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -121,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'CAVO Member',
+                            l10n.cavoMember,
                             style: TextStyle(
                               color: primaryText,
                               fontSize: 18,
@@ -130,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Guest mode • Sign in for full access',
+                            l10n.guestModeSignInForFullAccess,
                             style: TextStyle(
                               color: secondaryText,
                               fontSize: 13,
@@ -145,7 +149,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
-                'Account',
+                l10n.account,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -156,7 +160,7 @@ class ProfileScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
+                  color: surface.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
                 ),
@@ -174,7 +178,7 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: const Text('Login'),
+                            child: Text(l10n.login),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -188,14 +192,14 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: const Text('Register'),
+                            child: Text(l10n.register),
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Create an account to save your cart, manage orders, and sync your preferences.',
+                      l10n.createAccountToSaveCartManageOrders,
                       style: TextStyle(
                         color: secondaryText,
                         fontSize: 13,
@@ -208,7 +212,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
-                'Quick Access',
+                l10n.quickAccess,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -220,7 +224,7 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _QuickCard(
-                      title: 'Cart',
+                      title: l10n.cart,
                       icon: Icons.shopping_bag_outlined,
                       isLight: isLight,
                       onTap: () {
@@ -236,16 +240,16 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _QuickCard(
-                      title: 'Orders',
+                      title: l10n.orders,
                       icon: Icons.receipt_long_rounded,
                       isLight: isLight,
-                      onTap: () => showSoon('Orders'),
+                      onTap: () => showSoon(l10n.orders),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _QuickCard(
-                      title: 'Links',
+                      title: l10n.links,
                       icon: Icons.link_rounded,
                       isLight: isLight,
                       onTap: () {
@@ -262,7 +266,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
-                'Appearance',
+                l10n.appearance,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -273,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
               _ThemeToggleCard(isLight: isLight),
               const SizedBox(height: 22),
               Text(
-                'More',
+                l10n.more,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -282,27 +286,27 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _ActionTile(
-                title: 'Language',
-                subtitle: 'English / Arabic',
+                title: l10n.language,
+                subtitle: l10n.languageSupportSummary,
                 icon: Icons.language_rounded,
                 isLight: isLight,
-                onTap: () => showSoon('Language'),
+                onTap: () => showSoon(l10n.language),
               ),
               const SizedBox(height: 12),
               _ActionTile(
-                title: 'Saved Addresses',
-                subtitle: 'Manage delivery details',
+                title: l10n.savedAddresses,
+                subtitle: l10n.manageDeliveryDetails,
                 icon: Icons.location_on_outlined,
                 isLight: isLight,
-                onTap: () => showSoon('Saved Addresses'),
+                onTap: () => showSoon(l10n.savedAddresses),
               ),
               const SizedBox(height: 12),
               _ActionTile(
-                title: 'Help & Support',
-                subtitle: 'Reach CAVO support quickly',
+                title: l10n.helpSupport,
+                subtitle: l10n.reachCavoSupportQuickly,
                 icon: Icons.support_agent_rounded,
                 isLight: isLight,
-                onTap: () => showSoon('Help & Support'),
+                onTap: () => showSoon(l10n.helpSupport),
               ),
             ],
           ),
@@ -337,7 +341,7 @@ class _QuickCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
         decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: border),
         ),
@@ -390,7 +394,7 @@ class _ActionTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: border),
         ),
@@ -401,7 +405,7 @@ class _ActionTile extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: CavoColors.gold.withOpacity(0.12),
+                color: CavoColors.gold.withValues(alpha: 0.12),
               ),
               child: Icon(
                 icon,
@@ -453,10 +457,11 @@ class _ThemeToggleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final glass = isLight
-        ? CavoColors.glassLight.withOpacity(0.68)
-        : CavoColors.glassDark.withOpacity(0.68);
+        ? CavoColors.glassLight.withValues(alpha: 0.68)
+        : CavoColors.glassDark.withValues(alpha: 0.68);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
@@ -476,7 +481,7 @@ class _ThemeToggleCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _ThemeOption(
-                      label: 'Light',
+                      label: l10n.light,
                       icon: Icons.light_mode_rounded,
                       selected: mode == ThemeMode.light,
                       isLight: isLight,
@@ -486,7 +491,7 @@ class _ThemeToggleCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _ThemeOption(
-                      label: 'Dark',
+                      label: l10n.dark,
                       icon: Icons.dark_mode_rounded,
                       selected: mode == ThemeMode.dark,
                       isLight: isLight,
@@ -520,24 +525,22 @@ class _ThemeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeText = isLight
-        ? CavoColors.lightTextPrimary
-        : CavoColors.textPrimary;
-    final inactiveText = isLight
-        ? CavoColors.lightTextSecondary
-        : CavoColors.textSecondary;
+    final activeText =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final inactiveText =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 240),
       curve: Curves.easeOutCubic,
       decoration: BoxDecoration(
         color: selected
-            ? CavoColors.gold.withOpacity(0.14)
+            ? CavoColors.gold.withValues(alpha: 0.14)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: selected
-              ? CavoColors.gold.withOpacity(0.30)
+              ? CavoColors.gold.withValues(alpha: 0.30)
               : Colors.transparent,
         ),
       ),

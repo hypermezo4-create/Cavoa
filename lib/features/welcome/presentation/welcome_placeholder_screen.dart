@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/localization/app_locale_controller.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/presentation/register_screen.dart';
@@ -19,8 +22,6 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
   late final Animation<Offset> _contentSlide;
   late final Animation<Offset> _buttonsSlide;
   late final Animation<double> _logoScale;
-
-  String _selectedLanguage = 'EN';
 
   @override
   void initState() {
@@ -101,7 +102,9 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final selectedLanguage = AppLocaleController.instance.code;
 
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final cardBg = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -164,10 +167,11 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                       Align(
                         alignment: Alignment.centerRight,
                         child: _LanguageSwitcher(
-                          selected: _selectedLanguage,
+                          selected: selectedLanguage,
                           isLight: isLight,
                           onChanged: (value) {
-                            setState(() => _selectedLanguage = value);
+                            AppLocaleController.instance.setByCode(value);
+                            setState(() {});
                           },
                         ),
                       ),
@@ -243,7 +247,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                       ),
                                       const SizedBox(height: 22),
                                       Text(
-                                        'Mirror Original',
+                                        l10n.mirrorOriginal,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           color: titleColor,
@@ -258,7 +262,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                           horizontal: 8,
                                         ),
                                         child: Text(
-                                          'Choose how you want to continue with CAVO.',
+                                          l10n.chooseHowToContinue,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: bodyColor,
@@ -291,7 +295,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                             const SizedBox(width: 10),
                                             Flexible(
                                               child: Text(
-                                                'English default • Arabic • Russian • German',
+                                                l10n.languageSupportSummary,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   color: bodyColor,
@@ -317,21 +321,21 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                           children: [
                             ElevatedButton(
                               onPressed: _goToLogin,
-                              child: const Text('Login'),
+                              child: Text(l10n.login),
                             ),
                             const SizedBox(height: 14),
                             OutlinedButton(
                               onPressed: _goToRegister,
-                              child: const Text('Register'),
+                              child: Text(l10n.register),
                             ),
                             const SizedBox(height: 14),
                             TextButton(
                               onPressed: _goToApp,
-                              child: const Text('Continue as Guest'),
+                              child: Text(l10n.continueAsGuest),
                             ),
                             const SizedBox(height: 18),
                             Text(
-                              'Refined by CAVO',
+                              l10n.refinedByCavo,
                               style: TextStyle(
                                 color: mutedColor,
                                 fontSize: 12,
@@ -370,6 +374,8 @@ class _LanguageSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final inactiveColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
     return Container(
       padding: const EdgeInsets.all(4),
@@ -385,21 +391,25 @@ class _LanguageSwitcher extends StatelessWidget {
           _LangChip(
             label: 'EN',
             active: selected == 'EN',
+            inactiveColor: inactiveColor,
             onTap: () => onChanged('EN'),
           ),
           _LangChip(
             label: 'AR',
             active: selected == 'AR',
+            inactiveColor: inactiveColor,
             onTap: () => onChanged('AR'),
           ),
           _LangChip(
             label: 'RU',
             active: selected == 'RU',
+            inactiveColor: inactiveColor,
             onTap: () => onChanged('RU'),
           ),
           _LangChip(
             label: 'DE',
             active: selected == 'DE',
+            inactiveColor: inactiveColor,
             onTap: () => onChanged('DE'),
           ),
         ],
@@ -411,11 +421,13 @@ class _LanguageSwitcher extends StatelessWidget {
 class _LangChip extends StatelessWidget {
   final String label;
   final bool active;
+  final Color inactiveColor;
   final VoidCallback onTap;
 
   const _LangChip({
     required this.label,
     required this.active,
+    required this.inactiveColor,
     required this.onTap,
   });
 
@@ -438,7 +450,7 @@ class _LangChip extends StatelessWidget {
             child: Text(
               label,
               style: TextStyle(
-                color: active ? Colors.black : CavoColors.textSecondary,
+                color: active ? Colors.black : inactiveColor,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 0.4,

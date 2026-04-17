@@ -1,0 +1,53 @@
+{
+  "@@locale": "de",
+  "mirrorOriginal": "Mirror Original",
+  "chooseHowToContinue": "Wähle aus, wie du mit CAVO fortfahren möchtest.",
+  "languageSupportSummary": "Englisch standardmäßig • Arabisch • Russisch • Deutsch",
+  "login": "Anmelden",
+  "register": "Registrieren",
+  "continueAsGuest": "Als Gast fortfahren",
+  "refinedByCavo": "Von CAVO veredelt",
+  "welcomeBack": "Willkommen zurück",
+  "signInToAccessCart": "Melde dich an, um auf deinen Warenkorb, gespeicherte Einstellungen und zukünftige Bestellungen zuzugreifen.",
+  "emailAddress": "E-Mail-Adresse",
+  "password": "Passwort",
+  "forgotPassword": "Passwort vergessen?",
+  "newToCavo": "Neu bei CAVO?",
+  "createAccountDescription": "Erstelle dein Konto, um deine Vorlieben zu speichern und zukünftige Bestellungen zu verwalten.",
+  "createAccount": "Konto erstellen",
+  "mirrorOriginalPremiumFootwear": "Mirror Original • Premium-Footwear",
+  "fullName": "Vollständiger Name",
+  "phoneNumber": "Telefonnummer",
+  "confirmPassword": "Passwort bestätigen",
+  "joinCavoToSave": "Registriere dich bei CAVO, um Warenkorb, Vorlieben und zukünftige Bestellungen zu speichern.",
+  "alreadyHaveAccount": "Hast du bereits ein Konto?",
+  "signInAndContinue": "Melde dich an und setze deinen Einkauf mit deinen gespeicherten Einstellungen fort.",
+  "goToLogin": "Zur Anmeldung",
+  "profile": "Profil",
+  "personalizeCavoExperience": "Personalisiere dein CAVO-Erlebnis",
+  "cavoMember": "CAVO-Mitglied",
+  "guestModeSignInForFullAccess": "Gastmodus • Für vollen Zugriff anmelden",
+  "account": "Konto",
+  "createAccountToSaveCartManageOrders": "Erstelle ein Konto, um deinen Warenkorb zu speichern, Bestellungen zu verwalten und deine Einstellungen zu synchronisieren.",
+  "quickAccess": "Schnellzugriff",
+  "cart": "Warenkorb",
+  "orders": "Bestellungen",
+  "links": "Links",
+  "appearance": "Darstellung",
+  "more": "Mehr",
+  "language": "Sprache",
+  "savedAddresses": "Gespeicherte Adressen",
+  "manageDeliveryDetails": "Lieferdaten verwalten",
+  "helpSupport": "Hilfe & Support",
+  "reachCavoSupportQuickly": "Kontaktiere den CAVO-Support schnell",
+  "light": "Hell",
+  "dark": "Dunkel",
+  "comingNextStep": "{title} wird im nächsten Schritt verbunden.",
+  "@comingNextStep": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "@@locale": "ru",
+  "mirrorOriginal": "Mirror Original",
+  "chooseHowToContinue": "Выберите, как вы хотите продолжить работу с CAVO.",
+  "languageSupportSummary": "Английский по умолчанию • Арабский • Русский • Немецкий",
+  "login": "Войти",
+  "register": "Регистрация",
+  "continueAsGuest": "Продолжить как гость",
+  "refinedByCavo": "Создано CAVO",
+  "welcomeBack": "С возвращением",
+  "signInToAccessCart": "Войдите, чтобы получить доступ к корзине, сохранённым настройкам и будущим заказам.",
+  "emailAddress": "Электронная почта",
+  "password": "Пароль",
+  "forgotPassword": "Забыли пароль?",
+  "newToCavo": "Впервые в CAVO?",
+  "createAccountDescription": "Создайте аккаунт, чтобы сохранить свои предпочтения и управлять будущими заказами.",
+  "createAccount": "Создать аккаунт",
+  "mirrorOriginalPremiumFootwear": "Mirror Original • Премиальная обувь",
+  "fullName": "Полное имя",
+  "phoneNumber": "Номер телефона",
+  "confirmPassword": "Подтвердите пароль",
+  "joinCavoToSave": "Присоединяйтесь к CAVO, чтобы сохранять корзину, настройки и будущие заказы.",
+  "alreadyHaveAccount": "Уже есть аккаунт?",
+  "signInAndContinue": "Войдите и продолжайте покупки с сохранёнными настройками.",
+  "goToLogin": "Перейти ко входу",
+  "profile": "Профиль",
+  "personalizeCavoExperience": "Настройте опыт CAVO под себя",
+  "cavoMember": "Участник CAVO",
+  "guestModeSignInForFullAccess": "Гостевой режим • Войдите для полного доступа",
+  "account": "Аккаунт",
+  "createAccountToSaveCartManageOrders": "Создайте аккаунт, чтобы сохранять корзину, управлять заказами и синхронизировать настройки.",
+  "quickAccess": "Быстрый доступ",
+  "cart": "Корзина",
+  "orders": "Заказы",
+  "links": "Ссылки",
+  "appearance": "Оформление",
+  "more": "Ещё",
+  "language": "Язык",
+  "savedAddresses": "Сохранённые адреса",
+  "manageDeliveryDetails": "Управление данными доставки",
+  "helpSupport": "Помощь и поддержка",
+  "reachCavoSupportQuickly": "Быстро свяжитесь с поддержкой CAVO",
+  "light": "Светлая",
+  "dark": "Тёмная",
+  "comingNextStep": "{title} будет подключено на следующем шаге.",
+  "@comingNextStep": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
+}
