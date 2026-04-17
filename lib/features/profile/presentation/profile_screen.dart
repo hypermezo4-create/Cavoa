@@ -2,6 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
+import '../../auth/presentation/login_screen.dart';
+import '../../auth/presentation/register_screen.dart';
+import '../../cart/presentation/cart_screen.dart';
+import '../../links/presentation/links_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -20,6 +24,23 @@ class ProfileScreen extends StatelessWidget {
         isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final mutedText =
         isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+
+    void showSoon(String title) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: surface,
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            '$title will be connected in the next step.',
+            style: TextStyle(color: primaryText),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: border),
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: bg,
@@ -69,6 +90,14 @@ class ProfileScreen extends StatelessWidget {
                   color: surface.withOpacity(0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
+                  boxShadow: [
+                    if (isLight)
+                      BoxShadow(
+                        color: CavoColors.lightShadow.withOpacity(0.08),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -101,7 +130,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Mirror Original • Premium Footwear',
+                            'Guest mode • Sign in for full access',
                             style: TextStyle(
                               color: secondaryText,
                               fontSize: 13,
@@ -116,6 +145,123 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
+                'Account',
+                style: TextStyle(
+                  color: primaryText,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: surface.withOpacity(0.96),
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: border),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text('Login'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const RegisterScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text('Register'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Create an account to save your cart, manage orders, and sync your preferences.',
+                      style: TextStyle(
+                        color: secondaryText,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 22),
+              Text(
+                'Quick Access',
+                style: TextStyle(
+                  color: primaryText,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _QuickCard(
+                      title: 'Cart',
+                      icon: Icons.shopping_bag_outlined,
+                      isLight: isLight,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CartScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickCard(
+                      title: 'Orders',
+                      icon: Icons.receipt_long_rounded,
+                      isLight: isLight,
+                      onTap: () => showSoon('Orders'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _QuickCard(
+                      title: 'Links',
+                      icon: Icons.link_rounded,
+                      isLight: isLight,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LinksScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+              Text(
                 'Appearance',
                 style: TextStyle(
                   color: primaryText,
@@ -125,8 +271,175 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _ThemeToggleCard(isLight: isLight),
+              const SizedBox(height: 22),
+              Text(
+                'More',
+                style: TextStyle(
+                  color: primaryText,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _ActionTile(
+                title: 'Language',
+                subtitle: 'English / Arabic',
+                icon: Icons.language_rounded,
+                isLight: isLight,
+                onTap: () => showSoon('Language'),
+              ),
+              const SizedBox(height: 12),
+              _ActionTile(
+                title: 'Saved Addresses',
+                subtitle: 'Manage delivery details',
+                icon: Icons.location_on_outlined,
+                isLight: isLight,
+                onTap: () => showSoon('Saved Addresses'),
+              ),
+              const SizedBox(height: 12),
+              _ActionTile(
+                title: 'Help & Support',
+                subtitle: 'Reach CAVO support quickly',
+                icon: Icons.support_agent_rounded,
+                isLight: isLight,
+                onTap: () => showSoon('Help & Support'),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final bool isLight;
+  final VoidCallback onTap;
+
+  const _QuickCard({
+    required this.title,
+    required this.icon,
+    required this.isLight,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final textColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+        decoration: BoxDecoration(
+          color: surface.withOpacity(0.96),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: border),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: CavoColors.gold, size: 24),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool isLight;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.isLight,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
+    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
+    final titleColor =
+        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final subtitleColor =
+        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: surface.withOpacity(0.96),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: CavoColors.gold.withOpacity(0.12),
+              ),
+              child: Icon(
+                icon,
+                color: CavoColors.gold,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: titleColor,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: subtitleColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: subtitleColor,
+            ),
+          ],
         ),
       ),
     );

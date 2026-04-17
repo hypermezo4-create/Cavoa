@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/product.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
+import '../../cart/data/cart_controller.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final CavoProduct product;
@@ -37,8 +38,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.dispose();
   }
 
-  void _showAdded() {
+  void _addToCart() {
+    CartController.instance.addItem(
+      product: widget.product,
+      size: _selectedSize,
+      quantity: _quantity,
+    );
+
     final sizeText = _selectedSize == null ? '' : ' • Size $_selectedSize';
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: Theme.of(context).brightness == Brightness.light
@@ -74,7 +82,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final section = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final soft = isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
     final primaryText =
         isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
@@ -487,7 +494,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: _showAdded,
+                        onPressed: _addToCart,
                         child: const Text('Add to Cart'),
                       ),
                     ),
