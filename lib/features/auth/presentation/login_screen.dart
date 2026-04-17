@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../main_navigation/presentation/main_navigation_controller.dart';
+import '../../main_navigation/presentation/main_shell.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -24,8 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _showSoon(String title) {
-    final l10n = context.l10n;
+  void _showMessage(String message) {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
@@ -37,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: surface,
         behavior: SnackBarBehavior.floating,
         content: Text(
-          l10n.comingNextStep(title),
+          message,
           style: TextStyle(color: primaryText),
         ),
         shape: RoundedRectangleBorder(
@@ -46,6 +50,56 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  String _mapAuthError(AppLocalizations l10n, FirebaseAuthException error) {
+    switch (error.code) {
+      case 'invalid-email':
+        return l10n.authInvalidEmail;
+      case 'invalid-credential':
+      case 'wrong-password':
+      case 'user-not-found':
+        return l10n.authInvalidCredentials;
+      case 'user-disabled':
+        return l10n.authUserDisabled;
+      case 'too-many-requests':
+        return l10n.authTooManyRequests;
+      default:
+        return error.message ?? l10n.somethingWentWrong;
+    }
+  }
+
+  Future<void> _login() async {
+    final l10n = context.l10n;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage(l10n.completeAllFields);
+      return;
+    }
+
+    try {
+      setState(() => _loading = true);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (!mounted) return;
+      MainNavigationController.instance.goTo(0);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      _showMessage(_mapAuthError(l10n, error));
+    } catch (_) {
+      if (!mounted) return;
+      _showMessage(l10n.somethingWentWrong);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -218,18 +272,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
-                        onPressed: () => _showSoon(l10n.forgotPassword),
+                        onPressed: () => _showMessage(l10n.forgotPasswordSoon),
                         child: Text(l10n.forgotPassword),
                       ),
                     ),
                     const SizedBox(height: 8),
                     ElevatedButton(
-                      onPressed: () => _showSoon(l10n.login),
-                      child: Text(l10n.login),
+                      onPressed: _loading ? null : _login,
+                      child: Text(_loading ? l10n.loading : l10n.login),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        MainNavigationController.instance.goTo(0);
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(builder: (_) => const MainShell()),
+                          (route) => false,
+                        );
+                      },
                       child: Text(l10n.continueAsGuest),
                     ),
                   ],

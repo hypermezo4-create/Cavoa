@@ -1,37 +1,18 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
-import '../data/cart_controller.dart';
 import '../../checkout/presentation/checkout_screen.dart';
+import '../../main_navigation/presentation/main_navigation_controller.dart';
+import '../data/cart_controller.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
-  void _showSoon(BuildContext context, String title) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: surface,
-        behavior: SnackBarBehavior.floating,
-        content: Text(
-          '$title will be connected in the next step.',
-          style: TextStyle(color: primaryText),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: border),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -77,11 +58,6 @@ class CartScreen extends StatelessWidget {
                       mutedText: mutedText,
                       surface: surface,
                       border: border,
-                      onContinue: () {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        }
-                      },
                     )
                   : Column(
                       children: [
@@ -90,7 +66,7 @@ class CartScreen extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
                             children: [
                               Text(
-                                'Cart',
+                                l10n.cart,
                                 style: TextStyle(
                                   color: primaryText,
                                   fontSize: 30,
@@ -99,7 +75,7 @@ class CartScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                '${items.length} item${items.length > 1 ? 's' : ''} ready for checkout',
+                                '${items.length} ${items.length == 1 ? l10n.item : l10n.items} ${l10n.readyForCheckout}',
                                 style: TextStyle(
                                   color: mutedText,
                                   fontSize: 13,
@@ -120,6 +96,8 @@ class CartScreen extends StatelessWidget {
                                     primaryText: primaryText,
                                     secondaryText: secondaryText,
                                     mutedText: mutedText,
+                                    noSizeSelectedLabel: l10n.noSizeSelected,
+                                    sizeLabel: l10n.size,
                                     onPlus: () =>
                                         CartController.instance.increaseQuantity(index),
                                     onMinus: () =>
@@ -133,14 +111,13 @@ class CartScreen extends StatelessWidget {
                               Container(
                                 padding: const EdgeInsets.all(18),
                                 decoration: BoxDecoration(
-                                  color: surface.withOpacity(0.96),
+                                  color: surface.withValues(alpha: 0.96),
                                   borderRadius: BorderRadius.circular(28),
                                   border: Border.all(color: border),
                                   boxShadow: [
                                     if (isLight)
                                       BoxShadow(
-                                        color:
-                                            CavoColors.lightShadow.withOpacity(0.08),
+                                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
                                         blurRadius: 16,
                                         offset: const Offset(0, 8),
                                       ),
@@ -149,27 +126,22 @@ class CartScreen extends StatelessWidget {
                                 child: Column(
                                   children: [
                                     _SummaryRow(
-                                      label: 'Subtotal',
-                                      value:
-                                          '${CartController.instance.subtotal} EGP',
+                                      label: l10n.subtotal,
+                                      value: '${CartController.instance.subtotal} EGP',
                                       textColor: secondaryText,
                                     ),
                                     const SizedBox(height: 10),
                                     _SummaryRow(
-                                      label: 'Store Pickup',
+                                      label: l10n.storePickup,
                                       value: '0 EGP',
                                       textColor: secondaryText,
                                     ),
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.symmetric(vertical: 14),
-                                      child: Divider(
-                                        color: border,
-                                        height: 1,
-                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      child: Divider(color: border, height: 1),
                                     ),
                                     _SummaryRow(
-                                      label: 'Total',
+                                      label: l10n.total,
                                       value: '${CartController.instance.total} EGP',
                                       textColor: primaryText,
                                       highlight: true,
@@ -183,29 +155,31 @@ class CartScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
                           decoration: BoxDecoration(
-                            color: surface.withOpacity(0.96),
-                            border: Border(
-                              top: BorderSide(color: border),
-                            ),
+                            color: surface.withValues(alpha: 0.96),
+                            border: Border(top: BorderSide(color: border)),
                           ),
                           child: Column(
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const CheckoutScreen(),
-                                      ),
-                                    );
-                                  },
-                                child: const Text('Proceed to Checkout'),
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => const CheckoutScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(l10n.proceedToCheckout),
                               ),
                               const SizedBox(height: 12),
                               OutlinedButton(
                                 onPressed: () {
+                                  if (Navigator.of(context).canPop()) {
                                     Navigator.of(context).pop();
-                                  },
-                                child: const Text('Continue Shopping'),
+                                  } else {
+                                    MainNavigationController.instance.goTo(1);
+                                  }
+                                },
+                                child: Text(l10n.continueShopping),
                               ),
                             ],
                           ),
@@ -229,6 +203,8 @@ class _CartItemCard extends StatelessWidget {
   final Color primaryText;
   final Color secondaryText;
   final Color mutedText;
+  final String noSizeSelectedLabel;
+  final String sizeLabel;
   final VoidCallback onPlus;
   final VoidCallback onMinus;
   final VoidCallback onRemove;
@@ -242,6 +218,8 @@ class _CartItemCard extends StatelessWidget {
     required this.primaryText,
     required this.secondaryText,
     required this.mutedText,
+    required this.noSizeSelectedLabel,
+    required this.sizeLabel,
     required this.onPlus,
     required this.onMinus,
     required this.onRemove,
@@ -252,13 +230,13 @@ class _CartItemCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: surface.withOpacity(0.96),
+        color: surface.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(26),
         border: Border.all(color: border),
         boxShadow: [
           if (isLight)
             BoxShadow(
-              color: CavoColors.lightShadow.withOpacity(0.08),
+              color: CavoColors.lightShadow.withValues(alpha: 0.08),
               blurRadius: 16,
               offset: const Offset(0, 8),
             ),
@@ -306,7 +284,7 @@ class _CartItemCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  item.size == null ? 'No size selected' : 'Size ${item.size}',
+                  item.size == null ? noSizeSelectedLabel : '$sizeLabel ${item.size}',
                   style: TextStyle(
                     color: secondaryText,
                     fontSize: 12,
@@ -338,8 +316,7 @@ class _CartItemCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
                   color: surfaceSoft,
                   borderRadius: BorderRadius.circular(18),
@@ -389,7 +366,7 @@ class _QtyButton extends StatelessWidget {
         height: 26,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: CavoColors.gold.withOpacity(0.12),
+          color: CavoColors.gold.withValues(alpha: 0.12),
         ),
         child: Icon(
           icon,
@@ -448,7 +425,6 @@ class _EmptyCartView extends StatelessWidget {
   final Color mutedText;
   final Color surface;
   final Color border;
-  final VoidCallback onContinue;
 
   const _EmptyCartView({
     required this.isLight,
@@ -457,11 +433,11 @@ class _EmptyCartView extends StatelessWidget {
     required this.mutedText,
     required this.surface,
     required this.border,
-    required this.onContinue,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -469,13 +445,13 @@ class _EmptyCartView extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
-            color: surface.withOpacity(0.96),
+            color: surface.withValues(alpha: 0.96),
             borderRadius: BorderRadius.circular(32),
             border: Border.all(color: border),
             boxShadow: [
               if (isLight)
                 BoxShadow(
-                  color: CavoColors.lightShadow.withOpacity(0.08),
+                  color: CavoColors.lightShadow.withValues(alpha: 0.08),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),
@@ -489,7 +465,7 @@ class _EmptyCartView extends StatelessWidget {
                 height: 82,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: CavoColors.gold.withOpacity(0.12),
+                  color: CavoColors.gold.withValues(alpha: 0.12),
                 ),
                 child: const Icon(
                   Icons.shopping_bag_outlined,
@@ -499,7 +475,7 @@ class _EmptyCartView extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Text(
-                'Your cart is empty',
+                l10n.yourCartIsEmpty,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 22,
@@ -508,7 +484,7 @@ class _EmptyCartView extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Start adding your favorite premium pieces to see them here.',
+                l10n.startAddingFavorites,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: secondaryText,
@@ -519,12 +495,18 @@ class _EmptyCartView extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               ElevatedButton(
-                onPressed: onContinue,
-                child: const Text('Explore Collection'),
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    MainNavigationController.instance.goTo(1);
+                  }
+                },
+                child: Text(l10n.exploreCollection),
               ),
               const SizedBox(height: 12),
               Text(
-                'Mirror Original • Premium Footwear',
+                l10n.mirrorOriginalPremiumFootwear,
                 style: TextStyle(
                   color: mutedText,
                   fontSize: 12,

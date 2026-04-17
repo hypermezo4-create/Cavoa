@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppLocaleController extends ValueNotifier<Locale> {
   AppLocaleController._() : super(const Locale('en'));
 
   static final AppLocaleController instance = AppLocaleController._();
+  static const _storageKey = 'cavo_locale_code';
+
+  SharedPreferences? _prefs;
 
   static const supportedLocales = <Locale>[
     Locale('en'),
@@ -12,23 +16,34 @@ class AppLocaleController extends ValueNotifier<Locale> {
     Locale('de'),
   ];
 
-  void setLocale(Locale locale) {
-    value = locale;
+  Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+    final savedCode = _prefs?.getString(_storageKey);
+    if (savedCode != null && savedCode.isNotEmpty) {
+      setByCode(savedCode, save: false);
+    }
   }
 
-  void setByCode(String code) {
+  void setLocale(Locale locale, {bool save = true}) {
+    value = locale;
+    if (save) {
+      _prefs?.setString(_storageKey, locale.languageCode);
+    }
+  }
+
+  void setByCode(String code, {bool save = true}) {
     switch (code.toLowerCase()) {
       case 'ar':
-        value = const Locale('ar');
+        setLocale(const Locale('ar'), save: save);
         break;
       case 'ru':
-        value = const Locale('ru');
+        setLocale(const Locale('ru'), save: save);
         break;
       case 'de':
-        value = const Locale('de');
+        setLocale(const Locale('de'), save: save);
         break;
       default:
-        value = const Locale('en');
+        setLocale(const Locale('en'), save: save);
     }
   }
 

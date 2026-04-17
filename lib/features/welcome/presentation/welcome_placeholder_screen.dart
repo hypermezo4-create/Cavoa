@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/localization/app_locale_controller.dart';
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/presentation/register_screen.dart';
 import '../../main_navigation/presentation/main_shell.dart';
+import '../../../shared/widgets/cavo_language_picker.dart';
 
 class WelcomePlaceholderScreen extends StatefulWidget {
   const WelcomePlaceholderScreen({super.key});
@@ -104,8 +104,6 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final selectedLanguage = AppLocaleController.instance.code;
-
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final cardBg = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
@@ -166,14 +164,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                       const SizedBox(height: 12),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: _LanguageSwitcher(
-                          selected: selectedLanguage,
-                          isLight: isLight,
-                          onChanged: (value) {
-                            AppLocaleController.instance.setByCode(value);
-                            setState(() {});
-                          },
-                        ),
+                        child: CavoLanguagePicker(isLight: isLight),
                       ),
                       Expanded(
                         child: Center(
@@ -353,110 +344,6 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LanguageSwitcher extends StatelessWidget {
-  final String selected;
-  final bool isLight;
-  final ValueChanged<String> onChanged;
-
-  const _LanguageSwitcher({
-    required this.selected,
-    required this.isLight,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final inactiveColor =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: surface.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: border),
-      ),
-      child: Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        children: [
-          _LangChip(
-            label: 'EN',
-            active: selected == 'EN',
-            inactiveColor: inactiveColor,
-            onTap: () => onChanged('EN'),
-          ),
-          _LangChip(
-            label: 'AR',
-            active: selected == 'AR',
-            inactiveColor: inactiveColor,
-            onTap: () => onChanged('AR'),
-          ),
-          _LangChip(
-            label: 'RU',
-            active: selected == 'RU',
-            inactiveColor: inactiveColor,
-            onTap: () => onChanged('RU'),
-          ),
-          _LangChip(
-            label: 'DE',
-            active: selected == 'DE',
-            inactiveColor: inactiveColor,
-            onTap: () => onChanged('DE'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LangChip extends StatelessWidget {
-  final String label;
-  final bool active;
-  final Color inactiveColor;
-  final VoidCallback onTap;
-
-  const _LangChip({
-    required this.label,
-    required this.active,
-    required this.inactiveColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
-      decoration: BoxDecoration(
-        color: active ? CavoColors.gold : Colors.transparent,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: active ? Colors.black : inactiveColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.4,
-              ),
-            ),
-          ),
         ),
       ),
     );

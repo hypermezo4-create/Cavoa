@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 
 class LinksScreen extends StatelessWidget {
@@ -16,12 +18,11 @@ class LinksScreen extends StatelessWidget {
 
   Future<void> _openUrl(BuildContext context, String url) async {
     final uri = Uri.parse(url);
-    final opened = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+    var opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    opened = opened || await launchUrl(uri, mode: LaunchMode.platformDefault);
 
     if (!opened && context.mounted) {
+      final l10n = context.l10n;
       final isLight = Theme.of(context).brightness == Brightness.light;
       final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
       final border = isLight ? CavoColors.lightBorder : CavoColors.border;
@@ -33,7 +34,7 @@ class LinksScreen extends StatelessWidget {
           backgroundColor: surface,
           behavior: SnackBarBehavior.floating,
           content: Text(
-            'Unable to open this link right now.',
+            l10n.unableToOpenLink,
             style: TextStyle(color: primaryText),
           ),
           shape: RoundedRectangleBorder(
@@ -47,6 +48,7 @@ class LinksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -83,7 +85,7 @@ class LinksScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
             children: [
               Text(
-                'Links',
+                l10n.links,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 30,
@@ -92,7 +94,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                'All CAVO contact points in one place',
+                l10n.linksIntro,
                 style: TextStyle(
                   color: mutedText,
                   fontSize: 13,
@@ -103,13 +105,13 @@ class LinksScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
+                  color: surface.withValues(alpha: 0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
+                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -122,7 +124,7 @@ class LinksScreen extends StatelessWidget {
                       height: 58,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: CavoColors.gold.withOpacity(0.12),
+                        color: CavoColors.gold.withValues(alpha: 0.12),
                       ),
                       child: const Icon(
                         Icons.auto_awesome_rounded,
@@ -136,7 +138,7 @@ class LinksScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'CAVO Contact Hub',
+                            l10n.contactHub,
                             style: TextStyle(
                               color: primaryText,
                               fontSize: 18,
@@ -145,7 +147,7 @@ class LinksScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Mirror Original • Premium Footwear',
+                            l10n.mirrorOriginalPremiumFootwear,
                             style: TextStyle(
                               color: secondaryText,
                               fontSize: 13,
@@ -160,7 +162,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
-                'Direct Contact',
+                l10n.directContact,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -170,30 +172,30 @@ class LinksScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _LinkCard(
                 title: 'WhatsApp',
-                subtitle: 'Fast orders and direct communication',
+                subtitle: l10n.whatsAppSubtitle,
                 icon: Icons.chat_rounded,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _whatsAppUrl),
               ),
               const SizedBox(height: 12),
               _LinkCard(
-                title: 'Store Location',
-                subtitle: 'Open location in Google Maps',
+                title: l10n.storeLocation,
+                subtitle: l10n.storeLocationSubtitle,
                 icon: Icons.location_on_outlined,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _mapsUrl),
               ),
               const SizedBox(height: 12),
               _LinkCard(
-                title: 'Website',
-                subtitle: 'Open store website • English / Arabic',
+                title: l10n.website,
+                subtitle: l10n.websiteSubtitle,
                 icon: Icons.language_rounded,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _websiteUrl),
               ),
               const SizedBox(height: 22),
               Text(
-                'Social',
+                l10n.social,
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 18,
@@ -211,7 +213,7 @@ class LinksScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _LinkCard(
                 title: 'Telegram',
-                subtitle: 'Cavo_store channel',
+                subtitle: l10n.telegramSubtitle,
                 icon: Icons.send_rounded,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _telegramUrl),
@@ -219,7 +221,7 @@ class LinksScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _LinkCard(
                 title: 'Facebook',
-                subtitle: 'Official Facebook page',
+                subtitle: l10n.facebookSubtitle,
                 icon: Icons.facebook_rounded,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _facebookUrl),
@@ -269,13 +271,13 @@ class _LinkCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
+          color: surface.withValues(alpha: 0.96),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: border),
           boxShadow: [
             if (isLight)
               BoxShadow(
-                color: CavoColors.lightShadow.withOpacity(0.08),
+                color: CavoColors.lightShadow.withValues(alpha: 0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
@@ -288,7 +290,7 @@ class _LinkCard extends StatelessWidget {
               height: 46,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: CavoColors.gold.withOpacity(0.12),
+                color: CavoColors.gold.withValues(alpha: 0.12),
               ),
               child: Icon(
                 icon,

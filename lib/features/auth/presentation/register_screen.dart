@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../main_navigation/presentation/main_navigation_controller.dart';
+import '../../main_navigation/presentation/main_shell.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,6 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _loading = false;
 
   @override
   void dispose() {
@@ -31,8 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _showSoon(String title) {
-    final l10n = context.l10n;
+  void _showMessage(String message) {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
     final border = isLight ? CavoColors.lightBorder : CavoColors.border;
@@ -44,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: surface,
         behavior: SnackBarBehavior.floating,
         content: Text(
-          l10n.comingNextStep(title),
+          message,
           style: TextStyle(color: primaryText),
         ),
         shape: RoundedRectangleBorder(
@@ -53,6 +57,72 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  String _mapAuthError(AppLocalizations l10n, FirebaseAuthException error) {
+    switch (error.code) {
+      case 'email-already-in-use':
+        return l10n.authEmailInUse;
+      case 'invalid-email':
+        return l10n.authInvalidEmail;
+      case 'weak-password':
+        return l10n.authWeakPassword;
+      case 'too-many-requests':
+        return l10n.authTooManyRequests;
+      default:
+        return error.message ?? l10n.somethingWentWrong;
+    }
+  }
+
+  Future<void> _register() async {
+    final l10n = context.l10n;
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (name.isEmpty ||
+        email.isEmpty ||
+        phone.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      _showMessage(l10n.completeAllFields);
+      return;
+    }
+
+    if (password != confirmPassword) {
+      _showMessage(l10n.passwordsDoNotMatch);
+      return;
+    }
+
+    if (password.length < 6) {
+      _showMessage(l10n.passwordMustBeAtLeastSix);
+      return;
+    }
+
+    try {
+      setState(() => _loading = true);
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await credential.user?.updateDisplayName(name);
+      if (!mounted) return;
+      MainNavigationController.instance.goTo(0);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      _showMessage(_mapAuthError(l10n, error));
+    } catch (_) {
+      if (!mounted) return;
+      _showMessage(l10n.somethingWentWrong);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -244,8 +314,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 18),
                     ElevatedButton(
-                      onPressed: () => _showSoon(l10n.createAccount),
-                      child: Text(l10n.createAccount),
+                      onPressed: _loading ? null : _register,
+                      child: Text(_loading ? l10n.loading : l10n.createAccount),
                     ),
                   ],
                 ),

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "380167775107",
+    "project_id": "cavo-4c0e6",
+    "storage_bucket": "cavo-4c0e6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380167775107:android:102c199a2e44571d4accb6",
+        "android_client_info": {
+          "package_name": "com.cavo.store"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380167775107-psuoit4rjin8d5fvsruh6jmk8cnsjjh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPSEelYDGAXwQ2BLCZuVJYnWSzNfzbvDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380167775107-psuoit4rjin8d5fvsruh6jmk8cnsjjh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380167775107:android:4c4b8faf20c1efbc4accb6",
+        "android_client_info": {
+          "package_name": "com.example.cavoa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380167775107-psuoit4rjin8d5fvsruh6jmk8cnsjjh5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPSEelYDGAXwQ2BLCZuVJYnWSzNfzbvDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380167775107-psuoit4rjin8d5fvsruh6jmk8cnsjjh5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/product.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
@@ -39,6 +40,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   void _addToCart() {
+    final l10n = context.l10n;
+
     CartController.instance.addItem(
       product: widget.product,
       size: _selectedSize,
@@ -54,7 +57,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             : CavoColors.surface,
         behavior: SnackBarBehavior.floating,
         content: Text(
-          '${widget.product.title} x$_quantity$sizeText added to cart.',
+          '${widget.product.title} x$_quantity$sizeText ${l10n.addedToCart}',
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.light
                 ? CavoColors.lightTextPrimary
@@ -73,8 +76,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final product = widget.product;
     final gallery =
         product.gallery.isEmpty ? [product.coverUrl] : product.gallery;
@@ -282,7 +300,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                               const SizedBox(width: 10),
                               _TagChip(
-                                text: product.category.label,
+                                text: _categoryLabel(context, product.category),
                                 isLight: isLight,
                               ),
                             ],
@@ -333,7 +351,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Price',
+                                        l10n.price,
                                         style: TextStyle(
                                           color: mutedText,
                                           fontSize: 12,
@@ -382,7 +400,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            'Available Sizes',
+                            l10n.availableSizes,
                             style: TextStyle(
                               color: primaryText,
                               fontSize: 16,
@@ -439,8 +457,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     Expanded(
                                       child: Text(
                                         _selectedSize == null
-                                            ? 'Select your size'
-                                            : 'Selected size: $_selectedSize',
+                                            ? l10n.selectYourSize
+                                            : '${l10n.selectedSize}: $_selectedSize',
                                         style: TextStyle(
                                           color: secondaryText,
                                           fontSize: 13,
@@ -455,7 +473,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                           const SizedBox(height: 26),
                           Text(
-                            'Details',
+                            l10n.details,
                             style: TextStyle(
                               color: primaryText,
                               fontSize: 16,
@@ -495,7 +513,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _addToCart,
-                        child: const Text('Add to Cart'),
+                        child: Text(l10n.addToCart),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -530,6 +548,20 @@ class _GlassIconButton extends StatelessWidget {
     required this.isLight,
     this.active = false,
   });
+
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -584,6 +616,20 @@ class _TagChip extends StatelessWidget {
     this.highlighted = false,
   });
 
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bg = highlighted
@@ -629,6 +675,20 @@ class _GlassChoiceChip extends StatelessWidget {
     required this.isLight,
     required this.onTap,
   });
+
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -700,6 +760,20 @@ class _QuantityStepper extends StatelessWidget {
     required this.onPlus,
   });
 
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bg = isLight
@@ -757,6 +831,20 @@ class _StepperButton extends StatelessWidget {
     required this.isLight,
   });
 
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -790,6 +878,20 @@ class _BottomActionButton extends StatelessWidget {
     required this.icon,
     required this.onTap,
   });
+
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,15 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
+import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/presentation/register_screen.dart';
-import '../../cart/presentation/cart_screen.dart';
-import '../../links/presentation/links_screen.dart';
+import '../../main_navigation/presentation/main_navigation_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -28,23 +29,6 @@ class ProfileScreen extends StatelessWidget {
         isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final mutedText =
         isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
-
-    void showSoon(String title) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: surface,
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            l10n.comingNextStep(title),
-            style: TextStyle(color: primaryText),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: border),
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       backgroundColor: bg,
@@ -67,251 +51,303 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
-            children: [
-              Text(
-                l10n.profile,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                l10n.personalizeCavoExperience,
-                style: TextStyle(
-                  color: mutedText,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 62,
-                      height: 62,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: surfaceSoft,
-                        border: Border.all(color: border),
-                      ),
-                      child: const Icon(
-                        Icons.person_rounded,
-                        color: CavoColors.gold,
-                        size: 30,
-                      ),
+          child: StreamBuilder<User?>(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              final user = snapshot.data;
+
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
+                children: [
+                  Text(
+                    l10n.profile,
+                    style: TextStyle(
+                      color: primaryText,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w900,
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.cavoMember,
-                            style: TextStyle(
-                              color: primaryText,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            l10n.guestModeSignInForFullAccess,
-                            style: TextStyle(
-                              color: secondaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.personalizeCavoExperience,
+                    style: TextStyle(
+                      color: mutedText,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.account,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border),
-                ),
-                child: Column(
-                  children: [
-                    Row(
+                  ),
+                  const SizedBox(height: 22),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: surface.withValues(alpha: 0.96),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: border),
+                      boxShadow: [
+                        if (isLight)
+                          BoxShadow(
+                            color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                            blurRadius: 16,
+                            offset: const Offset(0, 8),
+                          ),
+                      ],
+                    ),
+                    child: Row(
                       children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const LoginScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(l10n.login),
+                        Container(
+                          width: 62,
+                          height: 62,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: surfaceSoft,
+                            border: Border.all(color: border),
+                          ),
+                          child: const Icon(
+                            Icons.person_rounded,
+                            color: CavoColors.gold,
+                            size: 30,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 14),
                         Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const RegisterScreen(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                user?.displayName?.trim().isNotEmpty == true
+                                    ? user!.displayName!
+                                    : (user != null ? l10n.myAccount : l10n.cavoMember),
+                                style: TextStyle(
+                                  color: primaryText,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
                                 ),
-                              );
-                            },
-                            child: Text(l10n.register),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                user?.email ?? l10n.guestModeSignInForFullAccess,
+                                style: TextStyle(
+                                  color: secondaryText,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.createAccountToSaveCartManageOrders,
-                      style: TextStyle(
-                        color: secondaryText,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1.5,
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    l10n.account,
+                    style: TextStyle(
+                      color: primaryText,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: surface.withValues(alpha: 0.96),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: border),
+                    ),
+                    child: user == null
+                        ? Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const LoginScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(l10n.login),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => const RegisterScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(l10n.register),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                l10n.createAccountToSaveCartManageOrders,
+                                style: TextStyle(
+                                  color: secondaryText,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _InfoRow(
+                                label: l10n.emailAddress,
+                                value: user.email ?? '-',
+                                primaryText: primaryText,
+                                secondaryText: secondaryText,
+                              ),
+                              const SizedBox(height: 12),
+                              _InfoRow(
+                                label: l10n.accountStatus,
+                                value: l10n.signedInSecurely,
+                                primaryText: primaryText,
+                                secondaryText: secondaryText,
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton(
+                                onPressed: () async {
+                                  await FirebaseAuth.instance.signOut();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(l10n.loggedOutSuccessfully)),
+                                    );
+                                  }
+                                },
+                                child: Text(l10n.logout),
+                              ),
+                            ],
+                          ),
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    l10n.quickAccess,
+                    style: TextStyle(
+                      color: primaryText,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _QuickCard(
+                          title: l10n.cart,
+                          icon: Icons.shopping_bag_outlined,
+                          isLight: isLight,
+                          onTap: () => MainNavigationController.instance.goTo(2),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.quickAccess,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickCard(
-                      title: l10n.cart,
-                      icon: Icons.shopping_bag_outlined,
-                      isLight: isLight,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const CartScreen(),
-                          ),
-                        );
-                      },
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickCard(
+                          title: l10n.checkout,
+                          icon: Icons.receipt_long_rounded,
+                          isLight: isLight,
+                          onTap: () => MainNavigationController.instance.goTo(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _QuickCard(
+                          title: l10n.links,
+                          icon: Icons.link_rounded,
+                          isLight: isLight,
+                          onTap: () => MainNavigationController.instance.goTo(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    l10n.appearance,
+                    style: TextStyle(
+                      color: primaryText,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickCard(
-                      title: l10n.orders,
-                      icon: Icons.receipt_long_rounded,
-                      isLight: isLight,
-                      onTap: () => showSoon(l10n.orders),
+                  const SizedBox(height: 12),
+                  _ThemeToggleCard(isLight: isLight),
+                  const SizedBox(height: 22),
+                  Text(
+                    l10n.more,
+                    style: TextStyle(
+                      color: primaryText,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _QuickCard(
-                      title: l10n.links,
-                      icon: Icons.link_rounded,
-                      isLight: isLight,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LinksScreen(),
-                          ),
-                        );
-                      },
-                    ),
+                  const SizedBox(height: 12),
+                  CavoLanguagePicker(isLight: isLight, expanded: true),
+                  const SizedBox(height: 12),
+                  _ActionTile(
+                    title: l10n.helpSupport,
+                    subtitle: l10n.reachCavoSupportQuickly,
+                    icon: Icons.support_agent_rounded,
+                    isLight: isLight,
+                    onTap: () => MainNavigationController.instance.goTo(4),
                   ),
                 ],
-              ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.appearance,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _ThemeToggleCard(isLight: isLight),
-              const SizedBox(height: 22),
-              Text(
-                l10n.more,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _ActionTile(
-                title: l10n.language,
-                subtitle: l10n.languageSupportSummary,
-                icon: Icons.language_rounded,
-                isLight: isLight,
-                onTap: () => showSoon(l10n.language),
-              ),
-              const SizedBox(height: 12),
-              _ActionTile(
-                title: l10n.savedAddresses,
-                subtitle: l10n.manageDeliveryDetails,
-                icon: Icons.location_on_outlined,
-                isLight: isLight,
-                onTap: () => showSoon(l10n.savedAddresses),
-              ),
-              const SizedBox(height: 12),
-              _ActionTile(
-                title: l10n.helpSupport,
-                subtitle: l10n.reachCavoSupportQuickly,
-                icon: Icons.support_agent_rounded,
-                isLight: isLight,
-                onTap: () => showSoon(l10n.helpSupport),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color primaryText;
+  final Color secondaryText;
+
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.primaryText,
+    required this.secondaryText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: secondaryText,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            color: primaryText,
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
     );
   }
 }

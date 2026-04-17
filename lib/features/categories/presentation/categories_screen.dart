@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/mock/cavo_catalog.dart';
 import '../../../data/models/product.dart';
@@ -28,6 +29,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     _selectedBrand = 'All';
   }
 
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final brands = CavoCatalog.brandsFor(_selectedCategory);
@@ -39,6 +54,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       category: _selectedCategory,
       brand: _selectedBrand,
     );
+
+    final l10n = context.l10n;
 
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
@@ -84,7 +101,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Browse Collection',
+                          l10n.browseCollection,
                           style: TextStyle(
                             color: primaryText,
                             fontSize: 28,
@@ -93,7 +110,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Mirror Original • Premium Footwear',
+                          l10n.mirrorOriginalPremiumFootwear,
                           style: TextStyle(
                             color: mutedText,
                             fontSize: 13,
@@ -122,7 +139,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       ],
                     ),
                     child: Text(
-                      '${products.length} items',
+                      '${products.length} ${l10n.itemsCountLabel}',
                       style: const TextStyle(
                         color: CavoColors.gold,
                         fontSize: 12,
@@ -173,7 +190,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              category.label,
+                              _categoryLabel(context, category),
                               style: TextStyle(
                                 color: active ? primaryText : secondaryText,
                                 fontSize: 14,
@@ -207,7 +224,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Brands',
+                      l10n.brandsTitle,
                       style: TextStyle(
                         color: primaryText,
                         fontSize: 17,
@@ -280,7 +297,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       ),
                       const SizedBox(height: 14),
                       Text(
-                        'New products are being prepared for this section.',
+                        l10n.newProductsPreparing,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: secondaryText,
@@ -328,6 +345,20 @@ class _CatalogCard extends StatelessWidget {
     required this.product,
     required this.isLight,
   });
+
+
+  String _categoryLabel(BuildContext context, ProductCategory category) {
+    final l10n = context.l10n;
+    switch (category) {
+      case ProductCategory.women:
+        return l10n.women;
+      case ProductCategory.kids:
+        return l10n.kids;
+      case ProductCategory.men:
+      default:
+        return l10n.men;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

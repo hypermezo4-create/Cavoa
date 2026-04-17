@@ -20,6 +20,8 @@ class HomeScreen extends StatelessWidget {
     final brands =
         CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
 
+    final l10n = context.l10n;
+
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -97,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Mirror Original',
+                          l10n.mirrorOriginal,
                           style: TextStyle(
                             color: mutedText,
                             fontSize: 12,
@@ -140,7 +142,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Search products, brands...',
+                        l10n.searchProductsBrands,
                         style: TextStyle(
                           color: mutedText,
                           fontSize: 14,
@@ -163,8 +165,8 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               _SectionHeader(
-                title: 'Shop by Category',
-                action: 'View All',
+                title: l10n.shopByCategory,
+                action: l10n.viewAll,
                 isLight: isLight,
                 onTap: () {
                   Navigator.of(context).push(
@@ -179,7 +181,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _CategoryCard(
-                      title: 'Men',
+                      title: l10n.men,
                       icon: Icons.man_rounded,
                       isLight: isLight,
                       onTap: () {
@@ -196,7 +198,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _CategoryCard(
-                      title: 'Women',
+                      title: l10n.women,
                       icon: Icons.woman_rounded,
                       isLight: isLight,
                       onTap: () {
@@ -213,7 +215,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _CategoryCard(
-                      title: 'Kids',
+                      title: l10n.kids,
                       icon: Icons.child_care_rounded,
                       isLight: isLight,
                       onTap: () {
@@ -231,8 +233,8 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               _SectionHeader(
-                title: 'Top Brands',
-                action: 'Curated',
+                title: l10n.topBrands,
+                action: l10n.curated,
                 isLight: isLight,
               ),
               const SizedBox(height: 14),
@@ -245,8 +247,8 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               _SectionHeader(
-                title: 'Featured Collection',
-                action: 'Premium',
+                title: l10n.featuredCollection,
+                action: l10n.premium,
                 isLight: isLight,
               ),
               const SizedBox(height: 14),
@@ -261,8 +263,8 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               _SectionHeader(
-                title: 'Offers',
-                action: 'Selected',
+                title: l10n.offersTitle,
+                action: l10n.selected,
                 isLight: isLight,
               ),
               const SizedBox(height: 14),
@@ -350,7 +352,7 @@ class _HeroBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: const Text(
-                    'NEW COLLECTION',
+                    l10n.newCollection.toUpperCase(),
                     style: TextStyle(
                       color: CavoColors.gold,
                       fontSize: 11,
@@ -361,7 +363,7 @@ class _HeroBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Premium Footwear\nDesigned to Stand\nApart',
+                  l10n.premiumFootwearDesignedToStandApart,
                   style: TextStyle(
                     color: titleColor,
                     fontSize: 26,
@@ -371,7 +373,7 @@ class _HeroBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Mirror Original pieces with a refined luxury feel.',
+                  l10n.mirrorOriginalPiecesRefined,
                   style: TextStyle(
                     color: bodyColor,
                     fontSize: 14,
@@ -392,7 +394,7 @@ class _HeroBanner extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Text('Shop Now'),
+                        child: Text(l10n.shopNow),
                       ),
                     ),
                     const SizedBox(width: 10),
