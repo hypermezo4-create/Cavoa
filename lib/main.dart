@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'features/auth/data/auth_service.dart';
+import 'features/cart/data/cart_controller.dart';
+import 'features/favorites/data/favorites_controller.dart';
+import 'features/search/data/search_history_controller.dart';
 import 'features/splash/presentation/splash_screen.dart';
 import 'core/localization/app_locale_controller.dart';
 import 'core/theme/app_theme.dart';
@@ -21,6 +24,9 @@ Future<void> main() async {
   }
   await ThemeModeController.instance.init();
   await AppLocaleController.instance.init();
+  await CartController.instance.init();
+  await FavoritesController.instance.init();
+  await SearchHistoryController.instance.init();
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(

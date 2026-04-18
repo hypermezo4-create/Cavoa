@@ -9,8 +9,10 @@ import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
+import '../../favorites/data/favorites_controller.dart';
 import '../../orders/data/order_controller.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
+import '../../favorites/presentation/favorites_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -172,6 +174,23 @@ class ProfileScreen extends StatelessWidget {
                   );
                 },
               ),
+              const SizedBox(height: 12),
+              ValueListenableBuilder<Set<String>>(
+                valueListenable: FavoritesController.instance,
+                builder: (context, favorites, _) {
+                  return _ProfileActionTile(
+                    title: context.l10n.favorites,
+                    subtitle: '${favorites.length} ${context.l10n.itemsCountLabel} ${context.l10n.savedForLater}',
+                    isLight: isLight,
+                    trailing: const Icon(Icons.favorite_rounded, color: CavoColors.gold),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
               const SizedBox(height: 18),
               CavoSectionHeader(
                 title: context.l10n.orders,
@@ -303,50 +322,56 @@ class _ProfileActionTile extends StatelessWidget {
   final String subtitle;
   final Widget trailing;
   final bool isLight;
+  final VoidCallback? onTap;
 
   const _ProfileActionTile({
     required this.title,
     required this.subtitle,
     required this.trailing,
     required this.isLight,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    return CavoGlassCard(
-      isLight: isLight,
-      borderRadius: const BorderRadius.all(Radius.circular(28)),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: primary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(28),
+      child: CavoGlassCard(
+        isLight: isLight,
+        borderRadius: const BorderRadius.all(Radius.circular(28)),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: secondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: secondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          trailing,
-        ],
+            const SizedBox(width: 12),
+            trailing,
+          ],
+        ),
       ),
     );
   }

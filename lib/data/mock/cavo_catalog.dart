@@ -2652,4 +2652,15 @@ class CavoCatalog {
         .toList();
   }
 
+  static CavoProduct? findById(String id) {
+    for (final product in products) {
+      if (product.id == id) return product;
+    }
+    return null;
+  }
+
+  static List<String> allBrands() {
+    final brands = products.map((e) => e.brand).toSet().toList()..sort();
+    return brands;
+  }
 }

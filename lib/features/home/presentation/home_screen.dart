@@ -9,6 +9,7 @@ import '../../../shared/widgets/cavo_network_image.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../categories/presentation/categories_screen.dart';
 import '../../product_details/presentation/product_details_screen.dart';
+import '../../search/presentation/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -418,7 +419,7 @@ class _SearchBarState extends State<_SearchBar> with SingleTickerProviderStateMi
     Future<void>.delayed(const Duration(milliseconds: 180), () {
       if (!mounted) return;
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+        MaterialPageRoute(builder: (_) => const SearchScreen()),
       );
       Future<void>.delayed(const Duration(milliseconds: 240), () {
         if (mounted) setState(() => _focused = false);

@@ -6,6 +6,7 @@ import '../../../data/models/product.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
+import '../../favorites/data/favorites_controller.dart';
 import 'product_gallery_viewer_screen.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -27,7 +28,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   late String _selectedSize;
   int _selectedIndex = 0;
   int _quantity = 1;
-  bool _favorite = false;
 
   List<String> get _gallery {
     final gallery = widget.product.gallery.where((item) => item.isNotEmpty).toList();
@@ -180,11 +180,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     onTap: () => Navigator.of(context).maybePop(),
                   ),
                   const Spacer(),
-                  CavoCircleIconButton(
-                    icon: _favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    isLight: isLight,
-                    iconColor: _favorite ? CavoColors.gold : null,
-                    onTap: () => setState(() => _favorite = !_favorite),
+                  ValueListenableBuilder<Set<String>>(
+                    valueListenable: FavoritesController.instance,
+                    builder: (context, favorites, _) {
+                      final isFavorite = favorites.contains(widget.product.id);
+                      return CavoCircleIconButton(
+                        icon: isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        isLight: isLight,
+                        iconColor: isFavorite ? CavoColors.gold : null,
+                        onTap: () async {
+                          final added = await FavoritesController.instance.toggle(widget.product.id);
+                          if (!mounted) return;
+                          _showMessage(
+                            added ? context.l10n.addedToFavorites : context.l10n.removedFromFavorites,
+                          );
+                        },
+                      );
+                    },
                   ),
                 ],
               ),

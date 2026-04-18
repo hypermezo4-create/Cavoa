@@ -7,6 +7,7 @@ import '../../../data/models/product.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../product_details/presentation/product_details_screen.dart';
+import '../../search/presentation/search_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   final ProductCategory initialCategory;
@@ -92,26 +93,36 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 ],
               ),
               const SizedBox(height: 18),
-              CavoGlassCard(
-                isLight: isLight,
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                borderRadius: const BorderRadius.all(Radius.circular(24)),
-                child: Row(
-                  children: [
-                    Icon(Icons.search_rounded, color: secondary),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        l10n.searchProductsBrands,
-                        style: TextStyle(
-                          color: secondary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+              InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SearchScreen(initialCategory: _selectedCategory),
+                    ),
+                  );
+                },
+                child: CavoGlassCard(
+                  isLight: isLight,
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                  borderRadius: const BorderRadius.all(Radius.circular(24)),
+                  child: Row(
+                    children: [
+                      Icon(Icons.search_rounded, color: secondary),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          l10n.searchProductsBrands,
+                          style: TextStyle(
+                            color: secondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
-                    const Icon(Icons.tune_rounded, color: CavoColors.gold),
-                  ],
+                      const Icon(Icons.tune_rounded, color: CavoColors.gold),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 18),
