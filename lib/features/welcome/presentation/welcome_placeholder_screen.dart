@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/cavo_language_picker.dart';
+import '../../auth/presentation/auth_premium_widgets.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../auth/presentation/register_screen.dart';
+import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
-import '../../../shared/widgets/cavo_language_picker.dart';
 
 class WelcomePlaceholderScreen extends StatefulWidget {
   const WelcomePlaceholderScreen({super.key});
@@ -19,17 +20,16 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fade;
-  late final Animation<Offset> _contentSlide;
-  late final Animation<Offset> _buttonsSlide;
   late final Animation<double> _logoScale;
+  late final Animation<Offset> _heroSlide;
+  late final Animation<Offset> _actionsSlide;
 
   @override
   void initState() {
     super.initState();
-
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1050),
+      duration: const Duration(milliseconds: 1250),
     );
 
     _fade = CurvedAnimation(
@@ -37,33 +37,30 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
       curve: Curves.easeOutCubic,
     );
 
-    _contentSlide = Tween<Offset>(
-      begin: const Offset(0, 0.08),
+    _logoScale = Tween<double>(begin: 0.88, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.48, curve: Curves.easeOutBack),
+      ),
+    );
+
+    _heroSlide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.00, 0.72, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.68, curve: Curves.easeOutCubic),
       ),
     );
 
-    _buttonsSlide = Tween<Offset>(
-      begin: const Offset(0, 0.14),
+    _actionsSlide = Tween<Offset>(
+      begin: const Offset(0, 0.1),
       end: Offset.zero,
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.28, 1.00, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    _logoScale = Tween<double>(
-      begin: 0.92,
-      end: 1.00,
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.00, 0.55, curve: Curves.easeOutBack),
+        curve: const Interval(0.18, 1.0, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -77,306 +74,158 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
   }
 
   void _goToApp() {
+    MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => const MainShell(),
-      ),
+      buildCavoFadeRoute(const MainShell()),
     );
   }
 
   void _goToLogin() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const LoginScreen(),
-      ),
-    );
+    Navigator.of(context).push(buildCavoFadeRoute(const LoginScreen()));
   }
 
   void _goToRegister() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const RegisterScreen(),
-      ),
-    );
+    Navigator.of(context).push(buildCavoFadeRoute(const RegisterScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final cardBg = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final titleColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final bodyColor =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedColor =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
-    return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF040404),
-                    Color(0xFF090909),
-                    Color(0xFF0D0B08),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Stack(
-          children: [
-            _GlowOrb(
-              alignment: Alignment.topCenter,
-              color: isLight
-                  ? CavoColors.heroLightGlow
-                  : const Color(0x18D4AF37),
-              size: 300,
-            ),
-            const _GlowOrb(
-              alignment: Alignment.center,
-              color: Color(0x10D4AF37),
-              size: 250,
-            ),
-            const _GlowOrb(
-              alignment: Alignment.bottomCenter,
-              color: Color(0x10F1D27A),
-              size: 300,
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: FadeTransition(
-                  opacity: _fade,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 12),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: CavoLanguagePicker(isLight: isLight),
-                      ),
-                      Expanded(
-                        child: Center(
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: SlideTransition(
-                              position: _contentSlide,
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 360,
+    return AuthPremiumScaffold(
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 18),
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: CavoLanguagePicker(isLight: false),
+              ),
+              Expanded(
+                child: Center(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: FadeTransition(
+                      opacity: _fade,
+                      child: Column(
+                        children: [
+                          SlideTransition(
+                            position: _heroSlide,
+                            child: Column(
+                              children: [
+                                ScaleTransition(
+                                  scale: _logoScale,
+                                  child: const AuthLogoMedallion(size: 176),
+                                ),
+                                const SizedBox(height: 22),
+                                const AuthBadge(text: 'CAVO'),
+                                const SizedBox(height: 28),
+                                Text(
+                                  l10n.mirrorOriginal,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 44,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.05,
                                   ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
+                                ),
+                                const SizedBox(height: 12),
+                                ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 340),
+                                  child: Text(
+                                    'Choose how you want to continue with CAVO.',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Color(0xFFB8B1A3),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 22),
+                                const AuthGlassCard(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 18,
+                                    vertical: 16,
+                                  ),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(26),
+                                  ),
+                                  child: Row(
                                     children: [
-                                      ScaleTransition(
-                                        scale: _logoScale,
-                                        child: Container(
-                                          width: 150,
-                                          height: 150,
-                                          padding: const EdgeInsets.all(6),
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: CavoColors.gold.withValues(
-                                                  alpha: isLight ? 0.16 : 0.18,
-                                                ),
-                                                blurRadius: isLight ? 34 : 40,
-                                                spreadRadius: 2,
-                                              ),
-                                              BoxShadow(
-                                                color: CavoColors.goldLight
-                                                    .withValues(
-                                                  alpha: isLight ? 0.05 : 0.06,
-                                                ),
-                                                blurRadius: isLight ? 64 : 82,
-                                                spreadRadius: 8,
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipOval(
-                                            child: Image.asset(
-                                              'assets/branding/cavo_logo_circle.png',
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
+                                      Icon(
+                                        Icons.auto_awesome_rounded,
+                                        color: Color(0xFFF1D27A),
                                       ),
-                                      const SizedBox(height: 26),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 10,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: cardBg.withValues(alpha: 0.92),
-                                          borderRadius:
-                                              BorderRadius.circular(18),
-                                          border: Border.all(color: border),
-                                        ),
+                                      SizedBox(width: 12),
+                                      Expanded(
                                         child: Text(
-                                          'CAVO',
-                                          style: TextStyle(
-                                            color: CavoColors.gold,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w800,
-                                            letterSpacing: 1.4,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 22),
-                                      Text(
-                                        l10n.mirrorOriginal,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: titleColor,
-                                          fontSize: 34,
-                                          fontWeight: FontWeight.w900,
-                                          height: 1.05,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        child: Text(
-                                          l10n.chooseHowToContinue,
+                                          'English default  •  Arabic  •  Russian  •  German',
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            color: bodyColor,
+                                            color: Color(0xFFF5F1E8),
                                             fontSize: 15,
-                                            height: 1.55,
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.35,
                                           ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 22),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                          vertical: 14,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: cardBg.withValues(alpha: 0.88),
-                                          borderRadius:
-                                              BorderRadius.circular(22),
-                                          border: Border.all(color: border),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const Icon(
-                                              Icons.auto_awesome_rounded,
-                                              color: CavoColors.gold,
-                                              size: 18,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Flexible(
-                                              child: Text(
-                                                l10n.languageSupportSummary,
-                                                textAlign: TextAlign.center,
-                                                style: TextStyle(
-                                                  color: bodyColor,
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 34),
+                          SlideTransition(
+                            position: _actionsSlide,
+                            child: Column(
+                              children: [
+                                AuthPrimaryButton(
+                                  label: l10n.login,
+                                  onPressed: _goToLogin,
+                                ),
+                                const SizedBox(height: 14),
+                                AuthOutlineButton(
+                                  label: l10n.createAccount,
+                                  onPressed: _goToRegister,
+                                  leadingIcon: Icons.person_add_alt_1_rounded,
+                                ),
+                                const SizedBox(height: 18),
+                                TextButton(
+                                  onPressed: _goToApp,
+                                  child: Text(
+                                    l10n.continueAsGuest,
+                                    style: const TextStyle(
+                                      color: Color(0xFFD4AF37),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 26),
+                                const Text(
+                                  'Refined by CAVO',
+                                  style: TextStyle(
+                                    color: Color(0xFF7F786B),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      SlideTransition(
-                        position: _buttonsSlide,
-                        child: Column(
-                          children: [
-                            ElevatedButton(
-                              onPressed: _goToLogin,
-                              child: Text(l10n.login),
-                            ),
-                            const SizedBox(height: 14),
-                            OutlinedButton(
-                              onPressed: _goToRegister,
-                              child: Text(l10n.register),
-                            ),
-                            const SizedBox(height: 14),
-                            TextButton(
-                              onPressed: _goToApp,
-                              child: Text(l10n.continueAsGuest),
-                            ),
-                            const SizedBox(height: 18),
-                            Text(
-                              l10n.refinedByCavo,
-                              style: TextStyle(
-                                color: mutedColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.25,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _GlowOrb extends StatelessWidget {
-  final Alignment alignment;
-  final Color color;
-  final double size;
-
-  const _GlowOrb({
-    required this.alignment,
-    required this.color,
-    required this.size,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: IgnorePointer(
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                color,
-                Colors.transparent,
-              ],
-            ),
+            ],
           ),
         ),
       ),

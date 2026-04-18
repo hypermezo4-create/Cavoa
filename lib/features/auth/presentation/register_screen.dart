@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_colors.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
+import 'auth_premium_widgets.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -13,19 +14,57 @@ class RegisterScreen extends StatefulWidget {
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends State<RegisterScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _cardSlide;
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _loading = false;
+  bool _acceptedTerms = true;
+  bool _passwordsMatch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 950),
+    );
+
+    _fade = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+
+    _cardSlide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.86, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _confirmPasswordController.addListener(_syncPasswordMatch);
+    _passwordController.addListener(_syncPasswordMatch);
+    _controller.forward();
+  }
 
   @override
   void dispose() {
+    _confirmPasswordController.removeListener(_syncPasswordMatch);
+    _passwordController.removeListener(_syncPasswordMatch);
+    _controller.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -34,51 +73,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _showMessage(String message) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+  void _syncPasswordMatch() {
+    final match = _passwordController.text.isNotEmpty &&
+        _passwordController.text == _confirmPasswordController.text;
 
+    if (match != _passwordsMatch) {
+      setState(() {
+        _passwordsMatch = match;
+      });
+    }
+  }
+
+  void _showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: surface,
+        backgroundColor: const Color(0xFF141414),
         behavior: SnackBarBehavior.floating,
         content: Text(
           message,
-          style: TextStyle(color: primaryText),
+          style: const TextStyle(
+            color: Color(0xFFF5F1E8),
+            fontWeight: FontWeight.w600,
+            height: 1.45,
+          ),
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: border),
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: const Color(0xFFD4AF37).withOpacity(0.16),
+          ),
         ),
       ),
     );
   }
 
   String _mapAuthError(FirebaseAuthException error) {
+    final l10n = context.l10n;
+
     switch (error.code) {
       case 'email-already-in-use':
-        return 'This email is already in use.';
+        return l10n.authEmailInUse;
       case 'invalid-email':
-        return 'Invalid email address.';
+        return l10n.authInvalidEmail;
       case 'weak-password':
-        return 'Password is too weak.';
+        return l10n.authWeakPassword;
       default:
-        return error.message ?? 'Something went wrong.';
+        return error.message ?? l10n.somethingWentWrong;
     }
   }
 
   void _goToApp() {
     MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainShell()),
+      buildCavoFadeRoute(const MainShell()),
       (route) => false,
     );
   }
 
   Future<void> _register() async {
+    final l10n = context.l10n;
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
@@ -90,17 +143,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         phone.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      _showMessage('Please complete all fields.');
+      _showMessage(l10n.completeAllFields);
       return;
     }
 
     if (password != confirmPassword) {
-      _showMessage('Passwords do not match.');
+      _showMessage(l10n.passwordsDoNotMatch);
       return;
     }
 
     if (password.length < 6) {
-      _showMessage('Password must be at least 6 characters.');
+      _showMessage(l10n.passwordMustBeAtLeastSix);
+      return;
+    }
+
+    if (!_acceptedTerms) {
+      _showMessage('Please accept the Terms of Service and Privacy Policy.');
       return;
     }
 
@@ -122,362 +180,252 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _showMessage(_mapAuthError(error));
     } catch (_) {
       if (!mounted) return;
-      _showMessage('Something went wrong.');
+      _showMessage(l10n.somethingWentWrong);
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final soft = isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+    final l10n = context.l10n;
 
-    return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF050505),
-                    Color(0xFF080808),
-                    Color(0xFF0D0A06),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
-            children: [
-              Row(
+    return AuthPremiumScaffold(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+          physics: const BouncingScrollPhysics(),
+          children: [
+            FadeTransition(
+              opacity: _fade,
+              child: Row(
                 children: [
-                  _CircleButton(
-                    isLight: isLight,
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context),
+                  AuthBackButton(onPressed: () => Navigator.pop(context)),
+                  const Spacer(),
+                  const AuthBadge(
+                    text: 'Premium setup',
+                    icon: Icons.diamond_outlined,
                   ),
                 ],
               ),
-              const SizedBox(height: 22),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: surface,
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/branding/cavo_logo_circle.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+            ),
+            const SizedBox(height: 24),
+            FadeTransition(
+              opacity: _fade,
+              child: const Center(
+                child: AuthLogoMedallion(size: 120),
               ),
-              const SizedBox(height: 22),
-              Text(
+            ),
+            const SizedBox(height: 20),
+            FadeTransition(
+              opacity: _fade,
+              child: const Text(
                 'Create Account',
                 style: TextStyle(
-                  color: primaryText,
-                  fontSize: 30,
+                  color: Colors.white,
+                  fontSize: 40,
                   fontWeight: FontWeight.w900,
+                  height: 1.08,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Join CAVO to save your cart, preferences, and future orders.',
+            ),
+            const SizedBox(height: 10),
+            FadeTransition(
+              opacity: _fade,
+              child: const Text(
+                'Join CAVO and step into a smoother premium journey with saved style choices and faster checkout.',
                 style: TextStyle(
-                  color: secondaryText,
-                  fontSize: 14,
+                  color: Color(0xFFB8B1A3),
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  height: 1.5,
+                  height: 1.55,
                 ),
               ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 18),
+            FadeTransition(
+              opacity: _fade,
+              child: const AuthProgressDots(activeIndex: 0),
+            ),
+            const SizedBox(height: 22),
+            SlideTransition(
+              position: _cardSlide,
+              child: AuthGlassCard(
                 child: Column(
                   children: [
-                    TextField(
+                    AuthTextField(
                       controller: _nameController,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: 'Full name',
-                        prefixIcon: const Icon(Icons.person_outline_rounded),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
-                        ),
-                      ),
+                      hintText: 'Full name',
+                      icon: Icons.person_outline_rounded,
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 14),
-                    TextField(
+                    AuthTextField(
                       controller: _emailController,
+                      hintText: l10n.emailAddress,
+                      icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: 'Email address',
-                        prefixIcon: const Icon(Icons.mail_outline_rounded),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
-                        ),
-                      ),
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 14),
-                    TextField(
+                    AuthTextField(
                       controller: _phoneController,
+                      hintText: 'Phone number',
+                      icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: 'Phone number',
-                        prefixIcon: const Icon(Icons.phone_outlined),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
-                        ),
-                      ),
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 14),
-                    TextField(
+                    AuthTextField(
                       controller: _passwordController,
+                      hintText: l10n.password,
+                      icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        prefixIcon: const Icon(Icons.lock_outline_rounded),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off_rounded
-                                : Icons.visibility_rounded,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
+                      textInputAction: TextInputAction.next,
+                      suffix: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          color: const Color(0xFFF5F1E8),
                         ),
                       ),
                     ),
                     const SizedBox(height: 14),
-                    TextField(
+                    AuthTextField(
                       controller: _confirmPasswordController,
+                      hintText: l10n.confirmPassword,
+                      icon: Icons.verified_user_outlined,
                       obscureText: _obscureConfirmPassword,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: 'Confirm password',
-                        prefixIcon: const Icon(Icons.verified_user_outlined),
-                        suffixIcon: IconButton(
-                          onPressed: () {
+                      textInputAction: TextInputAction.done,
+                      suffix: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_passwordsMatch)
+                            Container(
+                              width: 24,
+                              height: 24,
+                              margin: const EdgeInsets.only(right: 4),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFF3DDC97).withOpacity(0.18),
+                              ),
+                              child: const Icon(
+                                Icons.check_rounded,
+                                color: Color(0xFF3DDC97),
+                                size: 16,
+                              ),
+                            ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
+                              });
+                            },
+                            icon: Icon(
+                              _obscureConfirmPassword
+                                  ? Icons.visibility_off_rounded
+                                  : Icons.visibility_rounded,
+                              color: const Color(0xFFF5F1E8),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
                             setState(() {
-                              _obscureConfirmPassword =
-                                  !_obscureConfirmPassword;
+                              _acceptedTerms = !_acceptedTerms;
                             });
                           },
-                          icon: Icon(
-                            _obscureConfirmPassword
-                                ? Icons.visibility_off_rounded
-                                : Icons.visibility_rounded,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: 22,
+                            height: 22,
+                            margin: const EdgeInsets.only(top: 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: _acceptedTerms
+                                  ? const Color(0xFFD4AF37)
+                                  : Colors.transparent,
+                              border: Border.all(
+                                color: const Color(0xFFD4AF37).withOpacity(0.42),
+                              ),
+                            ),
+                            child: _acceptedTerms
+                                ? const Icon(
+                                    Icons.check_rounded,
+                                    size: 16,
+                                    color: Colors.black,
+                                  )
+                                : null,
                           ),
                         ),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text(
+                            'I agree to the Terms of Service and Privacy Policy.',
+                            style: TextStyle(
+                              color: Color(0xFFB8B1A3),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     const SizedBox(height: 18),
-                    ElevatedButton(
+                    AuthPrimaryButton(
+                      label: _loading ? l10n.loading : l10n.createAccount,
                       onPressed: _loading ? null : _register,
-                      child:
-                          Text(_loading ? 'Loading...' : 'Create Account'),
+                      loading: _loading,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withOpacity(0.96),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: border),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: TextStyle(
-                        color: primaryText,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Sign in and continue shopping with your saved preferences.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: secondaryText,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: const Text('Go to Login'),
-                    ),
-                  ],
+            ),
+            const SizedBox(height: 18),
+            FadeTransition(
+              opacity: _fade,
+              child: AuthGlassCard(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                borderRadius: const BorderRadius.all(Radius.circular(24)),
+                child: AuthFooterLink(
+                  title: 'Already have an account?',
+                  actionLabel: 'Login',
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      buildCavoFadeRoute(const LoginScreen()),
+                    );
+                  },
                 ),
               ),
-              const SizedBox(height: 18),
-              Center(
-                child: Text(
-                  'Mirror Original • Premium Footwear',
-                  style: TextStyle(
-                    color: mutedText,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+            ),
+            const SizedBox(height: 18),
+            const Center(
+              child: Text(
+                'Refined onboarding • strong motion • premium feel',
+                style: TextStyle(
+                  color: Color(0xFF7F786B),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CircleButton extends StatelessWidget {
-  final bool isLight;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _CircleButton({
-    required this.isLight,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final iconColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 46,
-        height: 46,
-        decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
-          shape: BoxShape.circle,
-          border: Border.all(color: border),
-        ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: 20,
+            ),
+          ],
         ),
       ),
     );

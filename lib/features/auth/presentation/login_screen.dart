@@ -2,11 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
-import '../../../l10n/app_localizations.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
-import '../data/auth_service.dart';
 import '../../main_navigation/presentation/main_shell.dart';
+import '../data/auth_service.dart';
+import 'auth_premium_widgets.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,44 +15,89 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _cardSlide;
+  late final Animation<Offset> _footerSlide;
 
   bool _obscurePassword = true;
   bool _loading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _fade = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+
+    _cardSlide = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.76, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _footerSlide = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.18, 1.0, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
   void dispose() {
+    _controller.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _showMessage(String message) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: surface,
+        backgroundColor: const Color(0xFF141414),
         behavior: SnackBarBehavior.floating,
         content: Text(
           message,
-          style: TextStyle(color: primaryText),
+          style: const TextStyle(
+            color: Color(0xFFF5F1E8),
+            fontWeight: FontWeight.w600,
+            height: 1.45,
+          ),
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: border),
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(
+            color: const Color(0xFFD4AF37).withOpacity(0.16),
+          ),
         ),
       ),
     );
   }
 
-  String _mapAuthError(AppLocalizations l10n, FirebaseAuthException error) {
+  String _mapAuthError(FirebaseAuthException error) {
+    final l10n = context.l10n;
+
     switch (error.code) {
       case 'invalid-email':
         return l10n.authInvalidEmail;
@@ -68,6 +112,14 @@ class _LoginScreenState extends State<LoginScreen> {
       default:
         return error.message ?? l10n.somethingWentWrong;
     }
+  }
+
+  void _goToApp() {
+    MainNavigationController.instance.goTo(0);
+    Navigator.of(context).pushAndRemoveUntil(
+      buildCavoFadeRoute(const MainShell()),
+      (route) => false,
+    );
   }
 
   Future<void> _login() async {
@@ -92,21 +144,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _goToApp();
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(_mapAuthError(l10n, error));
+      _showMessage(_mapAuthError(error));
     } catch (_) {
       if (!mounted) return;
       _showMessage(l10n.somethingWentWrong);
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
-  }
-
-  void _goToApp() {
-    MainNavigationController.instance.goTo(0);
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainShell()),
-      (route) => false,
-    );
   }
 
   Future<void> _loginWithGoogle() async {
@@ -122,306 +168,237 @@ class _LoginScreenState extends State<LoginScreen> {
       _showMessage(error.toString());
     } catch (error) {
       if (!mounted) return;
-      _showMessage(error.toString());
+      _showMessage('Unexpected Google sign-in error.\n$error');
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final soft = isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
-    return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF050505),
-                    Color(0xFF080808),
-                    Color(0xFF0D0A06),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
-            children: [
-              Row(
+    return AuthPremiumScaffold(
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
+          physics: const BouncingScrollPhysics(),
+          children: [
+            FadeTransition(
+              opacity: _fade,
+              child: Row(
                 children: [
-                  _CircleButton(
-                    isLight: isLight,
-                    icon: Icons.arrow_back_ios_new_rounded,
-                    onTap: () => Navigator.pop(context),
+                  AuthBackButton(onPressed: () => Navigator.pop(context)),
+                  const Spacer(),
+                  const AuthBadge(
+                    text: 'Secure sign in',
+                    icon: Icons.shield_outlined,
                   ),
                 ],
               ),
-              const SizedBox(height: 22),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: surface,
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/branding/cavo_logo_circle.png',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+            ),
+            const SizedBox(height: 26),
+            FadeTransition(
+              opacity: _fade,
+              child: const Center(
+                child: AuthLogoMedallion(size: 128),
               ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.welcomeBack,
+            ),
+            const SizedBox(height: 22),
+            FadeTransition(
+              opacity: _fade,
+              child: const Text(
+                'Welcome Back',
                 style: TextStyle(
-                  color: primaryText,
-                  fontSize: 30,
+                  color: Colors.white,
+                  fontSize: 42,
                   fontWeight: FontWeight.w900,
+                  height: 1.05,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.signInToAccessCart,
+            ),
+            const SizedBox(height: 10),
+            FadeTransition(
+              opacity: _fade,
+              child: const Text(
+                'Sign in to continue your cart, saved preferences, and premium checkout flow.',
                 style: TextStyle(
-                  color: secondaryText,
-                  fontSize: 14,
+                  color: Color(0xFFB8B1A3),
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  height: 1.5,
+                  height: 1.55,
                 ),
               ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 24),
+            SlideTransition(
+              position: _cardSlide,
+              child: AuthGlassCard(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextField(
+                    const AuthBadge(
+                      text: 'Mirror Original',
+                      icon: Icons.auto_awesome_rounded,
+                    ),
+                    const SizedBox(height: 18),
+                    AuthTextField(
                       controller: _emailController,
+                      hintText: l10n.emailAddress,
+                      icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: l10n.emailAddress,
-                        prefixIcon: const Icon(Icons.mail_outline_rounded),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
-                        ),
-                      ),
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 14),
-                    TextField(
+                    AuthTextField(
                       controller: _passwordController,
+                      hintText: l10n.password,
+                      icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
-                      style: TextStyle(color: primaryText),
-                      decoration: InputDecoration(
-                        hintText: l10n.password,
-                        prefixIcon: const Icon(Icons.lock_outline_rounded),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off_rounded
-                                : Icons.visibility_rounded,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: soft,
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: border),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: const BorderSide(
-                            color: CavoColors.gold,
-                            width: 1.2,
-                          ),
+                      textInputAction: TextInputAction.done,
+                      suffix: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_off_rounded
+                              : Icons.visibility_rounded,
+                          color: const Color(0xFFF5F1E8),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
                         onPressed: () => _showMessage(l10n.forgotPasswordSoon),
-                        child: Text(l10n.forgotPassword),
+                        child: Text(
+                          l10n.forgotPassword,
+                          style: const TextStyle(
+                            color: Color(0xFFF1D27A),
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
+                    const SizedBox(height: 10),
+                    AuthPrimaryButton(
+                      label: _loading ? l10n.loading : l10n.login,
                       onPressed: _loading ? null : _login,
-                      child: Text(_loading ? l10n.loading : l10n.login),
+                      loading: _loading,
                     ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: _loading ? null : _loginWithGoogle,
-                      icon: const Icon(Icons.g_mobiledata_rounded),
-                      label: const Text('Continue with Google'),
+                    const SizedBox(height: 18),
+                    const AuthDividerLabel(text: 'or continue with'),
+                    const SizedBox(height: 18),
+                    Row(
+                      children: [
+                        AuthIconAction(
+                          onPressed: _loading ? () {} : () => _loginWithGoogle(),
+                          icon: const Text(
+                            'G',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        AuthIconAction(
+                          onPressed: () {
+                            _showMessage(
+                              'Phone OTP will be wired next after Google sign-in is fully locked.',
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.phone_in_talk_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        AuthIconAction(
+                          onPressed: () {
+                            _showMessage(
+                              'Facebook login visual slot is ready. We will connect the real flow in the next auth step.',
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.facebook_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: () {
-                        MainNavigationController.instance.goTo(0);
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(builder: (_) => const MainShell()),
-                          (route) => false,
-                        );
-                      },
-                      child: Text(l10n.continueAsGuest),
+                    const SizedBox(height: 16),
+                    AuthOutlineButton(
+                      label: l10n.continueAsGuest,
+                      onPressed: _goToApp,
+                      compact: true,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
-              Container(
+            ),
+            const SizedBox(height: 18),
+            SlideTransition(
+              position: _footerSlide,
+              child: AuthGlassCard(
                 padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: border),
-                ),
+                borderRadius: const BorderRadius.all(Radius.circular(26)),
                 child: Column(
                   children: [
-                    Text(
-                      l10n.newToCavo,
+                    const Text(
+                      'New to CAVO?',
                       style: TextStyle(
-                        color: primaryText,
-                        fontSize: 16,
+                        color: Colors.white,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      l10n.createAccountDescription,
+                    const Text(
+                      'Create your account to unlock saved style picks, faster checkout, and future order tracking.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: secondaryText,
-                        fontSize: 13,
+                        color: Color(0xFFB8B1A3),
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         height: 1.5,
                       ),
                     ),
                     const SizedBox(height: 14),
-                    OutlinedButton(
+                    AuthFooterLink(
+                      title: 'Ready to join?',
+                      actionLabel: 'Create Account',
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterScreen(),
-                          ),
+                        Navigator.of(context).pushReplacement(
+                          buildCavoFadeRoute(const RegisterScreen()),
                         );
                       },
-                      child: Text(l10n.createAccount),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
-              Center(
-                child: Text(
-                  l10n.mirrorOriginalPremiumFootwear,
-                  style: TextStyle(
-                    color: mutedText,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+            ),
+            const SizedBox(height: 18),
+            const Center(
+              child: Text(
+                'Mirror Original • Premium Footwear',
+                style: TextStyle(
+                  color: Color(0xFF7F786B),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CircleButton extends StatelessWidget {
-  final bool isLight;
-  final IconData icon;
-  final VoidCallback onTap;
-
-  const _CircleButton({
-    required this.isLight,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final iconColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 46,
-        height: 46,
-        decoration: BoxDecoration(
-          color: surface.withValues(alpha: 0.96),
-          shape: BoxShape.circle,
-          border: Border.all(color: border),
-        ),
-        child: Icon(
-          icon,
-          color: iconColor,
-          size: 20,
+            ),
+          ],
         ),
       ),
     );
