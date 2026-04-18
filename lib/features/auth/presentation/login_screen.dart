@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/localization/l10n_ext.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import 'register_screen.dart';
@@ -81,10 +82,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       setState(() => _loading = true);
+
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       if (!mounted) return;
       MainNavigationController.instance.goTo(0);
       Navigator.of(context).pushAndRemoveUntil(
@@ -97,6 +100,43 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (_) {
       if (!mounted) return;
       _showMessage(l10n.somethingWentWrong);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    final l10n = context.l10n;
+
+    try {
+      setState(() => _loading = true);
+
+      await GoogleSignIn.instance.initialize();
+
+      final GoogleSignInAccount googleUser =
+          await GoogleSignIn.instance.authenticate();
+
+      final GoogleSignInAuthentication googleAuth =
+          googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (!mounted) return;
+      MainNavigationController.instance.goTo(0);
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainShell()),
+        (route) => false,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (!mounted) return;
+      _showMessage(_mapAuthError(l10n, error));
+    } catch (_) {
+      if (!mounted) return;
+      _showMessage('Google sign-in failed.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -280,6 +320,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: _loading ? null : _login,
                       child: Text(_loading ? l10n.loading : l10n.login),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _loading ? null : _loginWithGoogle,
+                      icon: const Icon(Icons.g_mobiledata_rounded),
+                      label: const Text('Continue with Google'),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
