@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/mock/cavo_catalog.dart';
 import '../../../data/models/product.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
+import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../product_details/presentation/product_details_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -29,23 +31,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     _selectedBrand = 'All';
   }
 
-
-  String _categoryLabel(BuildContext context, ProductCategory category) {
-    final l10n = context.l10n;
-    switch (category) {
-      case ProductCategory.women:
-        return l10n.women;
-      case ProductCategory.kids:
-        return l10n.kids;
-      case ProductCategory.men:
-      default:
-        return l10n.men;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final brands = CavoCatalog.brandsFor(_selectedCategory);
+    final l10n = context.l10n;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final brands = ['All', ...CavoCatalog.brandsFor(_selectedCategory)];
+
     if (!brands.contains(_selectedBrand)) {
       _selectedBrand = 'All';
     }
@@ -55,47 +48,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       brand: _selectedBrand,
     );
 
-    final l10n = context.l10n;
-
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final surfaceSoft =
-        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
-
     return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF050505),
-                    Color(0xFF080808),
-                    Color(0xFF0D0A06),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      body: CavoPremiumBackground(
+        isLight: isLight,
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
             children: [
               Row(
                 children: [
+                  CavoCircleIconButton(
+                    icon: Icons.arrow_back_ios_new_rounded,
+                    isLight: isLight,
+                    onTap: () => Navigator.of(context).maybePop(),
+                  ),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,16 +72,16 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         Text(
                           l10n.browseCollection,
                           style: TextStyle(
-                            color: primaryText,
+                            color: primary,
                             fontSize: 28,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 4),
                         Text(
                           l10n.mirrorOriginalPremiumFootwear,
                           style: TextStyle(
-                            color: mutedText,
+                            color: secondary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -120,190 +89,142 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: surface.withValues(alpha: 0.94),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: border),
-                      boxShadow: [
-                        if (isLight)
-                          BoxShadow(
-                            color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                            blurRadius: 16,
-                            offset: const Offset(0, 8),
-                          ),
-                      ],
-                    ),
-                    child: Text(
-                      '${products.length} ${l10n.itemsCountLabel}',
-                      style: const TextStyle(
-                        color: CavoColors.gold,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 22),
-              Row(
-                children: ProductCategory.values.map((category) {
-                  final active = _selectedCategory == category;
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        right: category == ProductCategory.kids ? 0 : 10,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = category;
-                            _selectedBrand = 'All';
-                          });
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          decoration: BoxDecoration(
-                            color: active
-                                ? CavoColors.gold.withValues(alpha: 0.14)
-                                : surface.withValues(alpha: 0.92),
-                            borderRadius: BorderRadius.circular(22),
-                            border: Border.all(
-                              color: active
-                                  ? CavoColors.gold.withValues(alpha: 0.35)
-                                  : border,
-                            ),
-                            boxShadow: [
-                              if (isLight && active)
-                                BoxShadow(
-                                  color: CavoColors.lightShadow.withValues(alpha: 0.06),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 6),
-                                ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              _categoryLabel(context, category),
-                              style: TextStyle(
-                                color: active ? primaryText : secondaryText,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ),
+              const SizedBox(height: 18),
+              CavoGlassCard(
+                isLight: isLight,
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                borderRadius: const BorderRadius.all(Radius.circular(24)),
+                child: Row(
+                  children: [
+                    Icon(Icons.search_rounded, color: secondary),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l10n.searchProductsBrands,
+                        style: TextStyle(
+                          color: secondary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.94),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
+                    const Icon(Icons.tune_rounded, color: CavoColors.gold),
                   ],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              ),
+              const SizedBox(height: 18),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
                   children: [
-                    Text(
-                      l10n.brandsTitle,
-                      style: TextStyle(
-                        color: primaryText,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
+                    _CategoryChip(
+                      label: l10n.men,
+                      selected: _selectedCategory == ProductCategory.men,
+                      isLight: isLight,
+                      onTap: () => setState(() {
+                        _selectedCategory = ProductCategory.men;
+                        _selectedBrand = 'All';
+                      }),
+                    ),
+                    const SizedBox(width: 10),
+                    _CategoryChip(
+                      label: l10n.women,
+                      selected: _selectedCategory == ProductCategory.women,
+                      isLight: isLight,
+                      onTap: () => setState(() {
+                        _selectedCategory = ProductCategory.women;
+                        _selectedBrand = 'All';
+                      }),
+                    ),
+                    const SizedBox(width: 10),
+                    _CategoryChip(
+                      label: l10n.kids,
+                      selected: _selectedCategory == ProductCategory.kids,
+                      isLight: isLight,
+                      onTap: () => setState(() {
+                        _selectedCategory = ProductCategory.kids;
+                        _selectedBrand = 'All';
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              SizedBox(
+                height: 48,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: brands.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 10),
+                  itemBuilder: (context, index) {
+                    final brand = brands[index];
+                    return GestureDetector(
+                      onTap: () => setState(() => _selectedBrand = brand),
+                      child: CavoPillTag(
+                        label: brand,
+                        isLight: isLight,
+                        selected: _selectedBrand == brand,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 18),
+              CavoGlassCard(
+                isLight: isLight,
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _InfoStat(
+                        label: 'Products',
+                        value: '${products.length}',
+                        isLight: isLight,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 48,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: brands.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 10),
-                        itemBuilder: (context, index) {
-                          final brand = brands[index];
-                          final active = brand == _selectedBrand;
-                          return GestureDetector(
-                            onTap: () => setState(() => _selectedBrand = brand),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 220),
-                              curve: Curves.easeOutCubic,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: active
-                                    ? CavoColors.gold.withValues(alpha: 0.14)
-                                    : surfaceSoft.withValues(alpha: 0.95),
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: active
-                                      ? CavoColors.gold.withValues(alpha: 0.35)
-                                      : border,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  brand,
-                                  style: TextStyle(
-                                    color: active ? primaryText : secondaryText,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                    Expanded(
+                      child: _InfoStat(
+                        label: 'Brands',
+                        value: '${brands.length - 1}',
+                        isLight: isLight,
+                      ),
+                    ),
+                    Expanded(
+                      child: _InfoStat(
+                        label: 'Category',
+                        value: _selectedCategory.localizedLabel(context),
+                        isLight: isLight,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
+              const SizedBox(height: 20),
+              CavoSectionHeader(
+                title: '${products.length} ${l10n.itemsCountLabel}',
+                subtitle: _selectedBrand == 'All'
+                    ? 'Showing all premium pieces in ${_selectedCategory.localizedLabel(context)}'
+                    : 'Showing ${_selectedCategory.localizedLabel(context)} • $_selectedBrand',
+                isLight: isLight,
+              ),
+              const SizedBox(height: 14),
               if (products.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: surface.withValues(alpha: 0.94),
-                    borderRadius: BorderRadius.circular(26),
-                    border: Border.all(color: border),
-                  ),
+                CavoGlassCard(
+                  isLight: isLight,
+                  borderRadius: const BorderRadius.all(Radius.circular(30)),
                   child: Column(
                     children: [
-                      const Icon(
-                        Icons.auto_awesome_outlined,
-                        color: CavoColors.gold,
-                        size: 34,
-                      ),
-                      const SizedBox(height: 14),
+                      const Icon(Icons.inventory_2_outlined, color: CavoColors.gold, size: 42),
+                      const SizedBox(height: 12),
                       Text(
                         l10n.newProductsPreparing,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: secondaryText,
-                          fontSize: 14,
-                          height: 1.5,
-                          fontWeight: FontWeight.w600,
+                          color: primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                     ],
@@ -311,21 +232,27 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 )
               else
                 GridView.builder(
-                  itemCount: products.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  itemCount: products.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 0.64,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.68,
                   ),
                   itemBuilder: (context, index) {
                     final product = products[index];
-                    return _CatalogCard(
+                    return _BrowseProductCard(
                       product: product,
                       isLight: isLight,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ProductDetailsScreen(product: product, heroTagBase: 'browse-${product.id}'),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -337,121 +264,186 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
 }
 
-class _CatalogCard extends StatelessWidget {
-  final CavoProduct product;
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final bool selected;
   final bool isLight;
+  final VoidCallback onTap;
 
-  const _CatalogCard({
-    required this.product,
+  const _CategoryChip({
+    required this.label,
+    required this.selected,
     required this.isLight,
+    required this.onTap,
   });
-
-
-  String _categoryLabel(BuildContext context, ProductCategory category) {
-    final l10n = context.l10n;
-    switch (category) {
-      case ProductCategory.women:
-        return l10n.women;
-      case ProductCategory.kids:
-        return l10n.kids;
-      case ProductCategory.men:
-      default:
-        return l10n.men;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final surfaceSoft =
-        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ProductDetailsScreen(product: product),
-          ),
-        );
-      },
-      child: Container(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         decoration: BoxDecoration(
-          color: surface.withValues(alpha: 0.96),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: border),
-          boxShadow: [
-            if (isLight)
-              BoxShadow(
-                color: CavoColors.lightShadow.withValues(alpha: 0.06),
-                blurRadius: 14,
-                offset: const Offset(0, 8),
-              ),
-          ],
+          color: selected
+              ? CavoColors.gold.withValues(alpha: 0.18)
+              : (isLight ? Colors.white : CavoColors.surface).withValues(alpha: 0.86),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected
+                ? CavoColors.gold.withValues(alpha: 0.34)
+                : (isLight ? CavoColors.lightBorder : CavoColors.border),
+          ),
         ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected
+                ? (isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary)
+                : (isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isLight;
+
+  const _InfoStat({
+    required this.label,
+    required this.value,
+    required this.isLight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            color: primary,
+            fontSize: 18,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(
+            color: secondary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BrowseProductCard extends StatelessWidget {
+  final CavoProduct product;
+  final bool isLight;
+  final VoidCallback onTap;
+
+  const _BrowseProductCard({
+    required this.product,
+    required this.isLight,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final soft = isLight ? const Color(0xFFF7F3E9) : const Color(0xFF161616);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(26),
+      child: CavoGlassCard(
+        isLight: isLight,
+        padding: const EdgeInsets.all(10),
+        borderRadius: const BorderRadius.all(Radius.circular(26)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
+            Container(
+              height: 126,
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: soft,
+                borderRadius: BorderRadius.circular(18),
+              ),
               child: Hero(
-                tag: 'product-${product.id}',
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: surfaceSoft,
+                tag: 'browse-${product.id}',
+                child: CavoNetworkImage(
+                  imageUrl: product.thumbnailUrl ?? product.coverUrl,
+                  fit: BoxFit.contain,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              product.brand,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: CavoColors.gold,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              product.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: primary,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                height: 1.12,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              product.shortDescription,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: secondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${product.price} EGP',
+                    style: const TextStyle(
+                      color: CavoColors.gold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                  child: CavoNetworkImage(
-                    imageUrl: product.coverUrl,
-                    borderRadius: BorderRadius.circular(20),
-                    fit: BoxFit.contain,
-                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
-              child: Text(
-                product.brand,
-                style: const TextStyle(
-                  color: CavoColors.gold,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                product.title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  height: 1.2,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-              child: Text(
-                product.shortDescription,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: secondaryText,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  height: 1.35,
-                ),
-              ),
+                const Icon(Icons.arrow_forward_rounded, color: CavoColors.gold),
+              ],
             ),
           ],
         ),

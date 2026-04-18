@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/models/order.dart';
@@ -7,6 +11,11 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
   OrderController._() : super([]);
 
   static final OrderController instance = OrderController._();
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  CollectionReference<Map<String, dynamic>> get _ordersCollection =>
+      _firestore.collection('orders');
 
   String _generateOrderId() {
     final now = DateTime.now();
@@ -19,15 +28,17 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
     return 'CAVO-$y$m$d-$h$min$s';
   }
 
-  CavoOrder createOrderFromCart({
+  Future<CavoOrder> createOrderFromCart({
     required String customerName,
     required String phoneNumber,
     required String city,
     required String area,
+    required String addressLine,
     required String notes,
     required OrderPaymentMethod paymentMethod,
-  }) {
+  }) async {
     final cartItems = CartController.instance.value;
+    final user = FirebaseAuth.instance.currentUser;
 
     final items = cartItems
         .map(
@@ -40,52 +51,66 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
             quantity: item.quantity,
           ),
         )
-        .toList();
+        .toList(growable: false);
 
     final order = CavoOrder(
       id: _generateOrderId(),
+      userId: user?.uid,
+      userEmail: user?.email,
       customerName: customerName,
       phoneNumber: phoneNumber,
       city: city,
       area: area,
+      addressLine: addressLine,
       notes: notes,
       paymentMethod: paymentMethod,
       items: items,
       subtotal: CartController.instance.subtotal,
-      pickupFee: 0,
+      pickupFee: CartController.instance.delivery,
       total: CartController.instance.total,
-      pickupType: 'Store Pickup',
+      pickupType: 'delivery',
       status: OrderStatus.pendingReview,
       createdAt: DateTime.now(),
     );
 
+    await _ordersCollection.doc(order.id).set(order.toMap());
     value = [order, ...value];
     return order;
   }
 
-  void updateStatus(String orderId, OrderStatus status) {
-    value = value
-        .map(
-          (order) => order.id == orderId
-              ? CavoOrder(
-                  id: order.id,
-                  customerName: order.customerName,
-                  phoneNumber: order.phoneNumber,
-                  city: order.city,
-                  area: order.area,
-                  notes: order.notes,
-                  paymentMethod: order.paymentMethod,
-                  items: order.items,
-                  subtotal: order.subtotal,
-                  pickupFee: order.pickupFee,
-                  total: order.total,
-                  pickupType: order.pickupType,
-                  status: status,
-                  createdAt: order.createdAt,
-                )
-              : order,
-        )
-        .toList();
+  Stream<List<CavoOrder>> watchCurrentUserOrders() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return Stream.value(value);
+    }
+
+    return _ordersCollection
+        .where('userId', isEqualTo: user.uid)
+        .snapshots()
+        .map((snapshot) {
+          final orders = snapshot.docs
+              .map((doc) => CavoOrder.fromMap(doc.data()))
+              .toList(growable: false);
+          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return orders;
+        });
+  }
+
+  Future<void> updateStatus(String orderId, OrderStatus status) async {
+    final existing = findById(orderId);
+    if (existing != null) {
+      value = value
+          .map((order) => order.id == orderId ? order.copyWith(status: status) : order)
+          .toList(growable: false);
+    }
+
+    await _ordersCollection.doc(orderId).set(
+      {
+        'status': status.key,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
   }
 
   CavoOrder? findById(String orderId) {

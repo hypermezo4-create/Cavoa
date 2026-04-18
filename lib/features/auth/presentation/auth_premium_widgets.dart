@@ -6,8 +6,8 @@ import '../../../core/theme/app_colors.dart';
 
 Route<T> buildCavoFadeRoute<T>(Widget page) {
   return PageRouteBuilder<T>(
-    transitionDuration: const Duration(milliseconds: 650),
-    reverseTransitionDuration: const Duration(milliseconds: 420),
+    transitionDuration: const Duration(milliseconds: 380),
+    reverseTransitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (_, animation, __) => page,
     transitionsBuilder: (_, animation, secondaryAnimation, child) {
       final curved = CurvedAnimation(
@@ -144,7 +144,7 @@ class AuthGlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: borderRadius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
@@ -156,13 +156,13 @@ class AuthGlassCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.30),
-                blurRadius: 24,
-                offset: const Offset(0, 16),
+                blurRadius: 14,
+                offset: const Offset(0, 8),
               ),
               BoxShadow(
                 color: CavoColors.gold.withOpacity(0.08),
-                blurRadius: 26,
-                spreadRadius: 1,
+                blurRadius: 12,
+                spreadRadius: 0,
               ),
             ],
             gradient: LinearGradient(

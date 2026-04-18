@@ -3,155 +3,91 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/cavo_premium_ui.dart';
 
 class LinksScreen extends StatelessWidget {
   const LinksScreen({super.key});
 
-  static const String _websiteUrl = 'https://cavo-store.vercel.app/store';
-  static const String _mapsUrl = 'https://maps.app.goo.gl/tiDQ6gDTZNtmHn5SA';
-  static const String _whatsAppUrl = 'https://wa.me/201221204322';
-  static const String _instagramUrl = 'https://instagram.com/Cavo_mirror';
-  static const String _telegramUrl = 'https://t.me/Cavo_store';
-  static const String _facebookUrl =
-      'https://www.facebook.com/share/18ahZ8oWVH/';
-  static const String _tiktokUrl = 'https://www.tiktok.com/@cavo6159';
+  static const _whatsAppNumber = '201221204322';
+  static const _facebookUrl = 'https://www.facebook.com/share/18ahZ8oWVH/';
+  static const _telegramUrl = 'https://t.me/Cavo_store';
+  static const _instagramUrl = 'https://www.instagram.com/Cavo_mirror';
+  static const _tiktokUrl = 'https://www.tiktok.com/@cavo6159';
+  static const _mapsUrl = 'https://maps.google.com/?q=Carrefour+Arabia+Mall+City+Center+Hurghada';
+  static const _websiteUrl = 'https://cavoproo.vercel.app/';
 
   Future<void> _openUrl(BuildContext context, String url) async {
-    final uri = Uri.parse(url);
-    var opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    opened = opened || await launchUrl(uri, mode: LaunchMode.platformDefault);
-
+    final opened = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     if (!opened && context.mounted) {
-      final l10n = context.l10n;
-      final isLight = Theme.of(context).brightness == Brightness.light;
-      final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-      final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-      final primaryText =
-          isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: surface,
-          behavior: SnackBarBehavior.floating,
-          content: Text(
-            l10n.unableToOpenLink,
-            style: TextStyle(color: primaryText),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: border),
-          ),
-        ),
+        SnackBar(content: Text(context.l10n.unableToOpenLink)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
     return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF050505),
-                    Color(0xFF080808),
-                    Color(0xFF0D0A06),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      body: CavoPremiumBackground(
+        isLight: isLight,
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
             children: [
-              Text(
-                l10n.links,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                ),
+              CavoSectionHeader(
+                title: context.l10n.links,
+                subtitle: context.l10n.linksIntro,
+                isLight: isLight,
               ),
-              const SizedBox(height: 6),
-              Text(
-                l10n.linksIntro,
-                style: TextStyle(
-                  color: mutedText,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 22),
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: border),
-                  boxShadow: [
-                    if (isLight)
-                      BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 8),
-                      ),
-                  ],
-                ),
+              const SizedBox(height: 18),
+              CavoGlassCard(
+                isLight: isLight,
+                borderRadius: const BorderRadius.all(Radius.circular(34)),
                 child: Row(
                   children: [
                     Container(
-                      width: 58,
-                      height: 58,
+                      width: 86,
+                      height: 86,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: CavoColors.gold.withValues(alpha: 0.12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: CavoColors.gold.withValues(alpha: 0.18),
+                            blurRadius: 24,
+                          ),
+                        ],
                       ),
-                      child: const Icon(
-                        Icons.auto_awesome_rounded,
-                        color: CavoColors.gold,
-                        size: 28,
+                      child: ClipOval(
+                        child: Image.asset('assets/branding/cavo_logo_circle.png', fit: BoxFit.cover),
                       ),
                     ),
-                    const SizedBox(width: 14),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l10n.contactHub,
+                            context.l10n.contactHub,
                             style: TextStyle(
-                              color: primaryText,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
+                              color: primary,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 8),
                           Text(
-                            l10n.mirrorOriginalPremiumFootwear,
+                            'All direct contact points for CAVO in one premium hub, including WhatsApp, social, maps, and the website.',
                             style: TextStyle(
-                              color: secondaryText,
+                              color: secondary,
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
+                              height: 1.5,
                             ),
                           ),
                         ],
@@ -160,77 +96,72 @@ class LinksScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.directContact,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              _LinkCard(
+              const SizedBox(height: 18),
+              _LinkTile(
                 title: 'WhatsApp',
-                subtitle: l10n.whatsAppSubtitle,
+                subtitle: context.l10n.whatsAppSubtitle,
                 icon: Icons.chat_rounded,
+                accent: const Color(0xFF25D366),
                 isLight: isLight,
-                onTap: () => _openUrl(context, _whatsAppUrl),
+                onTap: () => _openUrl(context, 'https://wa.me/$_whatsAppNumber'),
               ),
               const SizedBox(height: 12),
-              _LinkCard(
-                title: l10n.storeLocation,
-                subtitle: l10n.storeLocationSubtitle,
-                icon: Icons.location_on_outlined,
+              _LinkTile(
+                title: context.l10n.storeLocation,
+                subtitle: context.l10n.storeLocationSubtitle,
+                icon: Icons.location_on_rounded,
+                accent: const Color(0xFF4285F4),
                 isLight: isLight,
                 onTap: () => _openUrl(context, _mapsUrl),
               ),
               const SizedBox(height: 12),
-              _LinkCard(
-                title: l10n.website,
-                subtitle: l10n.websiteSubtitle,
+              _LinkTile(
+                title: context.l10n.website,
+                subtitle: context.l10n.websiteSubtitle,
                 icon: Icons.language_rounded,
+                accent: CavoColors.gold,
                 isLight: isLight,
                 onTap: () => _openUrl(context, _websiteUrl),
               ),
-              const SizedBox(height: 22),
-              Text(
-                l10n.social,
-                style: TextStyle(
-                  color: primaryText,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
+              const SizedBox(height: 18),
+              CavoSectionHeader(
+                title: context.l10n.social,
+                subtitle: 'Native brand colors are preserved inside the cards for a more premium identity.',
+                isLight: isLight,
               ),
               const SizedBox(height: 12),
-              _LinkCard(
+              _LinkTile(
                 title: 'Instagram',
                 subtitle: '@Cavo_mirror',
-                icon: Icons.camera_alt_outlined,
+                icon: Icons.camera_alt_rounded,
+                accent: const Color(0xFFE4405F),
                 isLight: isLight,
                 onTap: () => _openUrl(context, _instagramUrl),
               ),
               const SizedBox(height: 12),
-              _LinkCard(
+              _LinkTile(
                 title: 'Telegram',
-                subtitle: l10n.telegramSubtitle,
+                subtitle: context.l10n.telegramSubtitle,
                 icon: Icons.send_rounded,
+                accent: const Color(0xFF229ED9),
                 isLight: isLight,
                 onTap: () => _openUrl(context, _telegramUrl),
               ),
               const SizedBox(height: 12),
-              _LinkCard(
+              _LinkTile(
                 title: 'Facebook',
-                subtitle: l10n.facebookSubtitle,
+                subtitle: context.l10n.facebookSubtitle,
                 icon: Icons.facebook_rounded,
+                accent: const Color(0xFF1877F2),
                 isLight: isLight,
                 onTap: () => _openUrl(context, _facebookUrl),
               ),
               const SizedBox(height: 12),
-              _LinkCard(
+              _LinkTile(
                 title: 'TikTok',
                 subtitle: '@cavo6159',
                 icon: Icons.music_note_rounded,
+                accent: const Color(0xFFFE2C55),
                 isLight: isLight,
                 onTap: () => _openUrl(context, _tiktokUrl),
               ),
@@ -242,61 +173,45 @@ class LinksScreen extends StatelessWidget {
   }
 }
 
-class _LinkCard extends StatelessWidget {
+class _LinkTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final Color accent;
   final bool isLight;
   final VoidCallback onTap;
 
-  const _LinkCard({
+  const _LinkTile({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.accent,
     required this.isLight,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final titleColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final subtitleColor =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: surface.withValues(alpha: 0.96),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: border),
-          boxShadow: [
-            if (isLight)
-              BoxShadow(
-                color: CavoColors.lightShadow.withValues(alpha: 0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-          ],
-        ),
+      borderRadius: BorderRadius.circular(30),
+      child: CavoGlassCard(
+        isLight: isLight,
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
         child: Row(
           children: [
             Container(
-              width: 46,
-              height: 46,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: CavoColors.gold.withValues(alpha: 0.12),
+                color: accent.withValues(alpha: 0.14),
+                border: Border.all(color: accent.withValues(alpha: 0.22)),
               ),
-              child: Icon(
-                icon,
-                color: CavoColors.gold,
-                size: 22,
-              ),
+              child: Icon(icon, color: accent),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -306,16 +221,16 @@ class _LinkCard extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: titleColor,
-                      fontSize: 15,
+                      color: primary,
+                      fontSize: 16,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: subtitleColor,
+                      color: secondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -323,11 +238,8 @@ class _LinkCard extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: subtitleColor,
-            ),
+            const SizedBox(width: 10),
+            Icon(Icons.arrow_forward_ios_rounded, color: accent, size: 16),
           ],
         ),
       ),

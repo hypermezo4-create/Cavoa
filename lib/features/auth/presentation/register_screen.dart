@@ -37,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 950),
+      duration: const Duration(milliseconds: 520),
     );
 
     _fade = CurvedAnimation(
@@ -51,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.86, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.76, curve: Curves.easeOutCubic),
       ),
     );
 

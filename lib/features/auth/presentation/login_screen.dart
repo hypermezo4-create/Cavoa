@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 480),
     );
 
     _fade = CurvedAnimation(
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.76, curve: Curves.easeOutCubic),
+        curve: const Interval(0.0, 0.72, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen>
     ).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.18, 1.0, curve: Curves.easeOutCubic),
+        curve: const Interval(0.10, 1.0, curve: Curves.easeOutCubic),
       ),
     );
 

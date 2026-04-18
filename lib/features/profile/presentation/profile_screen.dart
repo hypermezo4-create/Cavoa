@@ -1,13 +1,15 @@
-import 'dart:ui';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_locale_controller.dart';
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/theme_mode_controller.dart';
-import '../../auth/presentation/login_screen.dart';
-import '../../auth/presentation/register_screen.dart';
-import '../../main_navigation/presentation/main_navigation_controller.dart';
+import '../../../data/models/order.dart';
+import '../../../shared/widgets/cavo_language_picker.dart';
+import '../../../shared/widgets/cavo_premium_ui.dart';
+import '../../cart/data/cart_controller.dart';
+import '../../orders/data/order_controller.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -15,428 +17,207 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
-    final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final surfaceSoft =
-        isLight ? CavoColors.lightSurfaceSoft : CavoColors.surfaceSoft;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final primaryText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondaryText =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final mutedText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      backgroundColor: bg,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isLight
-                ? const [
-                    Color(0xFFF8F6F1),
-                    Color(0xFFF2EEE5),
-                    Color(0xFFECE6DA),
-                  ]
-                : const [
-                    Color(0xFF050505),
-                    Color(0xFF080808),
-                    Color(0xFF0D0A06),
-                  ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      body: CavoPremiumBackground(
+        isLight: isLight,
         child: SafeArea(
-          child: StreamBuilder<User?>(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              final user = snapshot.data;
-
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
-                children: [
-                  Text(
-                    'Profile',
-                    style: TextStyle(
-                      color: primaryText,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    user == null
-                        ? 'Guest mode • Sign in for full access'
-                        : (user.email ?? 'My Account'),
-                    style: TextStyle(
-                      color: mutedText,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: surface.withOpacity(0.96),
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: border),
-                      boxShadow: [
-                        if (isLight)
-                          BoxShadow(
-                            color: CavoColors.lightShadow.withOpacity(0.08),
-                            blurRadius: 16,
-                            offset: const Offset(0, 8),
-                          ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 62,
-                          height: 62,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: surfaceSoft,
-                            border: Border.all(color: border),
-                          ),
-                          child: const Icon(
-                            Icons.person_rounded,
-                            color: CavoColors.gold,
-                            size: 30,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                user?.displayName?.trim().isNotEmpty == true
-                                    ? user!.displayName!
-                                    : (user != null
-                                        ? 'CAVO Member'
-                                        : 'Guest User'),
-                                style: TextStyle(
-                                  color: primaryText,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                user?.email ?? 'Sign in for full access',
-                                style: TextStyle(
-                                  color: secondaryText,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 22),
-                  if (user == null) ...[
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 120),
+            children: [
+              CavoSectionHeader(
+                title: context.l10n.profile,
+                subtitle: user == null
+                    ? context.l10n.guestModeSignInForFullAccess
+                    : context.l10n.signedInSecurely,
+                isLight: isLight,
+              ),
+              const SizedBox(height: 18),
+              CavoGlassCard(
+                isLight: isLight,
+                borderRadius: const BorderRadius.all(Radius.circular(34)),
+                child: Row(
+                  children: [
                     Container(
-                      padding: const EdgeInsets.all(18),
+                      width: 84,
+                      height: 84,
                       decoration: BoxDecoration(
-                        color: surface.withOpacity(0.96),
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: border),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const LoginScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Login'),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const RegisterScreen(),
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Register'),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Create an account to save your cart, manage orders, and sync your preferences.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: secondaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5,
-                            ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: CavoColors.gold.withValues(alpha: 0.18),
+                            blurRadius: 24,
                           ),
                         ],
                       ),
-                    ),
-                  ] else ...[
-                    Container(
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: surface.withOpacity(0.96),
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(color: border),
+                      child: ClipOval(
+                        child: Image.asset('assets/branding/cavo_logo_circle.png', fit: BoxFit.cover),
                       ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _InfoRow(
-                            label: 'Email',
-                            value: user.email ?? '-',
-                            primaryText: primaryText,
-                            secondaryText: secondaryText,
+                          Text(
+                            user?.displayName?.trim().isNotEmpty == true
+                                ? user!.displayName!
+                                : (user?.email ?? 'CAVO Member'),
+                            style: TextStyle(
+                              color: primary,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                          const SizedBox(height: 12),
-                          _InfoRow(
-                            label: 'Account status',
-                            value: 'Signed in securely',
-                            primaryText: primaryText,
-                            secondaryText: secondaryText,
+                          const SizedBox(height: 6),
+                          Text(
+                            user?.email ?? context.l10n.guestModeSignInForFullAccess,
+                            style: TextStyle(
+                              color: secondary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          const SizedBox(height: 16),
-                          OutlinedButton(
-                            onPressed: () async {
-                              await FirebaseAuth.instance.signOut();
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Logged out successfully.'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text('Logout'),
+                          const SizedBox(height: 10),
+                          CavoPillTag(
+                            label: user == null ? 'Guest mode' : 'Firebase account',
+                            isLight: isLight,
+                            selected: true,
                           ),
                         ],
                       ),
                     ),
                   ],
-                  const SizedBox(height: 22),
-                  Text(
-                    'Quick Access',
-                    style: TextStyle(
-                      color: primaryText,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _QuickCard(
-                          title: 'Cart',
-                          icon: Icons.shopping_bag_outlined,
-                          isLight: isLight,
-                          onTap: () => MainNavigationController.instance.goTo(2),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _QuickCard(
-                          title: 'Checkout',
-                          icon: Icons.receipt_long_rounded,
-                          isLight: isLight,
-                          onTap: () => MainNavigationController.instance.goTo(2),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _QuickCard(
-                          title: 'Links',
-                          icon: Icons.link_rounded,
-                          isLight: isLight,
-                          onTap: () => MainNavigationController.instance.goTo(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 22),
-                  Text(
-                    'Appearance',
-                    style: TextStyle(
-                      color: primaryText,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _ThemeToggleCard(isLight: isLight),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color primaryText;
-  final Color secondaryText;
-
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    required this.primaryText,
-    required this.secondaryText,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: secondaryText,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            color: primaryText,
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _QuickCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final bool isLight;
-  final VoidCallback onTap;
-
-  const _QuickCard({
-    required this.title,
-    required this.icon,
-    required this.isLight,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final textColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-        decoration: BoxDecoration(
-          color: surface.withOpacity(0.96),
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: border),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: CavoColors.gold, size: 24),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: textColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ThemeToggleCard extends StatelessWidget {
-  final bool isLight;
-
-  const _ThemeToggleCard({required this.isLight});
-
-  @override
-  Widget build(BuildContext context) {
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final glass = isLight
-        ? CavoColors.glassLight.withOpacity(0.68)
-        : CavoColors.glassDark.withOpacity(0.68);
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: glass,
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: border),
-          ),
-          child: ValueListenableBuilder<ThemeMode>(
-            valueListenable: ThemeModeController.instance,
-            builder: (context, mode, _) {
-              return Row(
+              const SizedBox(height: 18),
+              Row(
                 children: [
                   Expanded(
-                    child: _ThemeOption(
-                      label: 'Light',
-                      icon: Icons.light_mode_rounded,
-                      selected: mode == ThemeMode.light,
-                      isLight: isLight,
-                      onTap: ThemeModeController.instance.setLight,
+                    child: ValueListenableBuilder<List<CartItem>>(
+                      valueListenable: CartController.instance,
+                      builder: (context, cartItems, _) {
+                        return _CountCard(
+                          title: context.l10n.cart,
+                          value: '${cartItems.length}',
+                          subtitle: 'items saved',
+                          icon: Icons.shopping_bag_outlined,
+                          isLight: isLight,
+                        );
+                      },
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: _ThemeOption(
-                      label: 'Dark',
-                      icon: Icons.dark_mode_rounded,
-                      selected: mode == ThemeMode.dark,
-                      isLight: isLight,
-                      onTap: ThemeModeController.instance.setDark,
-                    ),
+                    child: user == null
+                        ? _CountCard(
+                            title: context.l10n.orders,
+                            value: '${OrderController.instance.value.length}',
+                            subtitle: 'local only',
+                            icon: Icons.receipt_long_outlined,
+                            isLight: isLight,
+                          )
+                        : StreamBuilder<List<CavoOrder>>(
+                            stream: OrderController.instance.watchCurrentUserOrders(),
+                            builder: (context, snapshot) {
+                              final value = snapshot.data?.length ?? 0;
+                              return _CountCard(
+                                title: context.l10n.orders,
+                                value: '$value',
+                                subtitle: 'synced to Firebase',
+                                icon: Icons.cloud_done_outlined,
+                                isLight: isLight,
+                              );
+                            },
+                          ),
                   ),
                 ],
-              );
-            },
+              ),
+              const SizedBox(height: 18),
+              CavoSectionHeader(
+                title: context.l10n.quickAccess,
+                subtitle: context.l10n.personalizeCavoExperience,
+                isLight: isLight,
+              ),
+              const SizedBox(height: 12),
+              _ProfileActionTile(
+                title: context.l10n.language,
+                subtitle: 'Current: ${AppLocaleController.instance.code}',
+                isLight: isLight,
+                trailing: const CavoLanguagePicker(isLight: false, expanded: false),
+              ),
+              const SizedBox(height: 12),
+              ValueListenableBuilder<ThemeMode>(
+                valueListenable: ThemeModeController.instance,
+                builder: (context, mode, _) {
+                  return _ProfileActionTile(
+                    title: context.l10n.appearance,
+                    subtitle: mode == ThemeMode.dark ? context.l10n.dark : context.l10n.light,
+                    isLight: isLight,
+                    trailing: Switch.adaptive(
+                      value: mode == ThemeMode.dark,
+                      activeColor: CavoColors.gold,
+                      onChanged: (_) => ThemeModeController.instance.toggle(),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 18),
+              CavoSectionHeader(
+                title: context.l10n.orders,
+                subtitle: user == null
+                    ? 'Sign in to sync order status from Firebase.'
+                    : 'Your recent Firebase orders appear here with their latest status.',
+                isLight: isLight,
+              ),
+              const SizedBox(height: 12),
+              if (user == null)
+                _OrdersPlaceholder(isLight: isLight)
+              else
+                StreamBuilder<List<CavoOrder>>(
+                  stream: OrderController.instance.watchCurrentUserOrders(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: Padding(
+                        padding: EdgeInsets.all(24),
+                        child: CircularProgressIndicator(),
+                      ));
+                    }
+                    final orders = snapshot.data ?? const <CavoOrder>[];
+                    if (orders.isEmpty) {
+                      return _OrdersPlaceholder(isLight: isLight);
+                    }
+                    return Column(
+                      children: orders.take(6).map((order) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _OrderCard(order: order, isLight: isLight),
+                      )).toList(growable: false),
+                    );
+                  },
+                ),
+              const SizedBox(height: 18),
+              if (user != null)
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(context.l10n.loggedOutSuccessfully)),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.logout_rounded),
+                    label: Text(context.l10n.logout),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -444,71 +225,225 @@ class _ThemeToggleCard extends StatelessWidget {
   }
 }
 
-class _ThemeOption extends StatelessWidget {
-  final String label;
+class _CountCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final String subtitle;
   final IconData icon;
-  final bool selected;
   final bool isLight;
-  final VoidCallback onTap;
 
-  const _ThemeOption({
-    required this.label,
+  const _CountCard({
+    required this.title,
+    required this.value,
+    required this.subtitle,
     required this.icon,
-    required this.selected,
     required this.isLight,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final activeText = isLight
-        ? CavoColors.lightTextPrimary
-        : CavoColors.textPrimary;
-    final inactiveText = isLight
-        ? CavoColors.lightTextSecondary
-        : CavoColors.textSecondary;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 240),
-      curve: Curves.easeOutCubic,
-      decoration: BoxDecoration(
-        color: selected
-            ? CavoColors.gold.withOpacity(0.14)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: selected
-              ? CavoColors.gold.withOpacity(0.30)
-              : Colors.transparent,
-        ),
+    return CavoGlassCard(
+      isLight: isLight,
+      borderRadius: const BorderRadius.all(Radius.circular(28)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: CavoColors.gold.withValues(alpha: 0.12),
+            ),
+            child: Icon(icon, color: CavoColors.gold),
+          ),
+          const SizedBox(height: 14),
+          Text(
+            value,
+            style: TextStyle(
+              color: primary,
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            title,
+            style: TextStyle(
+              color: primary,
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: secondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(22),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+    );
+  }
+}
+
+class _ProfileActionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget trailing;
+  final bool isLight;
+
+  const _ProfileActionTile({
+    required this.title,
+    required this.subtitle,
+    required this.trailing,
+    required this.isLight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    return CavoGlassCard(
+      isLight: isLight,
+      borderRadius: const BorderRadius.all(Radius.circular(28)),
+      child: Row(
+        children: [
+          Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  icon,
-                  color: selected ? CavoColors.gold : inactiveText,
-                  size: 24,
-                ),
-                const SizedBox(height: 8),
                 Text(
-                  label,
+                  title,
                   style: TextStyle(
-                    color: selected ? activeText : inactiveText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
+                    color: primary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: secondary,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
-        ),
+          const SizedBox(width: 12),
+          trailing,
+        ],
+      ),
+    );
+  }
+}
+
+class _OrdersPlaceholder extends StatelessWidget {
+  final bool isLight;
+
+  const _OrdersPlaceholder({required this.isLight});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    return CavoGlassCard(
+      isLight: isLight,
+      borderRadius: const BorderRadius.all(Radius.circular(30)),
+      child: Column(
+        children: [
+          const Icon(Icons.inventory_2_outlined, color: CavoColors.gold, size: 38),
+          const SizedBox(height: 12),
+          Text(
+            'No saved orders yet',
+            style: TextStyle(
+              color: primary,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Once checkout is completed, your orders will appear here with the latest status from Firebase.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: secondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              height: 1.55,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OrderCard extends StatelessWidget {
+  final CavoOrder order;
+  final bool isLight;
+
+  const _OrderCard({required this.order, required this.isLight});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+
+    return CavoGlassCard(
+      isLight: isLight,
+      borderRadius: const BorderRadius.all(Radius.circular(28)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  order.id,
+                  style: TextStyle(
+                    color: primary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              CavoPillTag(
+                label: order.status.label,
+                isLight: isLight,
+                selected: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.label}',
+            style: TextStyle(
+              color: secondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${order.city} • ${order.area} • ${order.addressLine}',
+            style: TextStyle(
+              color: secondary,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }

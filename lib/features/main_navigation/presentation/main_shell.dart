@@ -1,9 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../cart/data/cart_controller.dart';
 import '../../cart/presentation/cart_screen.dart';
 import '../../categories/presentation/categories_screen.dart';
 import '../../home/presentation/home_screen.dart';
@@ -24,20 +23,13 @@ class MainShell extends StatelessWidget {
       });
     }
 
-    final theme = Theme.of(context);
-    final isLight = theme.brightness == Brightness.light;
-    final navBackground =
-        isLight ? CavoColors.bottomBarLight : CavoColors.bottomBarDark;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final navBackground = isLight
+        ? CavoColors.bottomBarLight.withValues(alpha: 0.90)
+        : CavoColors.bottomBarDark.withValues(alpha: 0.92);
     final navBorder = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final shadowColor =
-        isLight ? CavoColors.lightShadow : Colors.black.withValues(alpha: 0.26);
-    final selectedBg = isLight
-        ? CavoColors.gold.withValues(alpha: 0.12)
-        : CavoColors.gold.withValues(alpha: 0.16);
-    final activeText =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final inactiveText =
-        isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+    final activeText = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final inactiveText = isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
     final pages = const [
       HomeScreen(),
@@ -57,67 +49,82 @@ class MainShell extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
       extendBody: true,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: ValueListenableBuilder<int>(
         valueListenable: MainNavigationController.instance,
         builder: (context, currentIndex, _) {
-          return IndexedStack(
-            index: currentIndex,
-            children: pages,
-          );
+          return IndexedStack(index: currentIndex, children: pages);
         },
       ),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: navBackground,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: navBorder),
-                boxShadow: [
-                  BoxShadow(
-                    color: shadowColor,
-                    blurRadius: 28,
-                    offset: const Offset(0, 14),
-                  ),
-                ],
+        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: navBackground,
+            borderRadius: BorderRadius.circular(34),
+            border: Border.all(color: navBorder),
+            boxShadow: [
+              BoxShadow(
+                color: (isLight ? CavoColors.lightShadow : Colors.black)
+                    .withValues(alpha: isLight ? 0.10 : 0.24),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
-              child: ValueListenableBuilder<int>(
+            ],
+          ),
+          child: ValueListenableBuilder<int>(
                 valueListenable: MainNavigationController.instance,
                 builder: (context, currentIndex, _) {
                   return Row(
                     children: List.generate(items.length, (index) {
                       final item = items[index];
                       final active = currentIndex == index;
-
                       return Expanded(
                         child: GestureDetector(
-                          onTap: () => MainNavigationController.instance.goTo(index),
                           behavior: HitTestBehavior.opaque,
+                          onTap: () => MainNavigationController.instance.goTo(index),
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 220),
+                            duration: const Duration(milliseconds: 260),
                             curve: Curves.easeOutCubic,
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
                             decoration: BoxDecoration(
-                              color: active ? selectedBg : Colors.transparent,
-                              borderRadius: BorderRadius.circular(22),
+                              borderRadius: BorderRadius.circular(24),
+                              gradient: active
+                                  ? LinearGradient(
+                                      colors: [
+                                        CavoColors.gold.withValues(alpha: isLight ? 0.24 : 0.20),
+                                        CavoColors.gold.withValues(alpha: isLight ? 0.10 : 0.08),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    )
+                                  : null,
+                              border: active
+                                  ? Border.all(
+                                      color: CavoColors.gold.withValues(alpha: 0.22),
+                                    )
+                                  : null,
+                              boxShadow: active
+                                  ? [
+                                      BoxShadow(
+                                        color: CavoColors.gold.withValues(alpha: 0.12),
+                                        blurRadius: 22,
+                                      ),
+                                    ]
+                                  : null,
                             ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  item.icon,
-                                  size: 22,
-                                  color: active ? CavoColors.gold : inactiveText,
+                                _NavIcon(
+                                  item: item,
+                                  index: index,
+                                  active: active,
+                                  isLight: isLight,
+                                  activeText: activeText,
+                                  inactiveText: inactiveText,
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
@@ -127,8 +134,7 @@ class MainShell extends StatelessWidget {
                                   style: TextStyle(
                                     color: active ? activeText : inactiveText,
                                     fontSize: 11,
-                                    fontWeight:
-                                        active ? FontWeight.w700 : FontWeight.w500,
+                                    fontWeight: active ? FontWeight.w800 : FontWeight.w600,
                                   ),
                                 ),
                               ],
@@ -142,8 +148,67 @@ class MainShell extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ),
+    );
+  }
+}
+
+class _NavIcon extends StatelessWidget {
+  final _NavItem item;
+  final int index;
+  final bool active;
+  final bool isLight;
+  final Color activeText;
+  final Color inactiveText;
+
+  const _NavIcon({
+    required this.item,
+    required this.index,
+    required this.active,
+    required this.isLight,
+    required this.activeText,
+    required this.inactiveText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final icon = Icon(
+      item.icon,
+      size: 22,
+      color: active ? CavoColors.gold : inactiveText,
+    );
+
+    if (index != 2) return icon;
+
+    return ValueListenableBuilder<List<CartItem>>(
+      valueListenable: CartController.instance,
+      builder: (context, items, _) {
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            icon,
+            if (items.isNotEmpty)
+              Positioned(
+                right: -8,
+                top: -8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: CavoColors.gold,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${items.length}',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -152,8 +217,5 @@ class _NavItem {
   final IconData icon;
   final String label;
 
-  const _NavItem({
-    required this.icon,
-    required this.label,
-  });
+  const _NavItem({required this.icon, required this.label});
 }
