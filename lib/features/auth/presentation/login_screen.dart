@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
+import '../data/auth_service.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import 'register_screen.dart';
 
@@ -89,11 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
-      MainNavigationController.instance.goTo(0);
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainShell()),
-        (route) => false,
-      );
+      _goToApp();
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
       _showMessage(_mapAuthError(l10n, error));
@@ -105,38 +101,28 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _loginWithGoogle() async {
-    final l10n = context.l10n;
+  void _goToApp() {
+    MainNavigationController.instance.goTo(0);
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainShell()),
+      (route) => false,
+    );
+  }
 
+  Future<void> _loginWithGoogle() async {
     try {
       setState(() => _loading = true);
 
-      await GoogleSignIn.instance.initialize();
-
-      final GoogleSignInAccount googleUser =
-          await GoogleSignIn.instance.authenticate();
-
-      final GoogleSignInAuthentication googleAuth =
-          googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      await AuthService.instance.signInWithGoogle();
 
       if (!mounted) return;
-      MainNavigationController.instance.goTo(0);
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainShell()),
-        (route) => false,
-      );
-    } on FirebaseAuthException catch (error) {
+      _goToApp();
+    } on CavoAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(_mapAuthError(l10n, error));
-    } catch (_) {
+      _showMessage(error.toString());
+    } catch (error) {
       if (!mounted) return;
-      _showMessage('Google sign-in failed.');
+      _showMessage(error.toString());
     } finally {
       if (mounted) setState(() => _loading = false);
     }

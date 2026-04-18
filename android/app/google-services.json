@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "380167775107-nbkh0jlojbpccfbvmj8fmv9a47flve4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cavo.store",
+            "certificate_hash": "14637bf2534ec3f26fb884afeb06a6724fe1b7a5"
+          }
+        },
+        {
           "client_id": "380167775107-psuoit4rjin8d5fvsruh6jmk8cnsjjh5.apps.googleusercontent.com",
           "client_type": 3
         }

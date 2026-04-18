@@ -1,0 +1,6 @@
+.dart_tool/
+build/
+.flutter-plugins-dependencies
+cavo-release.jks
+cavo-release.jks.base64
+android/key.properties
