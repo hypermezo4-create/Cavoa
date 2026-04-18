@@ -88,25 +88,55 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
         .where('userId', isEqualTo: user.uid)
         .snapshots()
         .map((snapshot) {
-          final orders = snapshot.docs
-              .map((doc) => CavoOrder.fromMap(doc.data()))
-              .toList(growable: false);
-          orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return orders;
-        });
+      final orders = snapshot.docs
+          .map((doc) => CavoOrder.fromMap(doc.data()))
+          .toList(growable: false);
+      orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      value = orders;
+      return orders;
+    });
   }
 
   Future<void> updateStatus(String orderId, OrderStatus status) async {
     final existing = findById(orderId);
     if (existing != null) {
       value = value
-          .map((order) => order.id == orderId ? order.copyWith(status: status) : order)
+          .map((order) =>
+              order.id == orderId ? order.copyWith(status: status) : order)
           .toList(growable: false);
     }
 
     await _ordersCollection.doc(orderId).set(
       {
         'status': status.key,
+        'updatedAt': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<void> submitRating({
+    required String orderId,
+    required int rating,
+    required List<String> tags,
+  }) async {
+    final ratedAt = DateTime.now();
+
+    value = value
+        .map((order) => order.id == orderId
+            ? order.copyWith(
+                rating: rating,
+                ratingTags: tags,
+                ratedAt: ratedAt,
+              )
+            : order)
+        .toList(growable: false);
+
+    await _ordersCollection.doc(orderId).set(
+      {
+        'rating': rating,
+        'ratingTags': tags,
+        'ratedAt': ratedAt,
         'updatedAt': FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),

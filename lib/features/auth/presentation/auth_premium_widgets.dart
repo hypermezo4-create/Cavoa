@@ -144,7 +144,7 @@ class AuthGlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: borderRadius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
         child: Container(
           padding: padding,
           decoration: BoxDecoration(
@@ -156,12 +156,12 @@ class AuthGlassCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.30),
-                blurRadius: 14,
+                blurRadius: 10,
                 offset: const Offset(0, 8),
               ),
               BoxShadow(
                 color: CavoColors.gold.withOpacity(0.08),
-                blurRadius: 12,
+                blurRadius: 8,
                 spreadRadius: 0,
               ),
             ],
@@ -774,7 +774,7 @@ class AuthProgressDots extends StatelessWidget {
                 ? [
                     BoxShadow(
                       color: CavoColors.gold.withOpacity(0.28),
-                      blurRadius: 14,
+                      blurRadius: 10,
                       spreadRadius: 1,
                     ),
                   ]

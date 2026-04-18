@@ -10,6 +10,7 @@ import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
 import '../../orders/data/order_controller.dart';
+import '../../orders/presentation/delivery_tracking_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -35,6 +36,10 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: user == null
                     ? context.l10n.guestModeSignInForFullAccess
                     : context.l10n.signedInSecurely,
+                action: user == null ? null : 'Edit',
+                onActionTap: user == null
+                    ? null
+                    : () => _showEditProfileSheet(context, user: user, isLight: isLight),
                 isLight: isLight,
               ),
               const SizedBox(height: 18),
@@ -399,51 +404,231 @@ class _OrderCard extends StatelessWidget {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
-    return CavoGlassCard(
-      isLight: isLight,
-      borderRadius: const BorderRadius.all(Radius.circular(28)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  order.id,
-                  style: TextStyle(
-                    color: primary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w900,
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => DeliveryTrackingScreen(order: order),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(28),
+      child: CavoGlassCard(
+        isLight: isLight,
+        borderRadius: const BorderRadius.all(Radius.circular(28)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    order.id,
+                    style: TextStyle(
+                      color: primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
-              ),
-              CavoPillTag(
-                label: order.status.label,
-                isLight: isLight,
-                selected: true,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.label}',
-            style: TextStyle(
-              color: secondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+                CavoPillTag(
+                  label: order.status.label,
+                  isLight: isLight,
+                  selected: true,
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${order.city} • ${order.area} • ${order.addressLine}',
-            style: TextStyle(
-              color: secondary,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              height: 1.5,
+            const SizedBox(height: 10),
+            Text(
+              '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.label}',
+              style: TextStyle(
+                color: secondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              '${order.city} • ${order.area} • ${order.addressLine}',
+              style: TextStyle(
+                color: secondary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    order.isRated ? 'Rated ${order.rating}/5' : 'Tap to track order',
+                    style: TextStyle(
+                      color: order.isRated ? const Color(0xFF2DBA71) : CavoColors.gold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, color: CavoColors.gold, size: 14),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Future<void> _showEditProfileSheet(
+  BuildContext context, {
+  required User user,
+  required bool isLight,
+}) async {
+  final nameController = TextEditingController(text: user.displayName ?? '');
+  final emailController = TextEditingController(text: user.email ?? '');
+  final phoneController = TextEditingController();
+  final locationController = TextEditingController(text: 'Hurghada, Egypt');
+  final bioController = TextEditingController(text: 'Premium CAVO member');
+
+  await showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+      final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+      bool saving = false;
+      bool success = false;
+      return StatefulBuilder(
+        builder: (context, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 14,
+              right: 14,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 14,
+            ),
+            child: CavoGlassCard(
+              isLight: isLight,
+              borderRadius: const BorderRadius.all(Radius.circular(34)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 60,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: secondary.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Edit Profile',
+                    style: TextStyle(
+                      color: primary,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _SheetField(controller: nameController, label: 'Full name', icon: Icons.person_outline_rounded, primary: primary, secondary: secondary),
+                  const SizedBox(height: 12),
+                  _SheetField(controller: emailController, label: 'Email', icon: Icons.mail_outline_rounded, primary: primary, secondary: secondary, enabled: false),
+                  const SizedBox(height: 12),
+                  _SheetField(controller: phoneController, label: 'Phone', icon: Icons.phone_outlined, primary: primary, secondary: secondary),
+                  const SizedBox(height: 12),
+                  _SheetField(controller: locationController, label: 'Location', icon: Icons.location_on_outlined, primary: primary, secondary: secondary),
+                  const SizedBox(height: 12),
+                  _SheetField(controller: bioController, label: 'Bio', icon: Icons.info_outline_rounded, primary: primary, secondary: secondary, maxLines: 2),
+                  const SizedBox(height: 18),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    child: success
+                        ? Row(
+                            key: const ValueKey('ok'),
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(Icons.check_circle_rounded, color: Color(0xFF2DBA71)),
+                              SizedBox(width: 8),
+                              Text('Profile saved smoothly', style: TextStyle(color: Color(0xFF2DBA71), fontWeight: FontWeight.w800)),
+                            ],
+                          )
+                        : const SizedBox.shrink(key: ValueKey('idle')),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: saving ? null : () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: saving
+                              ? null
+                              : () async {
+                                  setModalState(() => saving = true);
+                                  await user.updateDisplayName(nameController.text.trim());
+                                  if (context.mounted) {
+                                    setModalState(() {
+                                      saving = false;
+                                      success = true;
+                                    });
+                                    await Future<void>.delayed(const Duration(milliseconds: 700));
+                                  }
+                                },
+                          child: Text(saving ? 'Saving...' : 'Save Changes'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+class _SheetField extends StatelessWidget {
+  const _SheetField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.primary,
+    required this.secondary,
+    this.enabled = true,
+    this.maxLines = 1,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final Color primary;
+  final Color secondary;
+  final bool enabled;
+  final int maxLines;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      enabled: enabled,
+      maxLines: maxLines,
+      style: TextStyle(color: primary, fontWeight: FontWeight.w700),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: secondary, fontWeight: FontWeight.w600),
+        prefixIcon: Icon(icon, color: secondary),
       ),
     );
   }

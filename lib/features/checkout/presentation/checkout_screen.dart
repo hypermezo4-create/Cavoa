@@ -6,6 +6,7 @@ import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
 import '../../orders/data/order_controller.dart';
+import '../../orders/presentation/delivery_tracking_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -128,15 +129,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(dialogContext).pop();
-                        Navigator.of(context).maybePop();
-                      },
-                      child: const Text('Back to cart'),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            Navigator.of(context).maybePop();
+                          },
+                          child: const Text('Back to cart'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(dialogContext).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => DeliveryTrackingScreen(order: order),
+                              ),
+                            );
+                          },
+                          child: const Text('Track order'),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

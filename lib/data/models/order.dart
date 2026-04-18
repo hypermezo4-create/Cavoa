@@ -142,10 +142,17 @@ class CavoOrderItem {
       title: (map['title'] ?? '').toString(),
       brand: (map['brand'] ?? '').toString(),
       size: map['size']?.toString(),
-      unitPrice: (map['unitPrice'] ?? 0) as int,
-      quantity: (map['quantity'] ?? 0) as int,
+      unitPrice: (map['unitPrice'] as num?)?.toInt() ?? 0,
+      quantity: (map['quantity'] as num?)?.toInt() ?? 0,
     );
   }
+}
+
+DateTime? _readDate(dynamic raw) {
+  if (raw is Timestamp) return raw.toDate();
+  if (raw is DateTime) return raw;
+  if (raw is String) return DateTime.tryParse(raw);
+  return null;
 }
 
 class CavoOrder {
@@ -166,6 +173,9 @@ class CavoOrder {
   final String pickupType;
   final OrderStatus status;
   final DateTime createdAt;
+  final int? rating;
+  final List<String> ratingTags;
+  final DateTime? ratedAt;
 
   const CavoOrder({
     required this.id,
@@ -185,7 +195,12 @@ class CavoOrder {
     required this.pickupType,
     required this.status,
     required this.createdAt,
+    this.rating,
+    this.ratingTags = const <String>[],
+    this.ratedAt,
   });
+
+  bool get isRated => rating != null && (rating ?? 0) > 0;
 
   Map<String, dynamic> toMap() {
     return {
@@ -206,31 +221,27 @@ class CavoOrder {
       'pickupType': pickupType,
       'status': status.key,
       'createdAt': createdAt,
+      'rating': rating,
+      'ratingTags': ratingTags,
+      'ratedAt': ratedAt,
       'updatedAt': FieldValue.serverTimestamp(),
       'source': 'flutter_app',
     };
   }
 
   factory CavoOrder.fromMap(Map<String, dynamic> map) {
-    final createdAtRaw = map['createdAt'];
-    DateTime createdAt;
-    if (createdAtRaw is Timestamp) {
-      createdAt = createdAtRaw.toDate();
-    } else if (createdAtRaw is DateTime) {
-      createdAt = createdAtRaw;
-    } else if (createdAtRaw is String) {
-      createdAt = DateTime.tryParse(createdAtRaw) ?? DateTime.now();
-    } else {
-      createdAt = DateTime.now();
-    }
-
     final itemsRaw = map['items'];
     final items = itemsRaw is List
         ? itemsRaw
             .whereType<Map>()
             .map((item) => CavoOrderItem.fromMap(Map<String, dynamic>.from(item)))
-            .toList()
+            .toList(growable: false)
         : const <CavoOrderItem>[];
+
+    final ratingTagsRaw = map['ratingTags'];
+    final ratingTags = ratingTagsRaw is List
+        ? ratingTagsRaw.map((tag) => tag.toString()).toList(growable: false)
+        : const <String>[];
 
     return CavoOrder(
       id: (map['id'] ?? '').toString(),
@@ -249,7 +260,10 @@ class CavoOrder {
       total: (map['total'] as num?)?.toInt() ?? 0,
       pickupType: (map['pickupType'] ?? '').toString(),
       status: OrderStatusX.fromKey(map['status']?.toString()),
-      createdAt: createdAt,
+      createdAt: _readDate(map['createdAt']) ?? DateTime.now(),
+      rating: (map['rating'] as num?)?.toInt(),
+      ratingTags: ratingTags,
+      ratedAt: _readDate(map['ratedAt']),
     );
   }
 
@@ -271,6 +285,9 @@ class CavoOrder {
     String? pickupType,
     OrderStatus? status,
     DateTime? createdAt,
+    int? rating,
+    List<String>? ratingTags,
+    DateTime? ratedAt,
   }) {
     return CavoOrder(
       id: id ?? this.id,
@@ -290,6 +307,9 @@ class CavoOrder {
       pickupType: pickupType ?? this.pickupType,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      rating: rating ?? this.rating,
+      ratingTags: ratingTags ?? this.ratingTags,
+      ratedAt: ratedAt ?? this.ratedAt,
     );
   }
 }

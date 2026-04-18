@@ -388,8 +388,8 @@ class _BrowseProductCard extends StatelessWidget {
               child: Hero(
                 tag: 'browse-${product.id}',
                 child: CavoNetworkImage(
-                  imageUrl: product.coverUrl,
-                  fit: BoxFit.cover,
+                  imageUrl: product.thumbnailUrl ?? product.coverUrl,
+                  fit: BoxFit.contain,
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),

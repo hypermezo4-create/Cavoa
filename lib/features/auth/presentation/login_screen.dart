@@ -6,7 +6,9 @@ import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import '../data/auth_service.dart';
 import 'auth_premium_widgets.dart';
+import 'phone_auth_screen.dart';
 import 'register_screen.dart';
+import 'reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 360),
+      duration: const Duration(milliseconds: 480),
     );
 
     _fade = CurvedAnimation(
@@ -165,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen>
       _goToApp();
     } on CavoAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(error.message);
+      _showMessage(error.toString());
     } catch (error) {
       if (!mounted) return;
       _showMessage('Unexpected Google sign-in error.\n$error');
@@ -276,7 +278,11 @@ class _LoginScreenState extends State<LoginScreen>
                     Align(
                       alignment: AlignmentDirectional.centerEnd,
                       child: TextButton(
-                        onPressed: () => _showMessage(l10n.forgotPasswordSoon),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            buildCavoFadeRoute(const ResetPasswordScreen()),
+                          );
+                        },
                         child: Text(
                           l10n.forgotPassword,
                           style: const TextStyle(
@@ -310,11 +316,13 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                         const SizedBox(width: 12),
                         AuthIconAction(
-                          onPressed: () {
-                            _showMessage(
-                              'Phone OTP will be wired next after Google sign-in is fully locked.',
-                            );
-                          },
+                          onPressed: _loading
+                              ? () {}
+                              : () {
+                                  Navigator.of(context).push(
+                                    buildCavoFadeRoute(const PhoneAuthScreen()),
+                                  );
+                                },
                           icon: const Icon(
                             Icons.phone_in_talk_rounded,
                             color: Colors.white,
@@ -325,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen>
                         AuthIconAction(
                           onPressed: () {
                             _showMessage(
-                              'Facebook login visual slot is ready. We will connect the real flow in the next auth step.',
+                              'Facebook UI is reserved and the real login needs Meta app credentials before we can enable it safely.',
                             );
                           },
                           icon: const Icon(

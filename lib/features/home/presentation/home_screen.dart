@@ -383,51 +383,105 @@ class _BrandHeader extends StatelessWidget {
   }
 }
 
-class _SearchBar extends StatelessWidget {
+class _SearchBar extends StatefulWidget {
   final bool isLight;
 
   const _SearchBar({required this.isLight});
 
+  @override
+  State<_SearchBar> createState() => _SearchBarState();
+}
 
-  CavoProduct _productForCategory(ProductCategory category) {
-    for (final product in CavoCatalog.products) {
-      if (product.category == category) return product;
-    }
-    return CavoCatalog.products.first;
+class _SearchBarState extends State<_SearchBar> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _glow;
+  bool _focused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    )..repeat(reverse: true);
+    _glow = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
   }
 
-  CavoProduct _productForBrand(String brand) {
-    for (final product in CavoCatalog.products) {
-      if (product.brand == brand) return product;
-    }
-    return CavoCatalog.products.first;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _openSearch() {
+    setState(() => _focused = true);
+    Future<void>.delayed(const Duration(milliseconds: 180), () {
+      if (!mounted) return;
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+      );
+      Future<void>.delayed(const Duration(milliseconds: 240), () {
+        if (mounted) setState(() => _focused = false);
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final secondary = widget.isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
-    return CavoGlassCard(
-      isLight: isLight,
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      borderRadius: const BorderRadius.all(Radius.circular(26)),
-      child: Row(
-        children: [
-          Icon(Icons.search_rounded, color: secondary, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              context.l10n.searchProductsBrands,
-              style: TextStyle(
-                color: secondary,
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
+    return AnimatedBuilder(
+      animation: _glow,
+      builder: (context, child) {
+        final glow = 0.06 + (_glow.value * (_focused ? 0.08 : 0.03));
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: CavoColors.gold.withValues(alpha: glow),
+                blurRadius: _focused ? 28 : 16,
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(28),
+              onTap: _openSearch,
+              child: CavoGlassCard(
+                isLight: widget.isLight,
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                borderRadius: const BorderRadius.all(Radius.circular(26)),
+                child: Row(
+                  children: [
+                    Icon(Icons.search_rounded, color: secondary, size: 24),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 220),
+                        style: TextStyle(
+                          color: _focused ? CavoColors.textPrimary : secondary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        child: Text(context.l10n.searchProductsBrands),
+                      ),
+                    ),
+                    AnimatedRotation(
+                      turns: _focused ? 0.08 : 0,
+                      duration: const Duration(milliseconds: 260),
+                      child: const Icon(Icons.tune_rounded, color: CavoColors.gold),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          const Icon(Icons.tune_rounded, color: CavoColors.gold),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -780,7 +834,6 @@ class _BrandShowcaseCard extends StatelessWidget {
               ),
               child: CavoNetworkImage(
                 imageUrl: product.coverUrl,
-                fit: BoxFit.cover,
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
@@ -872,8 +925,8 @@ class _FeaturedProductCard extends StatelessWidget {
               child: Hero(
                 tag: 'home-list-${product.id}',
                 child: CavoNetworkImage(
-                  imageUrl: product.coverUrl,
-                  fit: BoxFit.cover,
+                  imageUrl: product.thumbnailUrl ?? product.coverUrl,
+                  fit: BoxFit.contain,
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),
