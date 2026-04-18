@@ -780,6 +780,7 @@ class _BrandShowcaseCard extends StatelessWidget {
               ),
               child: CavoNetworkImage(
                 imageUrl: product.coverUrl,
+                fit: BoxFit.cover,
                 borderRadius: BorderRadius.circular(18),
               ),
             ),
@@ -871,8 +872,8 @@ class _FeaturedProductCard extends StatelessWidget {
               child: Hero(
                 tag: 'home-list-${product.id}',
                 child: CavoNetworkImage(
-                  imageUrl: product.thumbnailUrl ?? product.coverUrl,
-                  fit: BoxFit.contain,
+                  imageUrl: product.coverUrl,
+                  fit: BoxFit.cover,
                   borderRadius: BorderRadius.circular(18),
                 ),
               ),

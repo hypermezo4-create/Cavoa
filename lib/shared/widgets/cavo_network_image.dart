@@ -70,7 +70,10 @@ class CavoNetworkImage extends StatelessWidget {
 
         return ClipRRect(
           borderRadius: radius,
-          child: RepaintBoundary(child: child),
+          child: ColoredBox(
+            color: CavoColors.black,
+            child: RepaintBoundary(child: child),
+          ),
         );
       },
     );

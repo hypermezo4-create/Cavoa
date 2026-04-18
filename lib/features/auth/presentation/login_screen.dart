@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 480),
+      duration: const Duration(milliseconds: 360),
     );
 
     _fade = CurvedAnimation(
@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen>
       _goToApp();
     } on CavoAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(error.toString());
+      _showMessage(error.message);
     } catch (error) {
       if (!mounted) return;
       _showMessage('Unexpected Google sign-in error.\n$error');
