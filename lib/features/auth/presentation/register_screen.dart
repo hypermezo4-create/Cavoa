@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/localization/l10n_ext.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
@@ -59,23 +57,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  String _mapAuthError(AppLocalizations l10n, FirebaseAuthException error) {
+  String _mapAuthError(FirebaseAuthException error) {
     switch (error.code) {
       case 'email-already-in-use':
-        return l10n.authEmailInUse;
+        return 'This email is already in use.';
       case 'invalid-email':
-        return l10n.authInvalidEmail;
+        return 'Invalid email address.';
       case 'weak-password':
-        return l10n.authWeakPassword;
-      case 'too-many-requests':
-        return l10n.authTooManyRequests;
+        return 'Password is too weak.';
       default:
-        return error.message ?? l10n.somethingWentWrong;
+        return error.message ?? 'Something went wrong.';
     }
   }
 
+  void _goToApp() {
+    MainNavigationController.instance.goTo(0);
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const MainShell()),
+      (route) => false,
+    );
+  }
+
   Future<void> _register() async {
-    final l10n = context.l10n;
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
@@ -87,39 +90,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
         phone.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      _showMessage(l10n.completeAllFields);
+      _showMessage('Please complete all fields.');
       return;
     }
 
     if (password != confirmPassword) {
-      _showMessage(l10n.passwordsDoNotMatch);
+      _showMessage('Passwords do not match.');
       return;
     }
 
     if (password.length < 6) {
-      _showMessage(l10n.passwordMustBeAtLeastSix);
+      _showMessage('Password must be at least 6 characters.');
       return;
     }
 
     try {
       setState(() => _loading = true);
-      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       await credential.user?.updateDisplayName(name);
+
       if (!mounted) return;
-      MainNavigationController.instance.goTo(0);
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const MainShell()),
-        (route) => false,
-      );
+      _goToApp();
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(_mapAuthError(l10n, error));
+      _showMessage(_mapAuthError(error));
     } catch (_) {
       if (!mounted) return;
-      _showMessage(l10n.somethingWentWrong);
+      _showMessage('Something went wrong.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -127,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final bg = isLight ? CavoColors.lightBackground : CavoColors.background;
     final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
@@ -184,7 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                        color: CavoColors.lightShadow.withOpacity(0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -199,7 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 22),
               Text(
-                l10n.createAccount,
+                'Create Account',
                 style: TextStyle(
                   color: primaryText,
                   fontSize: 30,
@@ -208,7 +210,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                l10n.joinCavoToSave,
+                'Join CAVO to save your cart, preferences, and future orders.',
                 style: TextStyle(
                   color: secondaryText,
                   fontSize: 14,
@@ -220,13 +222,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
+                  color: surface.withOpacity(0.96),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(color: border),
                   boxShadow: [
                     if (isLight)
                       BoxShadow(
-                        color: CavoColors.lightShadow.withValues(alpha: 0.08),
+                        color: CavoColors.lightShadow.withOpacity(0.08),
                         blurRadius: 16,
                         offset: const Offset(0, 8),
                       ),
@@ -234,88 +236,149 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 child: Column(
                   children: [
-                    _buildField(
-                      context: context,
+                    TextField(
                       controller: _nameController,
-                      hintText: l10n.fullName,
-                      icon: Icons.person_outline_rounded,
-                      soft: soft,
-                      border: border,
-                      primaryText: primaryText,
+                      style: TextStyle(color: primaryText),
+                      decoration: InputDecoration(
+                        hintText: 'Full name',
+                        prefixIcon: const Icon(Icons.person_outline_rounded),
+                        filled: true,
+                        fillColor: soft,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 14),
-                    _buildField(
-                      context: context,
+                    TextField(
                       controller: _emailController,
-                      hintText: l10n.emailAddress,
-                      icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
-                      soft: soft,
-                      border: border,
-                      primaryText: primaryText,
+                      style: TextStyle(color: primaryText),
+                      decoration: InputDecoration(
+                        hintText: 'Email address',
+                        prefixIcon: const Icon(Icons.mail_outline_rounded),
+                        filled: true,
+                        fillColor: soft,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 14),
-                    _buildField(
-                      context: context,
+                    TextField(
                       controller: _phoneController,
-                      hintText: l10n.phoneNumber,
-                      icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
-                      soft: soft,
-                      border: border,
-                      primaryText: primaryText,
+                      style: TextStyle(color: primaryText),
+                      decoration: InputDecoration(
+                        hintText: 'Phone number',
+                        prefixIcon: const Icon(Icons.phone_outlined),
+                        filled: true,
+                        fillColor: soft,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 14),
-                    _buildField(
-                      context: context,
+                    TextField(
                       controller: _passwordController,
-                      hintText: l10n.password,
-                      icon: Icons.lock_outline_rounded,
                       obscureText: _obscurePassword,
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
+                      style: TextStyle(color: primaryText),
+                      decoration: InputDecoration(
+                        hintText: 'Password',
+                        prefixIcon: const Icon(Icons.lock_outline_rounded),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: soft,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
                         ),
                       ),
-                      soft: soft,
-                      border: border,
-                      primaryText: primaryText,
                     ),
                     const SizedBox(height: 14),
-                    _buildField(
-                      context: context,
+                    TextField(
                       controller: _confirmPasswordController,
-                      hintText: l10n.confirmPassword,
-                      icon: Icons.verified_user_outlined,
                       obscureText: _obscureConfirmPassword,
-                      suffixIcon: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword =
-                                !_obscureConfirmPassword;
-                          });
-                        },
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
+                      style: TextStyle(color: primaryText),
+                      decoration: InputDecoration(
+                        hintText: 'Confirm password',
+                        prefixIcon: const Icon(Icons.verified_user_outlined),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: soft,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: const BorderSide(
+                            color: CavoColors.gold,
+                            width: 1.2,
+                          ),
                         ),
                       ),
-                      soft: soft,
-                      border: border,
-                      primaryText: primaryText,
                     ),
                     const SizedBox(height: 18),
                     ElevatedButton(
                       onPressed: _loading ? null : _register,
-                      child: Text(_loading ? l10n.loading : l10n.createAccount),
+                      child:
+                          Text(_loading ? 'Loading...' : 'Create Account'),
                     ),
                   ],
                 ),
@@ -324,14 +387,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: surface.withValues(alpha: 0.96),
+                  color: surface.withOpacity(0.96),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: border),
                 ),
                 child: Column(
                   children: [
                     Text(
-                      l10n.alreadyHaveAccount,
+                      'Already have an account?',
                       style: TextStyle(
                         color: primaryText,
                         fontSize: 16,
@@ -340,7 +403,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.signInAndContinue,
+                      'Sign in and continue shopping with your saved preferences.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: secondaryText,
@@ -359,7 +422,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         );
                       },
-                      child: Text(l10n.goToLogin),
+                      child: const Text('Go to Login'),
                     ),
                   ],
                 ),
@@ -367,7 +430,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 18),
               Center(
                 child: Text(
-                  l10n.mirrorOriginalPremiumFootwear,
+                  'Mirror Original • Premium Footwear',
                   style: TextStyle(
                     color: mutedText,
                     fontSize: 12,
@@ -376,44 +439,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildField({
-    required BuildContext context,
-    required TextEditingController controller,
-    required String hintText,
-    required IconData icon,
-    required Color soft,
-    required Color border,
-    required Color primaryText,
-    TextInputType? keyboardType,
-    bool obscureText = false,
-    Widget? suffixIcon,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      obscureText: obscureText,
-      style: TextStyle(color: primaryText),
-      decoration: InputDecoration(
-        hintText: hintText,
-        prefixIcon: Icon(icon),
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: soft,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: CavoColors.gold,
-            width: 1.2,
           ),
         ),
       ),
@@ -445,7 +470,7 @@ class _CircleButton extends StatelessWidget {
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: surface.withValues(alpha: 0.96),
+          color: surface.withOpacity(0.96),
           shape: BoxShape.circle,
           border: Border.all(color: border),
         ),
