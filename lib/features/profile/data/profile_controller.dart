@@ -103,6 +103,10 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
     required String gender,
     required int? age,
     required bool visitedBefore,
+    String? city,
+    String? area,
+    String? addressLine,
+    String? bio,
     String? avatarPath,
   }) async {
     final user = FirebaseAuth.instance.currentUser;
@@ -115,7 +119,10 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
       age: age,
       visitedBefore: visitedBefore,
       avatarPath: avatarPath,
-      city: current.city.isEmpty ? 'Hurghada' : current.city,
+      city: (city == null || city.trim().isEmpty) ? current.city : city.trim(),
+      area: area?.trim() ?? current.area,
+      addressLine: addressLine?.trim() ?? current.addressLine,
+      bio: (bio == null || bio.trim().isEmpty) ? current.bio : bio.trim(),
     ));
   }
 

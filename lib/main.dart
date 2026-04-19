@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'features/auth/data/auth_service.dart';
 import 'features/cart/data/cart_controller.dart';
 import 'features/favorites/data/favorites_controller.dart';
 import 'features/notifications/data/notification_center_controller.dart';
@@ -19,12 +18,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  try {
-    await AuthService.instance.initialize();
-  } catch (error, stackTrace) {
-    debugPrint('Initial Google Sign-In initialize failed: $error');
-    debugPrintStack(stackTrace: stackTrace);
-  }
   await ThemeModeController.instance.init();
   await AppLocaleController.instance.init();
   await CartController.instance.init();

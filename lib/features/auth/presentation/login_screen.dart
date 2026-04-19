@@ -5,9 +5,7 @@ import '../../../core/localization/l10n_ext.dart';
 import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
-import '../data/auth_service.dart';
 import 'auth_premium_widgets.dart';
-import 'phone_auth_screen.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
 
@@ -168,27 +166,6 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  Future<void> _loginWithGoogle() async {
-    try {
-      setState(() => _loading = true);
-
-      await AuthService.instance.signInWithGoogle();
-
-      if (!mounted) return;
-      _goToApp();
-    } on CavoAuthException catch (error) {
-      if (!mounted) return;
-      _showMessage(error.message.trim());
-    } catch (error) {
-      if (!mounted) return;
-      _showMessage('Google sign-in is not ready on this build yet. Please use email login for now.');
-    } finally {
-      if (mounted) {
-        setState(() => _loading = false);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -236,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen>
             FadeTransition(
               opacity: _fade,
               child: const Text(
-                'Sign in to continue your cart, saved preferences, and premium checkout flow.',
+                'Sign in with your email to continue your cart, saved preferences, and premium checkout flow.',
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 16,
@@ -309,51 +286,32 @@ class _LoginScreenState extends State<LoginScreen>
                       onPressed: _loading ? null : _login,
                       loading: _loading,
                     ),
-                    const SizedBox(height: 18),
-                    const AuthDividerLabel(text: 'or continue with'),
-                    const SizedBox(height: 18),
-                    Row(
-                      children: [
-                        AuthIconAction(
-                          onPressed: _loading ? () {} : () => _loginWithGoogle(),
-                          icon: const Text(
-                            'G',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        color: Colors.white.withOpacity(0.035),
+                        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.12)),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.mark_email_read_outlined, color: Color(0xFFF1D27A), size: 18),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Email sign-in and password reset are active on this build. External providers are hidden for stability.',
+                              style: TextStyle(
+                                color: Color(0xFFB8B1A3),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                height: 1.45,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        AuthIconAction(
-                          onPressed: _loading
-                              ? () {}
-                              : () {
-                                  Navigator.of(context).push(
-                                    buildCavoFadeRoute(PhoneAuthScreen(redirectToCheckout: widget.redirectToCheckout)),
-                                  );
-                                },
-                          icon: const Icon(
-                            Icons.phone_in_talk_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        AuthIconAction(
-                          onPressed: () {
-                            _showMessage(
-                              'Facebook login is not ready on this build yet. Please use email login for now.',
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.facebook_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     AuthOutlineButton(

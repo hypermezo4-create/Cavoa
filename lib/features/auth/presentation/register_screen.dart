@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../checkout/presentation/checkout_screen.dart';
@@ -28,6 +28,11 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _ageController = TextEditingController();
+  final _cityController = TextEditingController(text: 'Hurghada');
+  final _areaController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _bioController = TextEditingController(text: 'Premium CAVO member');
 
   late final AnimationController _controller;
   late final Animation<double> _fade;
@@ -40,7 +45,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _passwordsMatch = false;
   String _gender = 'male';
   bool _visitedBefore = false;
-  final _ageController = TextEditingController();
   String? _avatarPath;
 
   @override
@@ -82,6 +86,10 @@ class _RegisterScreenState extends State<RegisterScreen>
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _ageController.dispose();
+    _cityController.dispose();
+    _areaController.dispose();
+    _addressController.dispose();
+    _bioController.dispose();
     super.dispose();
   }
 
@@ -151,9 +159,18 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   Future<void> _pickAvatar(ImageSource source) async {
     final picker = ImagePicker();
-    final file = await picker.pickImage(source: source, imageQuality: 85, maxWidth: 1200);
+    final file = await picker.pickImage(
+      source: source,
+      imageQuality: 85,
+      maxWidth: 1200,
+    );
     if (file == null || !mounted) return;
     setState(() => _avatarPath = file.path);
+  }
+
+  bool _isValidEmail(String email) {
+    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return regex.hasMatch(email);
   }
 
   Future<void> _register() async {
@@ -163,13 +180,24 @@ class _RegisterScreenState extends State<RegisterScreen>
     final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
+    final city = _cityController.text.trim();
+    final area = _areaController.text.trim();
+    final address = _addressController.text.trim();
+    final bio = _bioController.text.trim();
 
     if (name.isEmpty ||
         email.isEmpty ||
         phone.isEmpty ||
         password.isEmpty ||
-        confirmPassword.isEmpty) {
+        confirmPassword.isEmpty ||
+        city.isEmpty ||
+        address.isEmpty) {
       _showMessage(l10n.completeAllFields);
+      return;
+    }
+
+    if (!_isValidEmail(email)) {
+      _showMessage(l10n.authInvalidEmail);
       return;
     }
 
@@ -204,10 +232,15 @@ class _RegisterScreenState extends State<RegisterScreen>
         gender: _gender,
         age: int.tryParse(_ageController.text.trim()),
         visitedBefore: _visitedBefore,
+        city: city,
+        area: area,
+        addressLine: address,
+        bio: bio,
         avatarPath: _avatarPath,
       );
 
       if (!mounted) return;
+      _showMessage('Your account is ready. Welcome to CAVO.');
       _goToApp();
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
@@ -221,7 +254,6 @@ class _RegisterScreenState extends State<RegisterScreen>
       }
     }
   }
-
 
   InputDecoration _dropdownDecoration(String label) {
     return InputDecoration(
@@ -261,8 +293,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                   AuthBackButton(onPressed: () => Navigator.pop(context)),
                   const Spacer(),
                   const AuthBadge(
-                    text: 'Premium setup',
-                    icon: Icons.diamond_outlined,
+                    text: 'Email account',
+                    icon: Icons.mark_email_read_outlined,
                   ),
                 ],
               ),
@@ -291,7 +323,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             FadeTransition(
               opacity: _fade,
               child: const Text(
-                'Join CAVO and step into a smoother premium journey with saved style choices and faster checkout.',
+                'Create your full CAVO account with your real details so checkout, profile, and future orders stay synced.',
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 16,
@@ -332,6 +364,35 @@ class _RegisterScreenState extends State<RegisterScreen>
                       icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _cityController,
+                            textInputAction: TextInputAction.next,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                            decoration: _dropdownDecoration('City'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _areaController,
+                            textInputAction: TextInputAction.next,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                            decoration: _dropdownDecoration('Area'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    TextField(
+                      controller: _addressController,
+                      textInputAction: TextInputAction.next,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                      decoration: _dropdownDecoration('Address details'),
                     ),
                     const SizedBox(height: 14),
                     AuthTextField(
@@ -382,8 +443,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                           IconButton(
                             onPressed: () {
                               setState(() {
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword;
+                                _obscureConfirmPassword = !_obscureConfirmPassword;
                               });
                             },
                             icon: Icon(
@@ -459,8 +519,15 @@ class _RegisterScreenState extends State<RegisterScreen>
                       contentPadding: EdgeInsets.zero,
                       activeColor: const Color(0xFFD4AF37),
                       title: const Text('Have you visited CAVO before?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
-                      subtitle: const Text('This helps personalize recommendations.', style: TextStyle(color: Color(0xFFB8B1A3), fontSize: 12)),
+                      subtitle: const Text('This helps personalize recommendations and account details.', style: TextStyle(color: Color(0xFFB8B1A3), fontSize: 12)),
                       onChanged: (value) => setState(() => _visitedBefore = value),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _bioController,
+                      maxLines: 2,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                      decoration: _dropdownDecoration('Bio'),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -539,7 +606,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(height: 18),
             const Center(
               child: Text(
-                'Refined onboarding • strong motion • premium feel',
+                'Email-first onboarding • full profile • premium feel',
                 style: TextStyle(
                   color: Color(0xFF7F786B),
                   fontSize: 12,

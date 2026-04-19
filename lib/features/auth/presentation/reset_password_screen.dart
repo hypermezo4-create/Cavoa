@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/l10n_ext.dart';
 import 'auth_premium_widgets.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -35,9 +36,43 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     super.dispose();
   }
 
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: const Color(0xFF141414),
+        behavior: SnackBarBehavior.floating,
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Color(0xFFF5F1E8),
+            fontWeight: FontWeight.w600,
+            height: 1.45,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _mapError(FirebaseAuthException error) {
+    final l10n = context.l10n;
+    switch (error.code) {
+      case 'invalid-email':
+        return l10n.authInvalidEmail;
+      case 'user-not-found':
+        return 'No account was found for this email.';
+      case 'too-many-requests':
+        return l10n.authTooManyRequests;
+      default:
+        return error.message ?? 'Could not send the reset email right now.';
+    }
+  }
+
   Future<void> _sendReset() async {
     final email = _emailController.text.trim();
-    if (email.isEmpty) return;
+    if (email.isEmpty) {
+      _showMessage(context.l10n.authInvalidEmail);
+      return;
+    }
 
     setState(() {
       _loading = true;
@@ -48,11 +83,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (!mounted) return;
       setState(() => _success = true);
+      _showMessage('Reset email sent. Check your inbox and spam folder.');
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.message ?? 'Could not send reset email.')),
-      );
+      _showMessage(_mapError(error));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -73,8 +107,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                   AuthBackButton(onPressed: () => Navigator.of(context).maybePop()),
                   const Spacer(),
                   const AuthBadge(
-                    text: 'Verify your email',
-                    icon: Icons.mail_outline_rounded,
+                    text: 'Reset password',
+                    icon: Icons.mark_email_read_outlined,
                   ),
                 ],
               ),
@@ -83,7 +117,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
             FadeTransition(
               opacity: _fade,
               child: const Text(
-                'Verify your email',
+                'Reset your password',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 36,
@@ -96,7 +130,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
             FadeTransition(
               opacity: _fade,
               child: const Text(
-                'We will send a reset link to your inbox so you can create a new password and return to CAVO smoothly.',
+                'Enter the email address linked to your CAVO account and we will send you a real password reset link.',
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 15,
@@ -111,7 +145,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 children: [
                   AuthTextField(
                     controller: _emailController,
-                    hintText: 'example@cavo.store',
+                    hintText: context.l10n.emailAddress,
                     icon: Icons.mail_outline_rounded,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.done,
@@ -126,7 +160,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                               _SuccessPulse(),
                               SizedBox(height: 12),
                               Text(
-                                'Code sent! Check your inbox.',
+                                'Reset email sent successfully.',
                                 style: TextStyle(
                                   color: Color(0xFF7FF1A8),
                                   fontWeight: FontWeight.w800,
