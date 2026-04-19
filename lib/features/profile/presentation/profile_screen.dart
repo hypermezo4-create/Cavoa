@@ -106,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           CavoPillTag(
-                            label: user == null ? (localeCode == 'ar' ? 'وضع الضيف' : localeCode == 'de' ? 'Gastmodus' : localeCode == 'ru' ? 'Гостевой режим' : 'Guest mode') : (localeCode == 'ar' ? 'حساب Firebase' : localeCode == 'de' ? 'Firebase-Konto' : localeCode == 'ru' ? 'Аккаунт Firebase' : 'Firebase account'),
+                            label: user == null ? (localeCode == 'ar' ? 'وضع الضيف' : localeCode == 'de' ? 'Gastmodus' : localeCode == 'ru' ? 'Гостевой режим' : 'Guest mode') : (localeCode == 'ar' ? 'حساب كافو' : localeCode == 'de' ? 'CAVO-Konto' : localeCode == 'ru' ? 'Аккаунт CAVO' : 'CAVO account'),
                             isLight: isLight,
                             selected: true,
                           ),
@@ -150,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
                               return _CountCard(
                                 title: context.l10n.orders,
                                 value: '$value',
-                                subtitle: localeCode == 'ar' ? 'متزامنة مع Firebase' : localeCode == 'de' ? 'mit Firebase synchronisiert' : localeCode == 'ru' ? 'синхронизировано с Firebase' : 'synced to Firebase',
+                                subtitle: localeCode == 'ar' ? 'متزامنة بأمان' : localeCode == 'de' ? 'sicher synchronisiert' : localeCode == 'ru' ? 'безопасно синхронизировано' : 'securely synced',
                                 icon: Icons.cloud_done_outlined,
                                 isLight: isLight,
                               );
@@ -250,8 +250,8 @@ class ProfileScreen extends StatelessWidget {
               CavoSectionHeader(
                 title: context.l10n.orders,
                 subtitle: user == null
-                    ? (localeCode == 'ar' ? 'سجل الدخول لمزامنة حالة الطلب من Firebase.' : localeCode == 'de' ? 'Melde dich an, um den Bestellstatus mit Firebase zu synchronisieren.' : localeCode == 'ru' ? 'Войдите, чтобы синхронизировать статус заказа из Firebase.' : 'Sign in to sync order status from Firebase.')
-                    : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة من Firebase هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Firebase-Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы из Firebase с актуальным статусом.' : 'Your recent Firebase orders appear here with their latest status.'),
+                    ? (localeCode == 'ar' ? 'سجل الدخول لمتابعة حالة طلباتك.' : localeCode == 'de' ? 'Melde dich an, um deinen Bestellstatus zu verfolgen.' : localeCode == 'ru' ? 'Войдите, чтобы отслеживать статус заказов.' : 'Sign in to track your order status.')
+                    : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы с актуальным статусом.' : 'Your recent orders appear here with their latest status.'),
                 isLight: isLight,
               ),
               const SizedBox(height: 12),
@@ -458,7 +458,7 @@ class _OrdersPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Once checkout is completed, your orders will appear here with the latest status from Firebase.',
+            'Once checkout is completed, your orders will appear here with the latest status.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: secondary,

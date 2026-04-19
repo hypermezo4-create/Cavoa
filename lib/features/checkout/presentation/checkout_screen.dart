@@ -160,7 +160,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    localeCode == 'ar' ? 'رقم الطلب: ${order.id}\nتم حفظ طلبك في Firebase وحالته الآن ${order.status.labelForLocale(localeCode)}.' : localeCode == 'de' ? 'Bestellnummer: ${order.id}\nDeine Bestellung wurde in Firebase gespeichert. Status: ${order.status.labelForLocale(localeCode)}.' : localeCode == 'ru' ? 'Номер заказа: ${order.id}\nВаш заказ сохранен в Firebase. Статус: ${order.status.labelForLocale(localeCode)}.' : 'Order ID: ${order.id}\nYour order is now saved in Firebase with status ${order.status.labelForLocale(localeCode)}.',
+                    localeCode == 'ar' ? 'رقم الطلب: ${order.id}\nتم استلام طلبك وحالته الآن ${order.status.labelForLocale(localeCode)}.' : localeCode == 'de' ? 'Bestellnummer: ${order.id}\nDeine Bestellung wurde empfangen. Status: ${order.status.labelForLocale(localeCode)}.' : localeCode == 'ru' ? 'Номер заказа: ${order.id}\nВаш заказ принят. Статус: ${order.status.labelForLocale(localeCode)}.' : 'Order ID: ${order.id}\nYour order has been received with status ${order.status.labelForLocale(localeCode)}.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: secondary,
@@ -255,7 +255,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                localeCode == 'ar' ? 'أكمل بيانات الطلب ليتم إرساله مباشرة إلى Firebase.' : localeCode == 'de' ? 'Vervollständige deine Bestelldaten und sende sie direkt an Firebase.' : localeCode == 'ru' ? 'Заполните данные заказа, и он будет отправлен напрямую в Firebase.' : 'Complete your order details and send the order directly to Firebase.',
+                                localeCode == 'ar' ? 'أكمل بيانات الطلب لتأكيده فورًا.' : localeCode == 'de' ? 'Vervollständige deine Bestelldaten, um die Bestellung sofort zu bestätigen.' : localeCode == 'ru' ? 'Заполните данные заказа, чтобы сразу подтвердить его.' : 'Complete your order details to confirm it right away.',
                                 style: TextStyle(
                                   color: secondary,
                                   fontSize: 13,
@@ -376,7 +376,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            localeCode == 'ar' ? 'يتم إرسال الطلبات إلى Firebase فور التأكيد لتتمكن من قبولها أو رفضها من لوحة الإدارة.' : localeCode == 'de' ? 'Bestellungen werden nach der Bestätigung sofort an Firebase gesendet.' : localeCode == 'ru' ? 'Заказы сразу отправляются в Firebase после подтверждения.' : 'Orders are sent to Firebase immediately after confirmation so you can approve or reject them from the admin side.',
+                            localeCode == 'ar' ? 'يتم إرسال الطلبات فور التأكيد لتتمكن الإدارة من مراجعتها وتحديث حالتها.' : localeCode == 'de' ? 'Bestellungen werden nach der Bestätigung sofort gesendet, damit das Team sie prüfen und aktualisieren kann.' : localeCode == 'ru' ? 'Заказы отправляются сразу после подтверждения, чтобы команда могла их проверить и обновить статус.' : 'Orders are sent immediately after confirmation so the team can review and update them.',
                             style: TextStyle(
                               color: secondary,
                               fontSize: 12,
@@ -463,7 +463,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          localeCode == 'ar' ? 'لا حاجة إلى لقطة شاشة للدفع. يتم إنشاء الطلب مباشرة في Firebase.' : localeCode == 'de' ? 'Kein Zahlungsscreenshot erforderlich. Die Bestellung wird direkt in Firebase erstellt.' : localeCode == 'ru' ? 'Скриншот оплаты не требуется. Заказ создается напрямую в Firebase.' : 'No payment screenshot required. The order is created directly in Firebase.',
+                          localeCode == 'ar' ? 'لا حاجة إلى لقطة شاشة للدفع. يتم إنشاء الطلب مباشرة بعد التأكيد.' : localeCode == 'de' ? 'Kein Zahlungsscreenshot erforderlich. Die Bestellung wird direkt nach der Bestätigung erstellt.' : localeCode == 'ru' ? 'Скриншот оплаты не требуется. Заказ создается сразу после подтверждения.' : 'No payment screenshot required. The order is created right after confirmation.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: secondary,

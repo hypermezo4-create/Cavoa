@@ -287,32 +287,6 @@ class _LoginScreenState extends State<LoginScreen>
                       loading: _loading,
                     ),
                     const SizedBox(height: 16),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(22),
-                        color: Colors.white.withOpacity(0.035),
-                        border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.12)),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.mark_email_read_outlined, color: Color(0xFFF1D27A), size: 18),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              'Email sign-in and password reset are active on this build. External providers are hidden for stability.',
-                              style: TextStyle(
-                                color: Color(0xFFB8B1A3),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                height: 1.45,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: 16),
                     AuthOutlineButton(
                       label: l10n.continueAsGuest,

@@ -29,7 +29,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
       _TrackingStep(
         status: OrderStatus.pendingReview,
         title: 'Order placed',
-        subtitle: 'Your order reached Firebase and is waiting for review.',
+        subtitle: 'Your order has been received and is waiting for review.',
         state: safeIndex >= 0 ? _StepState.done : _StepState.todo,
       ),
       _TrackingStep(
@@ -222,7 +222,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                                 Text(
                                   order.status == OrderStatus.rejected
                                       ? localeCode == 'ar' ? 'تم رفض الطلب من جانب الإدارة. تواصل مع الدعم إذا احتجت.' : localeCode == 'de' ? 'Die Bestellung wurde von der Verwaltung abgelehnt. Bitte kontaktiere bei Bedarf den Support.' : localeCode == 'ru' ? 'Заказ был отклонен со стороны администратора. При необходимости свяжитесь с поддержкой.' : 'The order was rejected from the admin side. Please contact support if needed.'
-                                      : localeCode == 'ar' ? 'نقوم بمزامنة كل حالة من Firebase حتى تعرف المرحلة الدقيقة دائمًا.' : localeCode == 'de' ? 'Jeder Status wird mit Firebase synchronisiert, damit du immer den genauen Schritt kennst.' : localeCode == 'ru' ? 'Каждый статус синхронизируется с Firebase, чтобы вы всегда знали точный этап.' : 'We keep every status synced from Firebase so you always know the exact step.',
+                                      : localeCode == 'ar' ? 'نقوم بتحديث كل حالة باستمرار حتى تعرف المرحلة الدقيقة دائمًا.' : localeCode == 'de' ? 'Jeder Status wird laufend aktualisiert, damit du immer den genauen Schritt kennst.' : localeCode == 'ru' ? 'Каждый статус регулярно обновляется, чтобы вы всегда знали точный этап.' : 'We keep every status updated so you always know the exact step.',
                                   style: TextStyle(
                                     color: secondary,
                                     fontSize: 13,
