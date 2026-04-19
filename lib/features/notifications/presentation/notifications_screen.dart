@@ -284,6 +284,7 @@ class _NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final order = OrderController.instance.findById(item.orderId);
     return InkWell(
       onTap: () async {
         await NotificationCenterController.instance.markRead(item.id);
