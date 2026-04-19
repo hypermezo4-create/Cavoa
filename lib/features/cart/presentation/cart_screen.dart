@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
@@ -5,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/cavo_network_image.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../checkout/presentation/checkout_screen.dart';
+import '../../auth/presentation/login_screen.dart';
 import '../data/cart_controller.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 
@@ -166,6 +168,27 @@ class CartScreen extends StatelessWidget {
                                     flex: 2,
                                     child: ElevatedButton(
                                       onPressed: () {
+                                        final user = FirebaseAuth.instance.currentUser;
+                                        if (user == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              backgroundColor: isLight ? CavoColors.lightSurface : CavoColors.surface,
+                                              behavior: SnackBarBehavior.floating,
+                                              content: Text(
+                                                'Sign in first to place your order.',
+                                                style: TextStyle(
+                                                  color: isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                          );
+                                          return;
+                                        }
+
                                         Navigator.of(context).push(
                                           MaterialPageRoute(builder: (_) => const CheckoutScreen()),
                                         );

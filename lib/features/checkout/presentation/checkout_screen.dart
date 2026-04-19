@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
+import '../../auth/presentation/login_screen.dart';
 import '../../orders/data/order_controller.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 
@@ -73,9 +74,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
+  Future<void> _requireSignIn() async {
+    _showMessage('Sign in first to place your order.');
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+
   Future<void> _confirmOrder() async {
     final localeCode = Localizations.localeOf(context).languageCode;
     FocusScope.of(context).unfocus();
+    if (FirebaseAuth.instance.currentUser == null) {
+      await _requireSignIn();
+      return;
+    }
     if (!_formKey.currentState!.validate()) {
       return;
     }

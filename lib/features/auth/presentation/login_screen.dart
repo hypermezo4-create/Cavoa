@@ -167,10 +167,10 @@ class _LoginScreenState extends State<LoginScreen>
       _goToApp();
     } on CavoAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(error.toString());
+      _showMessage(error.message);
     } catch (error) {
       if (!mounted) return;
-      _showMessage('Unexpected Google sign-in error.\n$error');
+      _showMessage('Unexpected Google sign-in error. Please try again.');
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -333,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen>
                         AuthIconAction(
                           onPressed: () {
                             _showMessage(
-                              'Facebook UI is reserved and the real login needs Meta app credentials before we can enable it safely.',
+                              'Facebook login will be enabled after Meta app setup is finished.',
                             );
                           },
                           icon: const Icon(

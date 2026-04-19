@@ -46,6 +46,27 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
     return '+20$digits';
   }
 
+  String _mapPhoneAuthError(FirebaseAuthException error) {
+    final code = error.code.toLowerCase();
+    if (code.contains('billing') || code.contains('not-enabled')) {
+      return 'Phone OTP is not ready yet on Firebase billing for this build.';
+    }
+    switch (error.code) {
+      case 'invalid-phone-number':
+        return 'Please enter a valid phone number.';
+      case 'too-many-requests':
+        return 'Too many OTP attempts. Please try again later.';
+      case 'quota-exceeded':
+        return 'OTP quota is exceeded right now. Please try again later.';
+      case 'operation-not-allowed':
+        return 'Phone sign-in is not enabled in Firebase Auth.';
+      case 'network-request-failed':
+        return 'Network error while sending OTP. Please try again.';
+      default:
+        return error.message ?? 'Phone verification failed.';
+    }
+  }
+
   void _goToApp() {
     MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushAndRemoveUntil(
@@ -77,7 +98,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
           if (!mounted) return;
           setState(() => _sending = false);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(error.message ?? 'Phone verification failed.')),
+            SnackBar(content: Text(_mapPhoneAuthError(error))),
           );
         },
         codeSent: (verificationId, _) {
@@ -100,7 +121,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
       if (!mounted) return;
       setState(() => _sending = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not send OTP. $error')),
+        SnackBar(content: Text(error is FirebaseAuthException ? _mapPhoneAuthError(error) : 'Could not send OTP right now.')),
       );
     }
   }
