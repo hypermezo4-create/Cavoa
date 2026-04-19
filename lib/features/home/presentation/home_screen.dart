@@ -10,6 +10,8 @@ import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../categories/presentation/categories_screen.dart';
 import '../../product_details/presentation/product_details_screen.dart';
 import '../../search/presentation/search_screen.dart';
+import '../../notifications/data/notification_center_controller.dart';
+import '../../notifications/presentation/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -80,10 +82,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   const Spacer(),
                   const CavoLanguagePicker(isLight: false),
                   const SizedBox(width: 10),
-                  CavoCircleIconButton(
-                    icon: Icons.notifications_none_rounded,
-                    isLight: isLight,
-                    onTap: () {},
+                  ValueListenableBuilder<List<CavoNotificationItem>>(
+                    valueListenable: NotificationCenterController.instance,
+                    builder: (context, notifications, _) {
+                      final unread = notifications.where((item) => !item.isRead).length;
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          CavoCircleIconButton(
+                            icon: Icons.notifications_none_rounded,
+                            isLight: isLight,
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                              );
+                            },
+                          ),
+                          if (unread > 0)
+                            Positioned(
+                              right: -2,
+                              top: -2,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: CavoColors.gold,
+                                  borderRadius: BorderRadius.circular(999),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: CavoColors.gold.withValues(alpha: 0.24),
+                                      blurRadius: 12,
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  unread > 9 ? '9+' : '$unread',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),

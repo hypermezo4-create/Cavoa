@@ -6,16 +6,47 @@ import 'package:flutter/material.dart';
 
 import '../../../data/models/order.dart';
 import '../../cart/data/cart_controller.dart';
+import '../../notifications/data/notification_center_controller.dart';
 
 class OrderController extends ValueNotifier<List<CavoOrder>> {
-  OrderController._() : super([]);
+  OrderController._() : super([]) {
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((_) {
+      _bindCurrentUserOrders();
+    });
+    _bindCurrentUserOrders();
+  }
 
   static final OrderController instance = OrderController._();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _ordersSubscription;
+  StreamSubscription<User?>? _authSubscription;
 
   CollectionReference<Map<String, dynamic>> get _ordersCollection =>
       _firestore.collection('orders');
+
+
+  void _bindCurrentUserOrders() {
+    _ordersSubscription?.cancel();
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      value = const <CavoOrder>[];
+      NotificationCenterController.instance.syncFromOrders(value);
+      return;
+    }
+
+    _ordersSubscription = _ordersCollection
+        .where('userId', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snapshot) {
+      final orders = snapshot.docs
+          .map((doc) => CavoOrder.fromMap(doc.data()))
+          .toList(growable: false);
+      orders.sort((a, b) => (b.updatedAt ?? b.createdAt).compareTo(a.updatedAt ?? a.createdAt));
+      value = orders;
+      NotificationCenterController.instance.syncFromOrders(orders);
+    });
+  }
 
   String _generateOrderId() {
     final now = DateTime.now();
@@ -75,25 +106,17 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
 
     await _ordersCollection.doc(order.id).set(order.toMap());
     value = [order, ...value];
+    NotificationCenterController.instance.syncFromOrders(value);
     return order;
   }
 
   Stream<List<CavoOrder>> watchCurrentUserOrders() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return Stream.value(value);
-    }
-
-    return _ordersCollection
-        .where('userId', isEqualTo: user.uid)
-        .snapshots()
-        .map((snapshot) {
-      final orders = snapshot.docs
-          .map((doc) => CavoOrder.fromMap(doc.data()))
-          .toList(growable: false);
-      orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      value = orders;
-      return orders;
+    _bindCurrentUserOrders();
+    return Stream<List<CavoOrder>>.multi((controller) {
+      controller.add(value);
+      void listener() => controller.add(value);
+      addListener(listener);
+      controller.onCancel = () => removeListener(listener);
     });
   }
 
@@ -101,9 +124,11 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
     final existing = findById(orderId);
     if (existing != null) {
       value = value
-          .map((order) =>
-              order.id == orderId ? order.copyWith(status: status) : order)
+          .map((order) => order.id == orderId
+              ? order.copyWith(status: status, updatedAt: DateTime.now())
+              : order)
           .toList(growable: false);
+      NotificationCenterController.instance.syncFromOrders(value);
     }
 
     await _ordersCollection.doc(orderId).set(
@@ -128,9 +153,11 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
                 rating: rating,
                 ratingTags: tags,
                 ratedAt: ratedAt,
+                updatedAt: ratedAt,
               )
             : order)
         .toList(growable: false);
+    NotificationCenterController.instance.syncFromOrders(value);
 
     await _ordersCollection.doc(orderId).set(
       {

@@ -25,12 +25,39 @@ extension OrderPaymentMethodX on OrderPaymentMethod {
     }
   }
 
-  String get label {
-    switch (this) {
-      case OrderPaymentMethod.vodafoneCash:
-        return 'Vodafone Cash';
-      case OrderPaymentMethod.instaPay:
-        return 'InstaPay';
+  String get label => labelForLocale('en');
+
+  String labelForLocale(String languageCode) {
+    switch (languageCode) {
+      case 'ar':
+        switch (this) {
+          case OrderPaymentMethod.vodafoneCash:
+            return 'فودافون كاش';
+          case OrderPaymentMethod.instaPay:
+            return 'إنستا باي';
+        }
+      case 'de':
+        switch (this) {
+          case OrderPaymentMethod.vodafoneCash:
+            return 'Vodafone Cash';
+          case OrderPaymentMethod.instaPay:
+            return 'InstaPay';
+        }
+      case 'ru':
+        switch (this) {
+          case OrderPaymentMethod.vodafoneCash:
+            return 'Vodafone Cash';
+          case OrderPaymentMethod.instaPay:
+            return 'InstaPay';
+        }
+      case 'en':
+      default:
+        switch (this) {
+          case OrderPaymentMethod.vodafoneCash:
+            return 'Vodafone Cash';
+          case OrderPaymentMethod.instaPay:
+            return 'InstaPay';
+        }
     }
   }
 
@@ -65,22 +92,79 @@ extension OrderStatusX on OrderStatus {
     }
   }
 
-  String get label {
-    switch (this) {
-      case OrderStatus.pendingReview:
-        return 'Pending Review';
-      case OrderStatus.approved:
-        return 'Approved';
-      case OrderStatus.rejected:
-        return 'Rejected';
-      case OrderStatus.processing:
-        return 'Processing';
-      case OrderStatus.shipped:
-        return 'Shipped';
-      case OrderStatus.delivered:
-        return 'Delivered';
-      case OrderStatus.cancelled:
-        return 'Cancelled';
+  String get label => labelForLocale('en');
+
+  String labelForLocale(String languageCode) {
+    switch (languageCode) {
+      case 'ar':
+        switch (this) {
+          case OrderStatus.pendingReview:
+            return 'قيد المراجعة';
+          case OrderStatus.approved:
+            return 'تمت الموافقة';
+          case OrderStatus.rejected:
+            return 'مرفوض';
+          case OrderStatus.processing:
+            return 'قيد التجهيز';
+          case OrderStatus.shipped:
+            return 'تم الشحن';
+          case OrderStatus.delivered:
+            return 'تم التسليم';
+          case OrderStatus.cancelled:
+            return 'ملغي';
+        }
+      case 'de':
+        switch (this) {
+          case OrderStatus.pendingReview:
+            return 'Wird geprüft';
+          case OrderStatus.approved:
+            return 'Bestätigt';
+          case OrderStatus.rejected:
+            return 'Abgelehnt';
+          case OrderStatus.processing:
+            return 'In Bearbeitung';
+          case OrderStatus.shipped:
+            return 'Versandt';
+          case OrderStatus.delivered:
+            return 'Zugestellt';
+          case OrderStatus.cancelled:
+            return 'Storniert';
+        }
+      case 'ru':
+        switch (this) {
+          case OrderStatus.pendingReview:
+            return 'На проверке';
+          case OrderStatus.approved:
+            return 'Подтвержден';
+          case OrderStatus.rejected:
+            return 'Отклонен';
+          case OrderStatus.processing:
+            return 'В обработке';
+          case OrderStatus.shipped:
+            return 'Отправлен';
+          case OrderStatus.delivered:
+            return 'Доставлен';
+          case OrderStatus.cancelled:
+            return 'Отменен';
+        }
+      case 'en':
+      default:
+        switch (this) {
+          case OrderStatus.pendingReview:
+            return 'Pending Review';
+          case OrderStatus.approved:
+            return 'Approved';
+          case OrderStatus.rejected:
+            return 'Rejected';
+          case OrderStatus.processing:
+            return 'Processing';
+          case OrderStatus.shipped:
+            return 'Shipped';
+          case OrderStatus.delivered:
+            return 'Delivered';
+          case OrderStatus.cancelled:
+            return 'Cancelled';
+        }
     }
   }
 
@@ -173,6 +257,7 @@ class CavoOrder {
   final String pickupType;
   final OrderStatus status;
   final DateTime createdAt;
+  final DateTime? updatedAt;
   final int? rating;
   final List<String> ratingTags;
   final DateTime? ratedAt;
@@ -195,6 +280,7 @@ class CavoOrder {
     required this.pickupType,
     required this.status,
     required this.createdAt,
+    this.updatedAt,
     this.rating,
     this.ratingTags = const <String>[],
     this.ratedAt,
@@ -261,6 +347,7 @@ class CavoOrder {
       pickupType: (map['pickupType'] ?? '').toString(),
       status: OrderStatusX.fromKey(map['status']?.toString()),
       createdAt: _readDate(map['createdAt']) ?? DateTime.now(),
+      updatedAt: _readDate(map['updatedAt']),
       rating: (map['rating'] as num?)?.toInt(),
       ratingTags: ratingTags,
       ratedAt: _readDate(map['ratedAt']),
@@ -285,6 +372,7 @@ class CavoOrder {
     String? pickupType,
     OrderStatus? status,
     DateTime? createdAt,
+    DateTime? updatedAt,
     int? rating,
     List<String>? ratingTags,
     DateTime? ratedAt,
@@ -307,6 +395,7 @@ class CavoOrder {
       pickupType: pickupType ?? this.pickupType,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
       rating: rating ?? this.rating,
       ratingTags: ratingTags ?? this.ratingTags,
       ratedAt: ratedAt ?? this.ratedAt,

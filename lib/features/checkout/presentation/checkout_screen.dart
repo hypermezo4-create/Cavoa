@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
@@ -26,6 +27,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   OrderPaymentMethod _paymentMethod = OrderPaymentMethod.vodafoneCash;
   bool _submitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    if ((user?.displayName ?? '').trim().isNotEmpty) {
+      _nameController.text = user!.displayName!.trim();
+    }
+    if ((user?.phoneNumber ?? '').trim().isNotEmpty) {
+      _phoneController.text = user!.phoneNumber!.trim();
+    }
+  }
 
   @override
   void dispose() {
@@ -61,6 +74,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _confirmOrder() async {
+    final localeCode = Localizations.localeOf(context).languageCode;
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) {
       return;
@@ -109,7 +123,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   const SizedBox(height: 18),
                   Text(
-                    'Order placed successfully',
+                    localeCode == 'ar' ? 'تم إرسال الطلب بنجاح' : localeCode == 'de' ? 'Bestellung erfolgreich erstellt' : localeCode == 'ru' ? 'Заказ успешно создан' : 'Order placed successfully',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: primary,
@@ -119,7 +133,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Order ID: ${order.id}\nYour order is now saved in Firebase with status ${order.status.label}.',
+                    localeCode == 'ar' ? 'رقم الطلب: ${order.id}\nتم حفظ طلبك في Firebase وحالته الآن ${order.status.labelForLocale(localeCode)}.' : localeCode == 'de' ? 'Bestellnummer: ${order.id}\nDeine Bestellung wurde in Firebase gespeichert. Status: ${order.status.labelForLocale(localeCode)}.' : localeCode == 'ru' ? 'Номер заказа: ${order.id}\nВаш заказ сохранен в Firebase. Статус: ${order.status.labelForLocale(localeCode)}.' : 'Order ID: ${order.id}\nYour order is now saved in Firebase with status ${order.status.labelForLocale(localeCode)}.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: secondary,
@@ -137,7 +151,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             Navigator.of(dialogContext).pop();
                             Navigator.of(context).maybePop();
                           },
-                          child: const Text('Back to cart'),
+                          child: Text(localeCode == 'ar' ? 'العودة للسلة' : localeCode == 'de' ? 'Zurück zum Warenkorb' : localeCode == 'ru' ? 'Назад в корзину' : 'Back to cart'),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -151,7 +165,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ),
                             );
                           },
-                          child: const Text('Track order'),
+                          child: Text(localeCode == 'ar' ? 'تتبع الطلب' : localeCode == 'de' ? 'Bestellung verfolgen' : localeCode == 'ru' ? 'Отследить заказ' : 'Track order'),
                         ),
                       ),
                     ],
@@ -164,7 +178,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
     } catch (error) {
       if (!mounted) return;
-      _showMessage('Could not place order right now. $error');
+      _showMessage(localeCode == 'ar' ? 'تعذر إنشاء الطلب الآن. $error' : localeCode == 'de' ? 'Die Bestellung konnte gerade nicht erstellt werden. $error' : localeCode == 'ru' ? 'Не удалось оформить заказ сейчас. $error' : 'Could not place order right now. $error');
     } finally {
       if (mounted) {
         setState(() => _submitting = false);
@@ -177,6 +191,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final localeCode = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
@@ -213,7 +228,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Complete your order details and send the order directly to Firebase.',
+                                localeCode == 'ar' ? 'أكمل بيانات الطلب ليتم إرساله مباشرة إلى Firebase.' : localeCode == 'de' ? 'Vervollständige deine Bestelldaten und sende sie direkt an Firebase.' : localeCode == 'ru' ? 'Заполните данные заказа, и он будет отправлен напрямую в Firebase.' : 'Complete your order details and send the order directly to Firebase.',
                                 style: TextStyle(
                                   color: secondary,
                                   fontSize: 13,
@@ -232,19 +247,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _FieldLabel(label: 'Full name', isLight: isLight),
+                          _FieldLabel(label: localeCode == 'ar' ? 'الاسم الكامل' : localeCode == 'de' ? 'Vollständiger Name' : localeCode == 'ru' ? 'Полное имя' : 'Full name', isLight: isLight),
                           _CheckoutTextField(
                             controller: _nameController,
-                            hintText: 'Ahmed Mohamed',
-                            validator: (value) => value == null || value.trim().isEmpty ? 'Please enter your name.' : null,
+                            hintText: localeCode == 'ar' ? 'أحمد محمد' : 'Ahmed Mohamed',
+                            validator: (value) => value == null || value.trim().isEmpty ? (localeCode == 'ar' ? 'من فضلك اكتب الاسم.' : localeCode == 'de' ? 'Bitte gib deinen Namen ein.' : localeCode == 'ru' ? 'Пожалуйста, введите имя.' : 'Please enter your name.') : null,
                           ),
                           const SizedBox(height: 12),
-                          _FieldLabel(label: 'Phone number', isLight: isLight),
+                          _FieldLabel(label: localeCode == 'ar' ? 'رقم الهاتف' : localeCode == 'de' ? 'Telefonnummer' : localeCode == 'ru' ? 'Номер телефона' : 'Phone number', isLight: isLight),
                           _CheckoutTextField(
                             controller: _phoneController,
                             hintText: '01xxxxxxxxx',
                             keyboardType: TextInputType.phone,
-                            validator: (value) => value == null || value.trim().length < 10 ? 'Please enter a valid phone number.' : null,
+                            validator: (value) => value == null || value.trim().length < 10 ? (localeCode == 'ar' ? 'من فضلك اكتب رقم هاتف صحيح.' : localeCode == 'de' ? 'Bitte gib eine gültige Telefonnummer ein.' : localeCode == 'ru' ? 'Введите корректный номер телефона.' : 'Please enter a valid phone number.') : null,
                           ),
                           const SizedBox(height: 12),
                           Row(
@@ -279,14 +294,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _FieldLabel(label: 'Address details', isLight: isLight),
+                          _FieldLabel(label: localeCode == 'ar' ? 'تفاصيل العنوان' : localeCode == 'de' ? 'Adressdetails' : localeCode == 'ru' ? 'Адрес' : 'Address details', isLight: isLight),
                           _CheckoutTextField(
                             controller: _addressController,
                             hintText: 'Street, building, floor, apartment',
-                            validator: (value) => value == null || value.trim().isEmpty ? 'Please enter your address details.' : null,
+                            validator: (value) => value == null || value.trim().isEmpty ? (localeCode == 'ar' ? 'من فضلك اكتب تفاصيل العنوان.' : localeCode == 'de' ? 'Bitte gib deine Adressdetails ein.' : localeCode == 'ru' ? 'Пожалуйста, введите адрес.' : 'Please enter your address details.') : null,
                           ),
                           const SizedBox(height: 12),
-                          _FieldLabel(label: 'Notes', isLight: isLight),
+                          _FieldLabel(label: localeCode == 'ar' ? 'ملاحظات' : localeCode == 'de' ? 'Hinweise' : localeCode == 'ru' ? 'Примечания' : 'Notes', isLight: isLight),
                           _CheckoutTextField(
                             controller: _notesController,
                             hintText: 'Optional delivery notes',
@@ -303,7 +318,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Payment method',
+                            localeCode == 'ar' ? 'طريقة الدفع' : localeCode == 'de' ? 'Zahlungsmethode' : localeCode == 'ru' ? 'Способ оплаты' : 'Payment method',
                             style: TextStyle(
                               color: primary,
                               fontSize: 18,
@@ -318,7 +333,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                               final selected = method == _paymentMethod;
                               return ChoiceChip(
                                 selected: selected,
-                                label: Text(method.label),
+                                label: Text(method.labelForLocale(localeCode)),
                                 onSelected: (_) => setState(() => _paymentMethod = method),
                                 selectedColor: CavoColors.gold.withValues(alpha: 0.20),
                                 backgroundColor: isLight ? Colors.white : CavoColors.surfaceSoft,
@@ -334,7 +349,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            'Orders are sent to Firebase immediately after confirmation so you can approve or reject them from the admin side.',
+                            localeCode == 'ar' ? 'يتم إرسال الطلبات إلى Firebase فور التأكيد لتتمكن من قبولها أو رفضها من لوحة الإدارة.' : localeCode == 'de' ? 'Bestellungen werden nach der Bestätigung sofort an Firebase gesendet.' : localeCode == 'ru' ? 'Заказы сразу отправляются в Firebase после подтверждения.' : 'Orders are sent to Firebase immediately after confirmation so you can approve or reject them from the admin side.',
                             style: TextStyle(
                               color: secondary,
                               fontSize: 12,
@@ -353,7 +368,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Order summary',
+                            localeCode == 'ar' ? 'ملخص الطلب' : localeCode == 'de' ? 'Bestellübersicht' : localeCode == 'ru' ? 'Сводка заказа' : 'Order summary',
                             style: TextStyle(
                               color: primary,
                               fontSize: 18,
@@ -416,12 +431,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: _submitting ? null : _confirmOrder,
-                            child: Text(_submitting ? context.l10n.loading : 'Place order'),
+                            child: Text(_submitting ? context.l10n.loading : (localeCode == 'ar' ? 'تأكيد الطلب' : localeCode == 'de' ? 'Bestellung aufgeben' : localeCode == 'ru' ? 'Оформить заказ' : 'Place order')),
                           ),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          'No payment screenshot required. The order is created directly in Firebase.',
+                          localeCode == 'ar' ? 'لا حاجة إلى لقطة شاشة للدفع. يتم إنشاء الطلب مباشرة في Firebase.' : localeCode == 'de' ? 'Kein Zahlungsscreenshot erforderlich. Die Bestellung wird direkt in Firebase erstellt.' : localeCode == 'ru' ? 'Скриншот оплаты не требуется. Заказ создается напрямую в Firebase.' : 'No payment screenshot required. The order is created directly in Firebase.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: secondary,

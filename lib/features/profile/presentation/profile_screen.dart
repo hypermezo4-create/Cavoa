@@ -11,6 +11,8 @@ import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
 import '../../favorites/data/favorites_controller.dart';
 import '../../orders/data/order_controller.dart';
+import '../../notifications/data/notification_center_controller.dart';
+import '../../notifications/presentation/notifications_screen.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 import '../../favorites/presentation/favorites_screen.dart';
 
@@ -23,6 +25,7 @@ class ProfileScreen extends StatelessWidget {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final user = FirebaseAuth.instance.currentUser;
+    final localeCode = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
       backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
@@ -186,6 +189,47 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              ValueListenableBuilder<List<CavoNotificationItem>>(
+                valueListenable: NotificationCenterController.instance,
+                builder: (context, notifications, _) {
+                  final unread = notifications.where((item) => !item.isRead).length;
+                  return _ProfileActionTile(
+                    title: localeCode == 'ar' ? 'الإشعارات' : localeCode == 'de' ? 'Benachrichtigungen' : localeCode == 'ru' ? 'Уведомления' : 'Notifications',
+                    subtitle: unread == 0
+                        ? (localeCode == 'ar' ? 'لا توجد تحديثات غير مقروءة' : localeCode == 'de' ? 'Keine ungelesenen Updates' : localeCode == 'ru' ? 'Нет непрочитанных обновлений' : 'No unread updates')
+                        : '$unread ${localeCode == 'ar' ? 'تحديث غير مقروء' : localeCode == 'de' ? 'ungelesene Updates' : localeCode == 'ru' ? 'непрочитанных обновлений' : 'unread updates'}',
+                    isLight: isLight,
+                    trailing: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        const Icon(Icons.notifications_none_rounded, color: CavoColors.gold),
+                        if (unread > 0)
+                          Positioned(
+                            right: -6,
+                            top: -6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: CavoColors.gold,
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                unread > 9 ? '9+' : '$unread',
+                                style: const TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
                       );
                     },
                   );
@@ -457,7 +501,7 @@ class _OrderCard extends StatelessWidget {
                   ),
                 ),
                 CavoPillTag(
-                  label: order.status.label,
+                  label: order.status.labelForLocale(Localizations.localeOf(context).languageCode),
                   isLight: isLight,
                   selected: true,
                 ),
@@ -465,7 +509,7 @@ class _OrderCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.label}',
+              '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.labelForLocale(Localizations.localeOf(context).languageCode)}',
               style: TextStyle(
                 color: secondary,
                 fontSize: 13,

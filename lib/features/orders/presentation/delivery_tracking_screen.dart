@@ -87,6 +87,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final localeCode = Localizations.localeOf(context).languageCode;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final accent = _statusTint(order.status);
@@ -114,7 +115,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Shipment Review',
+                          localeCode == 'ar' ? 'مراجعة الشحنة' : localeCode == 'de' ? 'Bestellstatus' : localeCode == 'ru' ? 'Статус доставки' : 'Shipment Review',
                           style: TextStyle(
                             color: primary,
                             fontSize: 28,
@@ -123,7 +124,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Track every step of your CAVO order.',
+                          localeCode == 'ar' ? 'تابع كل خطوة من طلب CAVO الخاص بك.' : localeCode == 'de' ? 'Verfolge jeden Schritt deiner CAVO-Bestellung.' : localeCode == 'ru' ? 'Следите за каждым этапом заказа CAVO.' : 'Track every step of your CAVO order.',
                           style: TextStyle(
                             color: secondary,
                             fontSize: 13,
@@ -145,7 +146,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _MetaBlock(
-                            label: 'Order ID',
+                            label: localeCode == 'ar' ? 'رقم الطلب' : localeCode == 'de' ? 'Bestellnummer' : localeCode == 'ru' ? 'Номер заказа' : 'Order ID',
                             value: order.id,
                             primary: primary,
                             secondary: secondary,
@@ -160,7 +161,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                             border: Border.all(color: accent.withValues(alpha: 0.20)),
                           ),
                           child: Text(
-                            order.status.label,
+                            order.status.labelForLocale(localeCode),
                             style: TextStyle(
                               color: accent,
                               fontSize: 12,
@@ -175,7 +176,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _MetaBlock(
-                            label: 'From',
+                            label: localeCode == 'ar' ? 'من' : localeCode == 'de' ? 'Von' : localeCode == 'ru' ? 'Откуда' : 'From',
                             value: 'CAVO, Hurghada',
                             primary: primary,
                             secondary: secondary,
@@ -184,7 +185,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _MetaBlock(
-                            label: 'To',
+                            label: localeCode == 'ar' ? 'إلى' : localeCode == 'de' ? 'Nach' : localeCode == 'ru' ? 'Куда' : 'To',
                             value: '${order.city}, ${order.area}',
                             primary: primary,
                             secondary: secondary,
@@ -209,7 +210,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  order.status == OrderStatus.delivered ? 'Enjoy your order' : 'Your order is moving',
+                                  order.status == OrderStatus.delivered ? (localeCode == 'ar' ? 'استمتع بطلبك' : localeCode == 'de' ? 'Viel Freude mit deiner Bestellung' : localeCode == 'ru' ? 'Наслаждайтесь заказом' : 'Enjoy your order') : (localeCode == 'ar' ? 'طلبك يتحرك الآن' : localeCode == 'de' ? 'Deine Bestellung bewegt sich jetzt' : localeCode == 'ru' ? 'Ваш заказ в пути' : 'Your order is moving'),
                                   style: TextStyle(
                                     color: primary,
                                     fontSize: 24,
@@ -220,8 +221,8 @@ class DeliveryTrackingScreen extends StatelessWidget {
                                 const SizedBox(height: 8),
                                 Text(
                                   order.status == OrderStatus.rejected
-                                      ? 'The order was rejected from the admin side. Please contact support if needed.'
-                                      : 'We keep every status synced from Firebase so you always know the exact step.',
+                                      ? localeCode == 'ar' ? 'تم رفض الطلب من جانب الإدارة. تواصل مع الدعم إذا احتجت.' : localeCode == 'de' ? 'Die Bestellung wurde von der Verwaltung abgelehnt. Bitte kontaktiere bei Bedarf den Support.' : localeCode == 'ru' ? 'Заказ был отклонен со стороны администратора. При необходимости свяжитесь с поддержкой.' : 'The order was rejected from the admin side. Please contact support if needed.'
+                                      : localeCode == 'ar' ? 'نقوم بمزامنة كل حالة من Firebase حتى تعرف المرحلة الدقيقة دائمًا.' : localeCode == 'de' ? 'Jeder Status wird mit Firebase synchronisiert, damit du immer den genauen Schritt kennst.' : localeCode == 'ru' ? 'Каждый статус синхронизируется с Firebase, чтобы вы всегда знали точный этап.' : 'We keep every status synced from Firebase so you always know the exact step.',
                                   style: TextStyle(
                                     color: secondary,
                                     fontSize: 13,
@@ -278,7 +279,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Timeline',
+                      localeCode == 'ar' ? 'الخط الزمني' : localeCode == 'de' ? 'Zeitachse' : localeCode == 'ru' ? 'Хронология' : 'Timeline',
                       style: TextStyle(
                         color: primary,
                         fontSize: 18,
@@ -307,7 +308,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Delivery details',
+                      localeCode == 'ar' ? 'تفاصيل التوصيل' : localeCode == 'de' ? 'Lieferdetails' : localeCode == 'ru' ? 'Детали доставки' : 'Delivery details',
                       style: TextStyle(
                         color: primary,
                         fontSize: 18,
@@ -315,11 +316,11 @@ class DeliveryTrackingScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    _detailRow('Customer', order.customerName, primary, secondary),
-                    _detailRow('Phone', order.phoneNumber, primary, secondary),
+                    _detailRow(localeCode == 'ar' ? 'العميل' : localeCode == 'de' ? 'Kunde' : localeCode == 'ru' ? 'Клиент' : 'Customer', order.customerName, primary, secondary),
+                    _detailRow(localeCode == 'ar' ? 'الهاتف' : localeCode == 'de' ? 'Telefon' : localeCode == 'ru' ? 'Телефон' : 'Phone', order.phoneNumber, primary, secondary),
                     _detailRow('Address', '${order.city}, ${order.area}\n${order.addressLine}', primary, secondary),
-                    _detailRow('Payment', order.paymentMethod.label, primary, secondary),
-                    _detailRow('Total', '${order.total} EGP', primary, secondary),
+                    _detailRow(localeCode == 'ar' ? 'الدفع' : localeCode == 'de' ? 'Zahlung' : localeCode == 'ru' ? 'Оплата' : 'Payment', order.paymentMethod.labelForLocale(localeCode), primary, secondary),
+                    _detailRow(localeCode == 'ar' ? 'الإجمالي' : localeCode == 'de' ? 'Gesamt' : localeCode == 'ru' ? 'Итого' : 'Total', '${order.total} EGP', primary, secondary),
                   ],
                 ),
               ),
