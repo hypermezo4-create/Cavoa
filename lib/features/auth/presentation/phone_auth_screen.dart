@@ -1,13 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import 'auth_premium_widgets.dart';
 import 'otp_verification_screen.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
-  const PhoneAuthScreen({super.key});
+  const PhoneAuthScreen({super.key, this.redirectToCheckout = false});
+
+  final bool redirectToCheckout;
 
   @override
   State<PhoneAuthScreen> createState() => _PhoneAuthScreenState();
@@ -69,6 +72,13 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
   }
 
   void _goToApp() {
+    if (widget.redirectToCheckout) {
+      Navigator.of(context).pushAndRemoveUntil(
+        buildCavoFadeRoute(const CheckoutScreen()),
+        (route) => false,
+      );
+      return;
+    }
     MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushAndRemoveUntil(
       buildCavoFadeRoute(const MainShell()),
@@ -110,6 +120,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
               OtpVerificationScreen(
                 verificationId: verificationId,
                 phoneNumber: number,
+                redirectToCheckout: widget.redirectToCheckout,
               ),
             ),
           );

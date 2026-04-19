@@ -152,7 +152,7 @@ class CartScreen extends StatelessWidget {
                                             ),
                                           );
                                           Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                                            MaterialPageRoute(builder: (_) => const LoginScreen(redirectToCheckout: true)),
                                           );
                                           return;
                                         }

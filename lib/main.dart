@@ -7,6 +7,7 @@ import 'features/cart/data/cart_controller.dart';
 import 'features/favorites/data/favorites_controller.dart';
 import 'features/notifications/data/notification_center_controller.dart';
 import 'features/orders/data/order_controller.dart';
+import 'features/profile/data/profile_controller.dart';
 import 'features/search/data/search_history_controller.dart';
 import 'features/splash/presentation/splash_screen.dart';
 import 'core/localization/app_locale_controller.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   await FavoritesController.instance.init();
   await SearchHistoryController.instance.init();
   await NotificationCenterController.instance.init();
+  await ProfileController.instance.init();
   OrderController.instance;
 
   SystemChrome.setSystemUIOverlayStyle(

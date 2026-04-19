@@ -1,14 +1,21 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
+import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
+import '../../profile/data/profile_controller.dart';
 import 'auth_premium_widgets.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  const RegisterScreen({super.key, this.redirectToCheckout = false});
+
+  final bool redirectToCheckout;
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -31,6 +38,10 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _loading = false;
   bool _acceptedTerms = true;
   bool _passwordsMatch = false;
+  String _gender = 'male';
+  bool _visitedBefore = false;
+  final _ageController = TextEditingController();
+  String? _avatarPath;
 
   @override
   void initState() {
@@ -70,6 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _ageController.dispose();
     super.dispose();
   }
 
@@ -123,11 +135,25 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void _goToApp() {
+    if (widget.redirectToCheckout) {
+      Navigator.of(context).pushAndRemoveUntil(
+        buildCavoFadeRoute(const CheckoutScreen()),
+        (route) => false,
+      );
+      return;
+    }
     MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushAndRemoveUntil(
       buildCavoFadeRoute(const MainShell()),
       (route) => false,
     );
+  }
+
+  Future<void> _pickAvatar(ImageSource source) async {
+    final picker = ImagePicker();
+    final file = await picker.pickImage(source: source, imageQuality: 85, maxWidth: 1200);
+    if (file == null || !mounted) return;
+    setState(() => _avatarPath = file.path);
   }
 
   Future<void> _register() async {
@@ -172,6 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen>
       );
 
       await credential.user?.updateDisplayName(name);
+      await ProfileController.instance.seedBasicProfile(
+        fullName: name,
+        phone: phone,
+        gender: _gender,
+        age: int.tryParse(_ageController.text.trim()),
+        visitedBefore: _visitedBefore,
+        avatarPath: _avatarPath,
+      );
 
       if (!mounted) return;
       _goToApp();
@@ -186,6 +220,28 @@ class _RegisterScreenState extends State<RegisterScreen>
         setState(() => _loading = false);
       }
     }
+  }
+
+
+  InputDecoration _dropdownDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Color(0xFFB8B1A3)),
+      filled: true,
+      fillColor: const Color(0xFF141416),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.16)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.16)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.2),
+      ),
+    );
   }
 
   @override
@@ -342,6 +398,72 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                     const SizedBox(height: 16),
                     Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => _pickAvatar(ImageSource.gallery),
+                          child: CircleAvatar(
+                            radius: 34,
+                            backgroundColor: const Color(0x1FD4AF37),
+                            backgroundImage: _avatarPath == null ? null : FileImage(File(_avatarPath!)),
+                            child: _avatarPath == null ? const Icon(Icons.photo_camera_back_rounded, color: Color(0xFFD4AF37)) : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Profile photo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(child: AuthOutlineButton(label: 'Gallery', onPressed: () => _pickAvatar(ImageSource.gallery), compact: true)),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: AuthOutlineButton(label: 'Camera', onPressed: () => _pickAvatar(ImageSource.camera), compact: true)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _gender,
+                            dropdownColor: const Color(0xFF171717),
+                            decoration: _dropdownDecoration('Gender'),
+                            items: const [
+                              DropdownMenuItem(value: 'male', child: Text('Male')),
+                              DropdownMenuItem(value: 'female', child: Text('Female')),
+                            ],
+                            onChanged: (value) => setState(() => _gender = value ?? 'male'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _ageController,
+                            keyboardType: TextInputType.number,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                            decoration: _dropdownDecoration('Age'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    SwitchListTile.adaptive(
+                      value: _visitedBefore,
+                      contentPadding: EdgeInsets.zero,
+                      activeColor: const Color(0xFFD4AF37),
+                      title: const Text('Have you visited CAVO before?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
+                      subtitle: const Text('This helps personalize recommendations.', style: TextStyle(color: Color(0xFFB8B1A3), fontSize: 12)),
+                      onChanged: (value) => setState(() => _visitedBefore = value),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         GestureDetector(
@@ -408,7 +530,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                   actionLabel: 'Login',
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      buildCavoFadeRoute(const LoginScreen()),
+                      buildCavoFadeRoute(LoginScreen(redirectToCheckout: widget.redirectToCheckout)),
                     );
                   },
                 ),

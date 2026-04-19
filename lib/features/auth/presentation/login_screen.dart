@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/localization/l10n_ext.dart';
+import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import '../data/auth_service.dart';
@@ -11,7 +12,9 @@ import 'register_screen.dart';
 import 'reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({super.key, this.redirectToCheckout = false});
+
+  final bool redirectToCheckout;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -117,6 +120,14 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   void _goToApp() {
+    if (widget.redirectToCheckout) {
+      Navigator.of(context).pushAndRemoveUntil(
+        buildCavoFadeRoute(const CheckoutScreen()),
+        (route) => false,
+      );
+      return;
+    }
+
     MainNavigationController.instance.goTo(0);
     Navigator.of(context).pushAndRemoveUntil(
       buildCavoFadeRoute(const MainShell()),
@@ -320,7 +331,7 @@ class _LoginScreenState extends State<LoginScreen>
                               ? () {}
                               : () {
                                   Navigator.of(context).push(
-                                    buildCavoFadeRoute(const PhoneAuthScreen()),
+                                    buildCavoFadeRoute(PhoneAuthScreen(redirectToCheckout: widget.redirectToCheckout)),
                                   );
                                 },
                           icon: const Icon(
@@ -387,7 +398,7 @@ class _LoginScreenState extends State<LoginScreen>
                       actionLabel: 'Create Account',
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
-                          buildCavoFadeRoute(const RegisterScreen()),
+                          buildCavoFadeRoute(RegisterScreen(redirectToCheckout: widget.redirectToCheckout)),
                         );
                       },
                     ),

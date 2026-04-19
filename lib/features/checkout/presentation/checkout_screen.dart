@@ -8,6 +8,7 @@ import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../cart/data/cart_controller.dart';
 import '../../auth/presentation/login_screen.dart';
 import '../../orders/data/order_controller.dart';
+import '../../profile/data/profile_controller.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -33,11 +34,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void initState() {
     super.initState();
     final user = FirebaseAuth.instance.currentUser;
-    if ((user?.displayName ?? '').trim().isNotEmpty) {
+    final profile = ProfileController.instance.value;
+    if ((profile?.fullName ?? '').trim().isNotEmpty) {
+      _nameController.text = profile!.fullName.trim();
+    } else if ((user?.displayName ?? '').trim().isNotEmpty) {
       _nameController.text = user!.displayName!.trim();
     }
-    if ((user?.phoneNumber ?? '').trim().isNotEmpty) {
+    if ((profile?.phone ?? '').trim().isNotEmpty) {
+      _phoneController.text = profile!.phone.trim();
+    } else if ((user?.phoneNumber ?? '').trim().isNotEmpty) {
       _phoneController.text = user!.phoneNumber!.trim();
+    }
+    if ((profile?.city ?? '').trim().isNotEmpty) {
+      _cityController.text = profile!.city.trim();
+    }
+    if ((profile?.area ?? '').trim().isNotEmpty) {
+      _areaController.text = profile!.area.trim();
+    }
+    if ((profile?.addressLine ?? '').trim().isNotEmpty) {
+      _addressController.text = profile!.addressLine.trim();
     }
   }
 
@@ -77,7 +92,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Future<void> _requireSignIn() async {
     _showMessage('Sign in first to place your order.');
     await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      MaterialPageRoute(builder: (_) => const LoginScreen(redirectToCheckout: true)),
     );
   }
 

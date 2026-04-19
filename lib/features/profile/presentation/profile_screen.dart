@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +17,8 @@ import '../../notifications/data/notification_center_controller.dart';
 import '../../notifications/presentation/notifications_screen.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 import '../../favorites/presentation/favorites_screen.dart';
+import '../data/profile_controller.dart';
+import 'profile_edit_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -26,6 +30,7 @@ class ProfileScreen extends StatelessWidget {
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final user = FirebaseAuth.instance.currentUser;
     final localeCode = Localizations.localeOf(context).languageCode;
+    final profile = ProfileController.instance.value;
 
     return Scaffold(
       backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
@@ -44,7 +49,11 @@ class ProfileScreen extends StatelessWidget {
                 action: user == null ? null : (localeCode == 'ar' ? 'تعديل' : localeCode == 'de' ? 'Bearbeiten' : localeCode == 'ru' ? 'Изменить' : 'Edit'),
                 onActionTap: user == null
                     ? null
-                    : () => _showEditProfileSheet(context, user: user, isLight: isLight),
+                    : () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ProfileEditScreen()),
+                        );
+                      },
                 isLight: isLight,
               ),
               const SizedBox(height: 18),
@@ -66,7 +75,9 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                       child: ClipOval(
-                        child: Image.asset('assets/branding/cavo_logo_circle.png', fit: BoxFit.cover),
+                        child: (profile?.avatarPath != null && profile!.avatarPath!.isNotEmpty)
+                            ? Image.file(File(profile.avatarPath!), fit: BoxFit.cover)
+                            : Image.asset('assets/branding/cavo_logo_circle.png', fit: BoxFit.cover),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -75,9 +86,9 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            user?.displayName?.trim().isNotEmpty == true
-                                ? user!.displayName!
-                                : (user?.email ?? 'CAVO Member'),
+                            profile?.fullName.trim().isNotEmpty == true
+                                ? profile!.fullName
+                                : (user?.displayName?.trim().isNotEmpty == true ? user!.displayName! : (user?.email ?? 'CAVO Member')),
                             style: TextStyle(
                               color: primary,
                               fontSize: 20,
@@ -86,7 +97,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            user?.email ?? context.l10n.guestModeSignInForFullAccess,
+                            profile?.email.isNotEmpty == true ? profile!.email : (user?.email ?? context.l10n.guestModeSignInForFullAccess),
                             style: TextStyle(
                               color: secondary,
                               fontSize: 13,
