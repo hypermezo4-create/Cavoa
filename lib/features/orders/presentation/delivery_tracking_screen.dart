@@ -332,7 +332,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                     onPressed: () async {
                       await showCavoRatingSheet(context, order: order);
                     },
-                    child: Text(order.isRated ? 'Update rating' : 'Rate your delivery'),
+                    child: Text(order.isRated ? (localeCode == 'ar' ? 'تعديل التقييم' : localeCode == 'de' ? 'Bewertung bearbeiten' : localeCode == 'ru' ? 'Изменить оценку' : 'Update rating') : (localeCode == 'ar' ? 'قيّم التوصيل' : localeCode == 'de' ? 'Lieferung bewerten' : localeCode == 'ru' ? 'Оценить доставку' : 'Rate your delivery')),
                   ),
                 ),
               ],

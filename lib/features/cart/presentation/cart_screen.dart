@@ -31,7 +31,7 @@ class CartScreen extends StatelessWidget {
                 children: [
                   ListView(
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(20, 14, 20, items.isEmpty ? 120 : 220),
+                    padding: EdgeInsets.fromLTRB(20, 14, 20, items.isEmpty ? 120 : 180),
                     children: [
                       CavoSectionHeader(
                         title: context.l10n.cart,
@@ -90,38 +90,6 @@ class CartScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: CavoBenefitTile(
-                                icon: Icons.workspace_premium_rounded,
-                                title: 'Premium selection',
-                                subtitle: 'Every item stays preserved in cart',
-                                isLight: isLight,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: CavoBenefitTile(
-                                icon: Icons.store_mall_directory_outlined,
-                                title: 'Pickup ready',
-                                subtitle: 'Hurghada store collection flow',
-                                isLight: isLight,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Your cart now feels like a premium holding area before checkout, with larger visuals and softer motion across the flow.',
-                          style: TextStyle(
-                            color: secondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            height: 1.5,
-                          ),
-                        ),
                       ],
                     ],
                   ),
@@ -175,7 +143,7 @@ class CartScreen extends StatelessWidget {
                                               backgroundColor: isLight ? CavoColors.lightSurface : CavoColors.surface,
                                               behavior: SnackBarBehavior.floating,
                                               content: Text(
-                                                'Sign in first to place your order.',
+                                                context.l10n.guestModeSignInForFullAccess,
                                                 style: TextStyle(
                                                   color: isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary,
                                                   fontWeight: FontWeight.w700,

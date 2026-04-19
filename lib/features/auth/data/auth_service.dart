@@ -75,10 +75,6 @@ class AuthService {
 
       throw CavoAuthException(
         _mapGoogleSignInException(error),
-        debugDetails:
-            'GoogleSignInException(code: ${error.code.name}, '
-            'description: ${error.description ?? 'none'}, '
-            'details: ${error.details ?? 'none'})',
         cause: error,
       );
     } on FirebaseAuthException catch (error, stackTrace) {
@@ -90,9 +86,6 @@ class AuthService {
 
       throw CavoAuthException(
         _mapFirebaseAuthException(error),
-        debugDetails:
-            'FirebaseAuthException(code: ${error.code}, '
-            'message: ${error.message ?? 'none'})',
         cause: error,
       );
     } catch (error, stackTrace) {
@@ -100,8 +93,7 @@ class AuthService {
       debugPrintStack(stackTrace: stackTrace);
 
       throw CavoAuthException(
-        'Unexpected Google sign-in failure.',
-        debugDetails: error.toString(),
+        'Google sign-in is not ready on this build yet. Please use email login for now.',
         cause: error,
       );
     }
@@ -110,28 +102,20 @@ class AuthService {
   String _mapGoogleSignInException(GoogleSignInException error) {
     switch (error.code) {
       case GoogleSignInExceptionCode.clientConfigurationError:
-        return 'Google Sign-In Android configuration error. '
-            'Check SHA-1, package name, and serverClientId.';
+        return 'Google sign-in is not ready on this build yet. Please use email login for now.';
       case GoogleSignInExceptionCode.canceled:
-        return 'Google sign-in was canceled. If this happens right after '
-            'choosing an account, it often means there is still a '
-            'configuration mismatch in Android/Firebase.';
+        return 'Google sign-in could not finish on this build yet. Please use email login for now.';
       case GoogleSignInExceptionCode.interrupted:
         return 'Google sign-in was interrupted. Please try again.';
       case GoogleSignInExceptionCode.providerConfigurationError:
-        return 'Google provider configuration is incomplete or unavailable '
-            'on this device.';
+        return 'Google sign-in is temporarily unavailable on this build.';
       case GoogleSignInExceptionCode.uiUnavailable:
         return 'Google sign-in UI is unavailable right now. Open the screen '
             'again and retry.';
       case GoogleSignInExceptionCode.userMismatch:
         return 'Google account mismatch detected. Sign out and try again.';
       case GoogleSignInExceptionCode.unknownError:
-        final description = error.description?.trim();
-        if (description != null && description.isNotEmpty) {
-          return description;
-        }
-        return 'Unknown Google sign-in error.';
+        return 'Google sign-in is temporarily unavailable on this build.';
     }
   }
 
@@ -148,7 +132,7 @@ class AuthService {
       case 'too-many-requests':
         return 'Too many attempts. Please try again later.';
       default:
-        return error.message ?? 'Firebase rejected Google sign-in.';
+        return 'Google sign-in is not ready on this build yet. Please use email login for now.';
     }
   }
 }

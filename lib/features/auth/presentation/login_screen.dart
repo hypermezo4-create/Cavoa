@@ -167,10 +167,10 @@ class _LoginScreenState extends State<LoginScreen>
       _goToApp();
     } on CavoAuthException catch (error) {
       if (!mounted) return;
-      _showMessage(error.message);
+      _showMessage(error.message.trim());
     } catch (error) {
       if (!mounted) return;
-      _showMessage('Unexpected Google sign-in error. Please try again.');
+      _showMessage('Google sign-in is not ready on this build yet. Please use email login for now.');
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -333,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen>
                         AuthIconAction(
                           onPressed: () {
                             _showMessage(
-                              'Facebook login will be enabled after Meta app setup is finished.',
+                              'Facebook login is not ready on this build yet. Please use email login for now.',
                             );
                           },
                           icon: const Icon(

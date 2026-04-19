@@ -48,8 +48,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
 
   String _mapPhoneAuthError(FirebaseAuthException error) {
     final code = error.code.toLowerCase();
-    if (code.contains('billing') || code.contains('not-enabled')) {
-      return 'Phone OTP is not ready yet on Firebase billing for this build.';
+    final message = (error.message ?? '').toLowerCase();
+    if (code.contains('billing') || code.contains('not-enabled') || message.contains('billing_not_enabled')) {
+      return 'Phone OTP is not ready on this build yet. Please use email login for now.';
     }
     switch (error.code) {
       case 'invalid-phone-number':
@@ -59,11 +60,11 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
       case 'quota-exceeded':
         return 'OTP quota is exceeded right now. Please try again later.';
       case 'operation-not-allowed':
-        return 'Phone sign-in is not enabled in Firebase Auth.';
+        return 'Phone OTP is not ready on this build yet. Please use email login for now.';
       case 'network-request-failed':
         return 'Network error while sending OTP. Please try again.';
       default:
-        return error.message ?? 'Phone verification failed.';
+        return error.message ?? 'Phone OTP is not ready on this build yet. Please use email login for now.';
     }
   }
 

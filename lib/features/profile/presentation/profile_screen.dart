@@ -41,7 +41,7 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: user == null
                     ? context.l10n.guestModeSignInForFullAccess
                     : context.l10n.signedInSecurely,
-                action: user == null ? null : 'Edit',
+                action: user == null ? null : (localeCode == 'ar' ? 'تعديل' : localeCode == 'de' ? 'Bearbeiten' : localeCode == 'ru' ? 'Изменить' : 'Edit'),
                 onActionTap: user == null
                     ? null
                     : () => _showEditProfileSheet(context, user: user, isLight: isLight),
@@ -95,7 +95,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           CavoPillTag(
-                            label: user == null ? 'Guest mode' : 'Firebase account',
+                            label: user == null ? (localeCode == 'ar' ? 'وضع الضيف' : localeCode == 'de' ? 'Gastmodus' : localeCode == 'ru' ? 'Гостевой режим' : 'Guest mode') : (localeCode == 'ar' ? 'حساب Firebase' : localeCode == 'de' ? 'Firebase-Konto' : localeCode == 'ru' ? 'Аккаунт Firebase' : 'Firebase account'),
                             isLight: isLight,
                             selected: true,
                           ),
@@ -115,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                         return _CountCard(
                           title: context.l10n.cart,
                           value: '${cartItems.length}',
-                          subtitle: 'items saved',
+                          subtitle: localeCode == 'ar' ? 'عناصر محفوظة' : localeCode == 'de' ? 'Artikel gespeichert' : localeCode == 'ru' ? 'товаров сохранено' : 'items saved',
                           icon: Icons.shopping_bag_outlined,
                           isLight: isLight,
                         );
@@ -128,7 +128,7 @@ class ProfileScreen extends StatelessWidget {
                         ? _CountCard(
                             title: context.l10n.orders,
                             value: '${OrderController.instance.value.length}',
-                            subtitle: 'local only',
+                            subtitle: localeCode == 'ar' ? 'محلي فقط' : localeCode == 'de' ? 'Nur lokal' : localeCode == 'ru' ? 'только локально' : 'local only',
                             icon: Icons.receipt_long_outlined,
                             isLight: isLight,
                           )
@@ -139,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
                               return _CountCard(
                                 title: context.l10n.orders,
                                 value: '$value',
-                                subtitle: 'synced to Firebase',
+                                subtitle: localeCode == 'ar' ? 'متزامنة مع Firebase' : localeCode == 'de' ? 'mit Firebase synchronisiert' : localeCode == 'ru' ? 'синхронизировано с Firebase' : 'synced to Firebase',
                                 icon: Icons.cloud_done_outlined,
                                 isLight: isLight,
                               );
@@ -157,7 +157,7 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ProfileActionTile(
                 title: context.l10n.language,
-                subtitle: 'Current: ${AppLocaleController.instance.code}',
+                subtitle: localeCode == 'ar' ? 'الحالية: ${AppLocaleController.instance.code}' : localeCode == 'de' ? 'Aktuell: ${AppLocaleController.instance.code}' : localeCode == 'ru' ? 'Текущий: ${AppLocaleController.instance.code}' : 'Current: ${AppLocaleController.instance.code}',
                 isLight: isLight,
                 trailing: const CavoLanguagePicker(isLight: false, expanded: false),
               ),
@@ -239,8 +239,8 @@ class ProfileScreen extends StatelessWidget {
               CavoSectionHeader(
                 title: context.l10n.orders,
                 subtitle: user == null
-                    ? 'Sign in to sync order status from Firebase.'
-                    : 'Your recent Firebase orders appear here with their latest status.',
+                    ? (localeCode == 'ar' ? 'سجل الدخول لمزامنة حالة الطلب من Firebase.' : localeCode == 'de' ? 'Melde dich an, um den Bestellstatus mit Firebase zu synchronisieren.' : localeCode == 'ru' ? 'Войдите, чтобы синхронизировать статус заказа из Firebase.' : 'Sign in to sync order status from Firebase.')
+                    : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة من Firebase هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Firebase-Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы из Firebase с актуальным статусом.' : 'Your recent Firebase orders appear here with their latest status.'),
                 isLight: isLight,
               ),
               const SizedBox(height: 12),
@@ -563,102 +563,119 @@ Future<void> _showEditProfileSheet(
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
+      final localeCode = Localizations.localeOf(context).languageCode;
       final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
       final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
       bool saving = false;
       bool success = false;
       return StatefulBuilder(
         builder: (context, setModalState) {
-          return Padding(
+          return AnimatedPadding(
+            duration: const Duration(milliseconds: 180),
             padding: EdgeInsets.only(
               left: 14,
               right: 14,
               bottom: MediaQuery.of(context).viewInsets.bottom + 14,
+              top: 14,
             ),
-            child: CavoGlassCard(
-              isLight: isLight,
-              borderRadius: const BorderRadius.all(Radius.circular(34)),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 60,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: secondary.withValues(alpha: 0.18),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      color: primary,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _SheetField(controller: nameController, label: 'Full name', icon: Icons.person_outline_rounded, primary: primary, secondary: secondary),
-                  const SizedBox(height: 12),
-                  _SheetField(controller: emailController, label: 'Email', icon: Icons.mail_outline_rounded, primary: primary, secondary: secondary, enabled: false),
-                  const SizedBox(height: 12),
-                  _SheetField(controller: phoneController, label: 'Phone', icon: Icons.phone_outlined, primary: primary, secondary: secondary),
-                  const SizedBox(height: 12),
-                  _SheetField(controller: locationController, label: 'Location', icon: Icons.location_on_outlined, primary: primary, secondary: secondary),
-                  const SizedBox(height: 12),
-                  _SheetField(controller: bioController, label: 'Bio', icon: Icons.info_outline_rounded, primary: primary, secondary: secondary, maxLines: 2),
-                  const SizedBox(height: 18),
-                  AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 220),
-                    child: success
-                        ? Row(
-                            key: const ValueKey('ok'),
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.check_circle_rounded, color: Color(0xFF2DBA71)),
-                              SizedBox(width: 8),
-                              Text('Profile saved smoothly', style: TextStyle(color: Color(0xFF2DBA71), fontWeight: FontWeight.w800)),
-                            ],
-                          )
-                        : const SizedBox.shrink(key: ValueKey('idle')),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: saving ? null : () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
+            child: FractionallySizedBox(
+              heightFactor: 0.86,
+              child: CavoGlassCard(
+                isLight: isLight,
+                borderRadius: const BorderRadius.all(Radius.circular(34)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 60,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: secondary.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(999),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: saving
-                              ? null
-                              : () async {
-                                  setModalState(() => saving = true);
-                                  await user.updateDisplayName(nameController.text.trim());
-                                  if (context.mounted) {
-                                    setModalState(() {
-                                      saving = false;
-                                      success = true;
-                                    });
-                                    await Future<void>.delayed(const Duration(milliseconds: 700));
-                                  }
-                                },
-                          child: Text(saving ? 'Saving...' : 'Save Changes'),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      localeCode == 'ar' ? 'تعديل الملف الشخصي' : localeCode == 'de' ? 'Profil bearbeiten' : localeCode == 'ru' ? 'Редактировать профиль' : 'Edit Profile',
+                      style: TextStyle(
+                        color: primary,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _SheetField(controller: nameController, label: localeCode == 'ar' ? 'الاسم الكامل' : localeCode == 'de' ? 'Vollständiger Name' : localeCode == 'ru' ? 'Полное имя' : 'Full name', icon: Icons.person_outline_rounded, primary: primary, secondary: secondary),
+                            const SizedBox(height: 12),
+                            _SheetField(controller: emailController, label: localeCode == 'ar' ? 'البريد الإلكتروني' : localeCode == 'de' ? 'E-Mail' : localeCode == 'ru' ? 'Электронная почта' : 'Email', icon: Icons.mail_outline_rounded, primary: primary, secondary: secondary, enabled: false),
+                            const SizedBox(height: 12),
+                            _SheetField(controller: phoneController, label: localeCode == 'ar' ? 'الهاتف' : localeCode == 'de' ? 'Telefon' : localeCode == 'ru' ? 'Телефон' : 'Phone', icon: Icons.phone_outlined, primary: primary, secondary: secondary),
+                            const SizedBox(height: 12),
+                            _SheetField(controller: locationController, label: localeCode == 'ar' ? 'الموقع' : localeCode == 'de' ? 'Standort' : localeCode == 'ru' ? 'Местоположение' : 'Location', icon: Icons.location_on_outlined, primary: primary, secondary: secondary),
+                            const SizedBox(height: 12),
+                            _SheetField(controller: bioController, label: localeCode == 'ar' ? 'نبذة' : localeCode == 'de' ? 'Info' : localeCode == 'ru' ? 'О себе' : 'Bio', icon: Icons.info_outline_rounded, primary: primary, secondary: secondary, maxLines: 2),
+                            const SizedBox(height: 18),
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 220),
+                              child: success
+                                  ? Row(
+                                      key: const ValueKey('ok'),
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.check_circle_rounded, color: Color(0xFF2DBA71)),
+                                        const SizedBox(width: 8),
+                                        Text(localeCode == 'ar' ? 'تم حفظ الملف الشخصي' : localeCode == 'de' ? 'Profil gespeichert' : localeCode == 'ru' ? 'Профиль сохранен' : 'Profile saved', style: const TextStyle(color: Color(0xFF2DBA71), fontWeight: FontWeight.w800)),
+                                      ],
+                                    )
+                                  : const SizedBox.shrink(key: ValueKey('idle')),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: saving ? null : () => Navigator.of(context).pop(),
+                            child: Text(localeCode == 'ar' ? 'إلغاء' : localeCode == 'de' ? 'Abbrechen' : localeCode == 'ru' ? 'Отмена' : 'Cancel'),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: saving
+                                ? null
+                                : () async {
+                                    setModalState(() => saving = true);
+                                    await user.updateDisplayName(nameController.text.trim());
+                                    if (context.mounted) {
+                                      setModalState(() {
+                                        saving = false;
+                                        success = true;
+                                      });
+                                      await Future<void>.delayed(const Duration(milliseconds: 700));
+                                      if (context.mounted) Navigator.of(context).pop();
+                                    }
+                                  },
+                            child: Text(saving ? (localeCode == 'ar' ? 'جارٍ الحفظ...' : localeCode == 'de' ? 'Wird gespeichert...' : localeCode == 'ru' ? 'Сохранение...' : 'Saving...') : (localeCode == 'ar' ? 'حفظ التغييرات' : localeCode == 'de' ? 'Änderungen speichern' : localeCode == 'ru' ? 'Сохранить изменения' : 'Save Changes')),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
