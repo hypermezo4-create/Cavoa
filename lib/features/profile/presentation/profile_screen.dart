@@ -18,6 +18,7 @@ import '../../notifications/presentation/notifications_screen.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 import '../../favorites/presentation/favorites_screen.dart';
 import '../data/profile_controller.dart';
+import '../../welcome/presentation/welcome_placeholder_screen.dart';
 import 'profile_edit_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -286,11 +287,14 @@ class ProfileScreen extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () async {
                       await FirebaseAuth.instance.signOut();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(context.l10n.loggedOutSuccessfully)),
-                        );
-                      }
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(context.l10n.loggedOutSuccessfully)),
+                      );
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (_) => const WelcomePlaceholderScreen()),
+                        (route) => false,
+                      );
                     },
                     icon: const Icon(Icons.logout_rounded),
                     label: Text(context.l10n.logout),

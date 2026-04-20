@@ -7,6 +7,7 @@ import '../../main_navigation/presentation/main_shell.dart';
 import '../../profile/data/profile_controller.dart';
 import 'auth_premium_widgets.dart';
 import 'otp_verification_screen.dart';
+import 'phone_name_setup_screen.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
   const PhoneAuthScreen({super.key, this.redirectToCheckout = false});
@@ -51,11 +52,6 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
   }
 
   String _mapPhoneAuthError(FirebaseAuthException error) {
-    final code = error.code.toLowerCase();
-    final message = (error.message ?? '').toLowerCase();
-    if (code.contains('billing') || code.contains('not-enabled') || message.contains('billing_not_enabled')) {
-      return 'Phone OTP is not ready on this build yet. Please use email login for now.';
-    }
     switch (error.code) {
       case 'invalid-phone-number':
         return 'Please enter a valid phone number.';
@@ -64,29 +60,33 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
       case 'quota-exceeded':
         return 'OTP quota is exceeded right now. Please try again later.';
       case 'operation-not-allowed':
-        return 'Phone OTP is not ready on this build yet. Please use email login for now.';
+        return 'Phone login is enabled now, but this APK needs a fresh rebuild and reinstall after the latest Firebase changes.';
       case 'network-request-failed':
         return 'Network error while sending OTP. Please try again.';
+      case 'invalid-app-credential':
+      case 'captcha-check-failed':
+      case 'app-not-authorized':
+        return 'App verification failed for this build. Rebuild and reinstall the app, then try your real number again.';
       default:
-        return error.message ?? 'Phone OTP is not ready on this build yet. Please use email login for now.';
+        return error.message?.trim().isNotEmpty == true
+            ? '${error.message} (${error.code})'
+            : 'Could not send OTP right now. (${error.code})';
     }
   }
 
-  Future<void> _finishPhoneAccountSetup(String phone) async {
+  Future<void> _ensurePhoneProfileSeed(String phone) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final displayName = (user.displayName ?? '').trim().isNotEmpty
-        ? user.displayName!.trim()
-        : 'CAVO Member';
-
-    try {
-      await user.updateDisplayName(displayName);
-    } catch (_) {}
+    final currentName = (user.displayName ?? '').trim();
+    final profileName = (ProfileController.instance.value?.fullName ?? '').trim();
+    final safeName = currentName.isNotEmpty
+        ? currentName
+        : (profileName.isNotEmpty && profileName != 'CAVO Member' ? profileName : '');
 
     try {
       await ProfileController.instance.seedBasicProfile(
-        fullName: displayName,
+        fullName: safeName,
         phone: phone,
         gender: '',
         age: null,
@@ -94,6 +94,30 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
       );
     } catch (_) {}
   }
+
+  bool _needsNameStep() {
+    final user = FirebaseAuth.instance.currentUser;
+    final currentName = (user?.displayName ?? '').trim();
+    final profileName = (ProfileController.instance.value?.fullName ?? '').trim();
+    return currentName.isEmpty || currentName == 'CAVO Member' || profileName.isEmpty || profileName == 'CAVO Member';
+  }
+
+  void _continueAfterSignIn(String phone) {
+    if (_needsNameStep()) {
+      Navigator.of(context).pushAndRemoveUntil(
+        buildCavoFadeRoute(
+          PhoneNameSetupScreen(
+            phoneNumber: phone,
+            redirectToCheckout: widget.redirectToCheckout,
+          ),
+        ),
+        (route) => false,
+      );
+      return;
+    }
+    _goToApp();
+  }
+
 
   void _goToApp() {
     if (widget.redirectToCheckout) {
@@ -126,9 +150,9 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
         phoneNumber: number,
         verificationCompleted: (credential) async {
           await FirebaseAuth.instance.signInWithCredential(credential);
-          await _finishPhoneAccountSetup(number);
+          await _ensurePhoneProfileSeed(number);
           if (!mounted) return;
-          _goToApp();
+          _continueAfterSignIn(number);
         },
         verificationFailed: (error) {
           if (!mounted) return;

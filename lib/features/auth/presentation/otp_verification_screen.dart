@@ -9,6 +9,7 @@ import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import '../../profile/data/profile_controller.dart';
 import 'auth_premium_widgets.dart';
+import 'phone_name_setup_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   const OtpVerificationScreen({
@@ -88,21 +89,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
     super.dispose();
   }
 
-  Future<void> _finishPhoneAccountSetup() async {
+  Future<void> _ensurePhoneProfileSeed() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
-    final displayName = (user.displayName ?? '').trim().isNotEmpty
-        ? user.displayName!.trim()
-        : 'CAVO Member';
-
-    try {
-      await user.updateDisplayName(displayName);
-    } catch (_) {}
+    final currentName = (user.displayName ?? '').trim();
+    final profileName = (ProfileController.instance.value?.fullName ?? '').trim();
+    final safeName = currentName.isNotEmpty
+        ? currentName
+        : (profileName.isNotEmpty && profileName != 'CAVO Member' ? profileName : '');
 
     try {
       await ProfileController.instance.seedBasicProfile(
-        fullName: displayName,
+        fullName: safeName,
         phone: widget.phoneNumber,
         gender: '',
         age: null,
@@ -110,6 +109,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
       );
     } catch (_) {}
   }
+
+  bool _needsNameStep() {
+    final user = FirebaseAuth.instance.currentUser;
+    final currentName = (user?.displayName ?? '').trim();
+    final profileName = (ProfileController.instance.value?.fullName ?? '').trim();
+    return currentName.isEmpty || currentName == 'CAVO Member' || profileName.isEmpty || profileName == 'CAVO Member';
+  }
+
+  void _continueAfterSignIn() {
+    if (_needsNameStep()) {
+      Navigator.of(context).pushAndRemoveUntil(
+        buildCavoFadeRoute(
+          PhoneNameSetupScreen(
+            phoneNumber: widget.phoneNumber,
+            redirectToCheckout: widget.redirectToCheckout,
+          ),
+        ),
+        (route) => false,
+      );
+      return;
+    }
+    _goToApp();
+  }
+
 
   void _goToApp() {
     if (widget.redirectToCheckout) {
@@ -148,12 +171,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         smsCode: code,
       );
       await FirebaseAuth.instance.signInWithCredential(credential);
-      await _finishPhoneAccountSetup();
+      await _ensurePhoneProfileSeed();
       if (!mounted) return;
       setState(() => _success = true);
       await Future<void>.delayed(const Duration(milliseconds: 620));
       if (!mounted) return;
-      _goToApp();
+      _continueAfterSignIn();
     } on FirebaseAuthException {
       if (!mounted) return;
       setState(() {
@@ -174,9 +197,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         phoneNumber: widget.phoneNumber,
         verificationCompleted: (credential) async {
           await FirebaseAuth.instance.signInWithCredential(credential);
-          await _finishPhoneAccountSetup();
+          await _ensurePhoneProfileSeed();
           if (!mounted) return;
-          _goToApp();
+          _continueAfterSignIn();
         },
         verificationFailed: (error) {
           if (!mounted) return;
