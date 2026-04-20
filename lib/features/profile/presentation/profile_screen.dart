@@ -519,6 +519,8 @@ class _OrderCard extends StatelessWidget {
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final localeCode = Localizations.localeOf(context).languageCode;
     final l10n = context.l10n;
+    final rating = order.rating;
+    final hasRating = rating != null && rating > 0;
 
     return InkWell(
       onTap: () {
@@ -576,18 +578,18 @@ class _OrderCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Expanded(
-                  child: Text(
-                    order.isRated
-                        ? l10n.ratedOutOfFive(order.rating)
-                        : l10n.tapToViewDetails,
-                    style: TextStyle(
-                      color: order.isRated ? const Color(0xFF2DBA71) : CavoColors.gold,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w800,
+                if (hasRating)
+                  Expanded(
+                    child: Text(
+                      l10n.ratedOutOfFive(rating),
+                      style: const TextStyle(
+                        color: Color(0xFF2DBA71),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
-                ),
+                if (!hasRating) const Spacer(),
                 const Icon(Icons.arrow_forward_ios_rounded, color: CavoColors.gold, size: 14),
               ],
             ),

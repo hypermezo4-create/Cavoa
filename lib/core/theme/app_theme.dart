@@ -100,10 +100,11 @@ abstract final class AppTheme {
           disabledBackgroundColor: CavoColors.gold.withValues(alpha: 0.35),
           disabledForegroundColor: Colors.black54,
           elevation: 0,
+          shadowColor: CavoColors.gold.withValues(alpha: 0.26),
           minimumSize: const Size(double.infinity, 56),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
           ),
           textStyle: const TextStyle(
             fontSize: 15,
@@ -137,15 +138,15 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w400,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.gold, width: 1.2),
         ),
       ),
@@ -274,10 +275,11 @@ abstract final class AppTheme {
           disabledBackgroundColor: CavoColors.gold.withValues(alpha: 0.35),
           disabledForegroundColor: Colors.black54,
           elevation: 0,
+          shadowColor: CavoColors.lightShadow.withValues(alpha: 0.30),
           minimumSize: const Size(double.infinity, 56),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
           ),
           textStyle: const TextStyle(
             fontSize: 15,
@@ -303,7 +305,7 @@ abstract final class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: CavoColors.lightSurfaceSoft,
+        fillColor: const Color(0xFFF6F9FF),
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         hintStyle: const TextStyle(
           color: CavoColors.lightTextMuted,
@@ -311,15 +313,15 @@ abstract final class AppTheme {
           fontWeight: FontWeight.w400,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.lightBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.lightBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: CavoColors.gold, width: 1.2),
         ),
       ),
@@ -349,12 +351,12 @@ abstract final class AppTheme {
       ),
 
       cardTheme: CardThemeData(
-        color: CavoColors.lightSurface,
+        color: const Color(0xFFFFFFFF),
         shadowColor: CavoColors.lightShadow,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: CavoColors.lightBorder),
+          borderRadius: BorderRadius.circular(26),
+          side: const BorderSide(color: CavoColors.lightBorder, width: 1.1),
         ),
       ),
     );
