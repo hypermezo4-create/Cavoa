@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../../../core/localization/app_locale_controller.dart';
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/theme_mode_controller.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
@@ -176,20 +175,11 @@ class ProfileScreen extends StatelessWidget {
                 trailing: const CavoLanguagePicker(isLight: false, expanded: false),
               ),
               const SizedBox(height: 12),
-              ValueListenableBuilder<ThemeMode>(
-                valueListenable: ThemeModeController.instance,
-                builder: (context, mode, _) {
-                  return _ProfileActionTile(
-                    title: context.l10n.appearance,
-                    subtitle: mode == ThemeMode.dark ? context.l10n.dark : context.l10n.light,
-                    isLight: isLight,
-                    trailing: Switch.adaptive(
-                      value: mode == ThemeMode.dark,
-                      activeColor: CavoColors.gold,
-                      onChanged: (_) => ThemeModeController.instance.toggle(),
-                    ),
-                  );
-                },
+              _ProfileActionTile(
+                title: context.l10n.appearance,
+                subtitle: context.l10n.dark,
+                isLight: isLight,
+                trailing: const Icon(Icons.dark_mode_rounded, color: CavoColors.gold),
               ),
               const SizedBox(height: 12),
               ValueListenableBuilder<Set<String>>(
