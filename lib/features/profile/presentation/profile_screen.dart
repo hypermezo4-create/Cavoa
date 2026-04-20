@@ -18,6 +18,7 @@ import '../../notifications/presentation/notifications_screen.dart';
 import '../../orders/presentation/my_orders_screen.dart';
 import '../../orders/presentation/order_details_screen.dart';
 import '../../favorites/presentation/favorites_screen.dart';
+import '../../admin_orders/presentation/admin_orders_dashboard_screen.dart';
 import '../data/profile_controller.dart';
 import '../../welcome/presentation/welcome_placeholder_screen.dart';
 import 'profile_edit_screen.dart';
@@ -208,6 +209,23 @@ class ProfileScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 12),
+              if (user != null)
+                Column(
+                  children: [
+                    _ProfileActionTile(
+                      title: 'Admin orders',
+                      subtitle: 'Open orders dashboard and manage statuses',
+                      isLight: isLight,
+                      trailing: const Icon(Icons.admin_panel_settings_outlined, color: CavoColors.gold),
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const AdminOrdersDashboardScreen()),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                ),
               ValueListenableBuilder<List<CavoNotificationItem>>(
                 valueListenable: NotificationCenterController.instance,
                 builder: (context, notifications, _) {

@@ -201,6 +201,36 @@ class CavoOrderItem {
   }
 }
 
+class OrderUserNotification {
+  final String id;
+  final String title;
+  final String body;
+  final DateTime createdAt;
+
+  const OrderUserNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.createdAt,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'body': body,
+        'createdAt': createdAt,
+      };
+
+  factory OrderUserNotification.fromMap(Map<String, dynamic> map) {
+    return OrderUserNotification(
+      id: (map['id'] ?? '').toString(),
+      title: (map['title'] ?? '').toString(),
+      body: (map['body'] ?? '').toString(),
+      createdAt: _readDate(map['createdAt']) ?? DateTime.now(),
+    );
+  }
+}
+
 DateTime? _readDate(dynamic raw) {
   if (raw is Timestamp) return raw.toDate();
   if (raw is DateTime) return raw;
@@ -230,6 +260,9 @@ class CavoOrder {
   final OrderStatus status;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final String adminNote;
+  final String rejectionReason;
+  final List<OrderUserNotification> userNotifications;
   final int? rating;
   final List<String> ratingTags;
   final DateTime? ratedAt;
@@ -256,6 +289,9 @@ class CavoOrder {
     required this.status,
     required this.createdAt,
     this.updatedAt,
+    this.adminNote = '',
+    this.rejectionReason = '',
+    this.userNotifications = const <OrderUserNotification>[],
     this.rating,
     this.ratingTags = const <String>[],
     this.ratedAt,
@@ -285,6 +321,9 @@ class CavoOrder {
       'total': total,
       'createdAt': createdAt,
       'updatedAt': now,
+      'adminNote': adminNote,
+      'rejectionReason': rejectionReason,
+      'userNotifications': userNotifications.map((item) => item.toMap()).toList(),
       'rating': rating,
       'ratingTags': ratingTags,
       'ratedAt': ratedAt,
@@ -344,6 +383,13 @@ class CavoOrder {
     final branch = fulfillment['branch'] is Map<String, dynamic>
         ? fulfillment['branch'] as Map<String, dynamic>
         : <String, dynamic>{};
+    final notificationsRaw = map['userNotifications'];
+    final userNotifications = notificationsRaw is List
+        ? notificationsRaw
+            .whereType<Map>()
+            .map((item) => OrderUserNotification.fromMap(Map<String, dynamic>.from(item)))
+            .toList(growable: false)
+        : const <OrderUserNotification>[];
 
     return CavoOrder(
       id: (map['id'] ?? '').toString(),
@@ -373,6 +419,9 @@ class CavoOrder {
       status: OrderStatusX.fromKey(map['status']?.toString()),
       createdAt: _readDate(map['createdAt']) ?? DateTime.now(),
       updatedAt: _readDate(map['updatedAt']),
+      adminNote: (map['adminNote'] ?? '').toString(),
+      rejectionReason: (map['rejectionReason'] ?? '').toString(),
+      userNotifications: userNotifications,
       rating: (map['rating'] as num?)?.toInt(),
       ratingTags: ratingTags,
       ratedAt: _readDate(map['ratedAt']),
@@ -401,6 +450,9 @@ class CavoOrder {
     OrderStatus? status,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? adminNote,
+    String? rejectionReason,
+    List<OrderUserNotification>? userNotifications,
     int? rating,
     List<String>? ratingTags,
     DateTime? ratedAt,
@@ -427,6 +479,9 @@ class CavoOrder {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      adminNote: adminNote ?? this.adminNote,
+      rejectionReason: rejectionReason ?? this.rejectionReason,
+      userNotifications: userNotifications ?? this.userNotifications,
       rating: rating ?? this.rating,
       ratingTags: ratingTags ?? this.ratingTags,
       ratedAt: ratedAt ?? this.ratedAt,
