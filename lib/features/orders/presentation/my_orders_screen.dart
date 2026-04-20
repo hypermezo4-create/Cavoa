@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
@@ -12,6 +13,7 @@ class MyOrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final l10n = context.l10n;
     final localeCode = Localizations.localeOf(context).languageCode;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
@@ -38,7 +40,7 @@ class MyOrdersScreen extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          localeCode == 'ar' ? 'طلباتي' : 'My Orders',
+                          l10n.myOrders,
                           style: TextStyle(color: primary, fontSize: 28, fontWeight: FontWeight.w900),
                         ),
                       ),
@@ -50,7 +52,7 @@ class MyOrdersScreen extends StatelessWidget {
                       isLight: isLight,
                       borderRadius: const BorderRadius.all(Radius.circular(30)),
                       child: Text(
-                        localeCode == 'ar' ? 'لا توجد طلبات بعد.' : 'No orders yet.',
+                        l10n.noOrdersYet,
                         style: TextStyle(color: secondary, fontWeight: FontWeight.w700),
                       ),
                     )
@@ -82,7 +84,7 @@ class MyOrdersScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentStatus.labelForLocale(localeCode)}',
+                                    '${order.total} EGP • ${order.items.length} ${l10n.itemsShortLabel} • ${order.paymentStatus.labelForLocale(localeCode)}',
                                     style: TextStyle(color: secondary, fontSize: 12, fontWeight: FontWeight.w700),
                                   ),
                                   const SizedBox(height: 6),

@@ -182,8 +182,8 @@ class _LoginScreenState extends State<LoginScreen>
                 children: [
                   AuthBackButton(onPressed: () => Navigator.pop(context)),
                   const Spacer(),
-                  const AuthBadge(
-                    text: 'Secure sign in',
+                  AuthBadge(
+                    text: l10n.secureSignIn,
                     icon: Icons.shield_outlined,
                   ),
                 ],
@@ -199,8 +199,8 @@ class _LoginScreenState extends State<LoginScreen>
             const SizedBox(height: 22),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Welcome Back',
+              child: Text(
+                l10n.welcomeBack,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 42,
@@ -212,8 +212,8 @@ class _LoginScreenState extends State<LoginScreen>
             const SizedBox(height: 10),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Sign in with your email to continue your cart, saved preferences, and premium checkout flow.',
+              child: Text(
+                l10n.signInEmailContinue,
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 16,
@@ -229,8 +229,8 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const AuthBadge(
-                      text: 'Mirror Original',
+                    AuthBadge(
+                      text: l10n.mirrorOriginal,
                       icon: Icons.auto_awesome_rounded,
                     ),
                     const SizedBox(height: 18),
@@ -304,8 +304,8 @@ class _LoginScreenState extends State<LoginScreen>
                 borderRadius: const BorderRadius.all(Radius.circular(26)),
                 child: Column(
                   children: [
-                    const Text(
-                      'New to CAVO?',
+                    Text(
+                      l10n.newToCavo,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -313,8 +313,8 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Create your account to unlock saved style picks, faster checkout, and future order tracking.',
+                    Text(
+                      l10n.createAccountDescription,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Color(0xFFB8B1A3),
@@ -325,8 +325,8 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 14),
                     AuthFooterLink(
-                      title: 'Ready to join?',
-                      actionLabel: 'Create Account',
+                      title: l10n.readyToJoin,
+                      actionLabel: l10n.createAccount,
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           buildCavoFadeRoute(RegisterScreen(redirectToCheckout: widget.redirectToCheckout)),
@@ -338,9 +338,9 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
             const SizedBox(height: 18),
-            const Center(
+            Center(
               child: Text(
-                'Mirror Original • Premium Footwear',
+                l10n.mirrorOriginalPremiumFootwear,
                 style: TextStyle(
                   color: Color(0xFF7F786B),
                   fontSize: 12,

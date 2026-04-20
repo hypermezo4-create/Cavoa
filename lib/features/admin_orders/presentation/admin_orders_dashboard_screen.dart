@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
@@ -27,6 +28,8 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final l10n = context.l10n;
+    final localeCode = Localizations.localeOf(context).languageCode;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
@@ -49,7 +52,7 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Admin Orders Dashboard',
+                        l10n.adminOrdersDashboardTitle,
                         style: TextStyle(color: primary, fontSize: 24, fontWeight: FontWeight.w900),
                       ),
                     ),
@@ -61,9 +64,9 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
                 child: TextField(
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    hintText: 'Search by customer, phone, or order ID',
-                    prefixIcon: Icon(Icons.search_rounded),
+                  decoration: InputDecoration(
+                    hintText: l10n.adminSearchOrderHint,
+                    prefixIcon: const Icon(Icons.search_rounded),
                   ),
                 ),
               ),
@@ -74,9 +77,9 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
                     Expanded(
                       child: DropdownButtonFormField<OrderStatus?>(
                         value: _statusFilter,
-                        decoration: const InputDecoration(labelText: 'Order status'),
+                        decoration: InputDecoration(labelText: l10n.orderStatusLabel),
                         items: [
-                          const DropdownMenuItem<OrderStatus?>(value: null, child: Text('All statuses')),
+                          DropdownMenuItem<OrderStatus?>(value: null, child: Text(l10n.allStatuses)),
                           ...OrderStatus.values.map(
                             (status) => DropdownMenuItem<OrderStatus?>(
                               value: status,
@@ -91,9 +94,9 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
                     Expanded(
                       child: DropdownButtonFormField<OrderPaymentStatus?>(
                         value: _paymentStatusFilter,
-                        decoration: const InputDecoration(labelText: 'Payment status'),
+                        decoration: InputDecoration(labelText: l10n.paymentStatusLabel),
                         items: [
-                          const DropdownMenuItem<OrderPaymentStatus?>(value: null, child: Text('All payments')),
+                          DropdownMenuItem<OrderPaymentStatus?>(value: null, child: Text(l10n.allPayments)),
                           ...OrderPaymentStatus.values.map(
                             (status) => DropdownMenuItem<OrderPaymentStatus?>(
                               value: status,
@@ -127,7 +130,7 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
 
                     if (filtered.isEmpty) {
                       return Center(
-                        child: Text('No orders match current filters.', style: TextStyle(color: secondary, fontWeight: FontWeight.w700)),
+                        child: Text(l10n.noOrdersMatchFilters, style: TextStyle(color: secondary, fontWeight: FontWeight.w700)),
                       );
                     }
 
@@ -153,15 +156,15 @@ class _AdminOrdersDashboardScreenState extends State<AdminOrdersDashboardScreen>
                                     Expanded(
                                       child: Text(order.id, style: TextStyle(color: primary, fontWeight: FontWeight.w900)),
                                     ),
-                                    CavoPillTag(label: order.status.key, isLight: isLight, selected: true),
+                                    CavoPillTag(label: order.status.labelForLocale(localeCode), isLight: isLight, selected: true),
                                   ],
                                 ),
                                 const SizedBox(height: 10),
                                 Text('${order.customerName} • ${order.phoneNumber}', style: TextStyle(color: secondary, fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 6),
-                                Text('Payment: ${order.paymentStatus.key} • Total: ${order.total} EGP', style: TextStyle(color: secondary, fontWeight: FontWeight.w600)),
+                                Text('${l10n.paymentLabel}: ${order.paymentStatus.labelForLocale(localeCode)} • ${l10n.total}: ${order.total} EGP', style: TextStyle(color: secondary, fontWeight: FontWeight.w600)),
                                 const SizedBox(height: 6),
-                                Text('Placed: ${order.createdAt.toLocal()}', style: TextStyle(color: secondary, fontSize: 12, fontWeight: FontWeight.w600)),
+                                Text('${l10n.placedAtLabel}: ${order.createdAt.toLocal()}', style: TextStyle(color: secondary, fontSize: 12, fontWeight: FontWeight.w600)),
                               ],
                             ),
                           ),
