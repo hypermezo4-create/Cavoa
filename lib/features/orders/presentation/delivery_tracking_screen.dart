@@ -15,7 +15,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
 
   List<_TrackingStep> _buildSteps() {
     final statuses = [
-      OrderStatus.pendingReview,
+      OrderStatus.pending,
       OrderStatus.approved,
       OrderStatus.processing,
       OrderStatus.shipped,
@@ -27,7 +27,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
 
     return [
       _TrackingStep(
-        status: OrderStatus.pendingReview,
+        status: OrderStatus.pending,
         title: 'Order placed',
         subtitle: 'Your order has been received and is waiting for review.',
         state: safeIndex >= 0 ? _StepState.done : _StepState.todo,

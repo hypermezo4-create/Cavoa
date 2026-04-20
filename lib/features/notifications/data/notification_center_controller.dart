@@ -88,7 +88,7 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
         ),
       );
 
-      if (order.status != OrderStatus.pendingReview) {
+      if (order.status != OrderStatus.pending) {
         final statusId = '${order.id}:status:${order.status.key}';
         notifications.add(
           CavoNotificationItem(
@@ -142,7 +142,7 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
         return 'Order delivered';
       case OrderStatus.cancelled:
         return 'Order cancelled';
-      case OrderStatus.pendingReview:
+      case OrderStatus.pending:
         return 'Order under review';
     }
   }
@@ -161,7 +161,7 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
         return 'Your order ${order.id} has arrived. Enjoy your pair.';
       case OrderStatus.cancelled:
         return 'Your order ${order.id} was cancelled.';
-      case OrderStatus.pendingReview:
+      case OrderStatus.pending:
         return 'Your order ${order.id} is still waiting for review.';
     }
   }
