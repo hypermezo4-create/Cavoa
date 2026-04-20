@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
+import '../../profile/data/profile_controller.dart';
 import 'auth_premium_widgets.dart';
 import 'otp_verification_screen.dart';
 
@@ -71,6 +72,29 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
     }
   }
 
+  Future<void> _finishPhoneAccountSetup(String phone) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final displayName = (user.displayName ?? '').trim().isNotEmpty
+        ? user.displayName!.trim()
+        : 'CAVO Member';
+
+    try {
+      await user.updateDisplayName(displayName);
+    } catch (_) {}
+
+    try {
+      await ProfileController.instance.seedBasicProfile(
+        fullName: displayName,
+        phone: phone,
+        gender: '',
+        age: null,
+        visitedBefore: false,
+      );
+    } catch (_) {}
+  }
+
   void _goToApp() {
     if (widget.redirectToCheckout) {
       Navigator.of(context).pushAndRemoveUntil(
@@ -102,6 +126,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen>
         phoneNumber: number,
         verificationCompleted: (credential) async {
           await FirebaseAuth.instance.signInWithCredential(credential);
+          await _finishPhoneAccountSetup(number);
           if (!mounted) return;
           _goToApp();
         },

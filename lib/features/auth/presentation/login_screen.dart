@@ -6,6 +6,7 @@ import '../../checkout/presentation/checkout_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
 import 'auth_premium_widgets.dart';
+import 'phone_auth_screen.dart';
 import 'register_screen.dart';
 import 'reset_password_screen.dart';
 
@@ -286,7 +287,21 @@ class _LoginScreenState extends State<LoginScreen>
                       onPressed: _loading ? null : _login,
                       loading: _loading,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+                    AuthOutlineButton(
+                      label: 'Continue with phone',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          buildCavoFadeRoute(
+                            PhoneAuthScreen(
+                              redirectToCheckout: widget.redirectToCheckout,
+                            ),
+                          ),
+                        );
+                      },
+                      compact: true,
+                      leadingIcon: Icons.phone_iphone_rounded,
+                    ),
                     const SizedBox(height: 16),
                     AuthOutlineButton(
                       label: l10n.continueAsGuest,
