@@ -206,12 +206,14 @@ class OrderUserNotification {
   final String title;
   final String body;
   final DateTime createdAt;
+  final String type;
 
   const OrderUserNotification({
     required this.id,
     required this.title,
     required this.body,
     required this.createdAt,
+    this.type = 'admin_update',
   });
 
   Map<String, dynamic> toMap() => {
@@ -219,6 +221,7 @@ class OrderUserNotification {
         'title': title,
         'body': body,
         'createdAt': createdAt,
+        'type': type,
       };
 
   factory OrderUserNotification.fromMap(Map<String, dynamic> map) {
@@ -227,6 +230,7 @@ class OrderUserNotification {
       title: (map['title'] ?? '').toString(),
       body: (map['body'] ?? '').toString(),
       createdAt: _readDate(map['createdAt']) ?? DateTime.now(),
+      type: (map['type'] ?? 'admin_update').toString(),
     );
   }
 }
