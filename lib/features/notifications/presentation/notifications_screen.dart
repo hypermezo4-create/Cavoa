@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
 import '../../notifications/data/notification_center_controller.dart';
+import '../../notifications/data/notification_types.dart';
 import '../../orders/data/order_controller.dart';
 import '../../orders/presentation/delivery_tracking_screen.dart';
 
@@ -185,7 +186,7 @@ class _NotificationCard extends StatelessWidget {
 
   String _title(BuildContext context, CavoOrder? order) {
     final code = Localizations.localeOf(context).languageCode;
-    if (item.type == 'rating') {
+    if (item.type == CavoNotificationType.ratingReminder) {
       switch (code) {
         case 'ar':
           return 'قيّم طلبك';
@@ -197,7 +198,7 @@ class _NotificationCard extends StatelessWidget {
           return 'Rate your order';
       }
     }
-    if (item.type == 'created') {
+    if (item.type == CavoNotificationType.orderCreated) {
       switch (code) {
         case 'ar':
           return 'تم إنشاء الطلب';
@@ -209,24 +210,39 @@ class _NotificationCard extends StatelessWidget {
           return 'Order created';
       }
     }
-    final status = order?.status;
-    if (status == null) return item.title;
-    switch (code) {
-      case 'ar':
-        return 'حالة الطلب: ${status.labelForLocale(code)}';
-      case 'de':
-        return 'Bestellstatus: ${status.labelForLocale(code)}';
-      case 'ru':
-        return 'Статус заказа: ${status.labelForLocale(code)}';
-      default:
-        return 'Order status: ${status.labelForLocale(code)}';
+    switch (item.type) {
+      case CavoNotificationType.orderApproved:
+      case CavoNotificationType.orderRejected:
+      case CavoNotificationType.orderProcessing:
+      case CavoNotificationType.orderShipped:
+      case CavoNotificationType.orderDelivered:
+      case CavoNotificationType.orderCancelled:
+        final status = order?.status;
+        if (status == null) return item.title;
+        switch (code) {
+          case 'ar':
+            return 'حالة الطلب: ${status.labelForLocale(code)}';
+          case 'de':
+            return 'Bestellstatus: ${status.labelForLocale(code)}';
+          case 'ru':
+            return 'Статус заказа: ${status.labelForLocale(code)}';
+          default:
+            return 'Order status: ${status.labelForLocale(code)}';
+        }
+      case CavoNotificationType.paymentConfirmed:
+      case CavoNotificationType.paymentFailed:
+      case CavoNotificationType.adminUpdate:
+        return item.title;
+      case CavoNotificationType.orderCreated:
+      case CavoNotificationType.ratingReminder:
+        return item.title;
     }
   }
 
   String _body(BuildContext context, CavoOrder? order) {
     final code = Localizations.localeOf(context).languageCode;
     if (order == null) return item.body;
-    if (item.type == 'rating') {
+    if (item.type == CavoNotificationType.ratingReminder) {
       switch (code) {
         case 'ar':
           return 'تم تسليم الطلب ${order.id}. اضغط لفتح التتبع وإضافة تقييمك.';
@@ -238,7 +254,7 @@ class _NotificationCard extends StatelessWidget {
           return 'Order ${order.id} was delivered. Tap to open tracking and leave your rating.';
       }
     }
-    if (item.type == 'created') {
+    if (item.type == CavoNotificationType.orderCreated) {
       switch (code) {
         case 'ar':
           return 'إجمالي طلبك ${order.total} EGP وهو الآن بانتظار المراجعة.';
@@ -250,31 +266,56 @@ class _NotificationCard extends StatelessWidget {
           return 'Your order total is ${order.total} EGP and it is now waiting for review.';
       }
     }
-    switch (order.status) {
-      case OrderStatus.approved:
-        return code == 'ar' ? 'تمت الموافقة على طلبك ${order.id}.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde bestätigt.' : code == 'ru' ? 'Ваш заказ ${order.id} подтвержден.' : 'Your order ${order.id} was approved.';
-      case OrderStatus.rejected:
-        return code == 'ar' ? 'تم رفض طلبك ${order.id}. يمكنك التواصل مع الدعم.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde abgelehnt.' : code == 'ru' ? 'Ваш заказ ${order.id} был отклонен.' : 'Your order ${order.id} was rejected.';
-      case OrderStatus.processing:
-        return code == 'ar' ? 'طلبك ${order.id} قيد التجهيز الآن.' : code == 'de' ? 'Deine Bestellung ${order.id} wird gerade vorbereitet.' : code == 'ru' ? 'Ваш заказ ${order.id} сейчас готовится.' : 'Your order ${order.id} is now being prepared.';
-      case OrderStatus.shipped:
-        return code == 'ar' ? 'طلبك ${order.id} في الطريق إلى ${order.city}, ${order.area}.' : code == 'de' ? 'Deine Bestellung ${order.id} ist auf dem Weg nach ${order.city}, ${order.area}.' : code == 'ru' ? 'Ваш заказ ${order.id} направляется в ${order.city}, ${order.area}.' : 'Your order ${order.id} is on the way to ${order.city}, ${order.area}.';
-      case OrderStatus.delivered:
-        return code == 'ar' ? 'تم تسليم طلبك ${order.id}. نتمنى لك تجربة رائعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde zugestellt.' : code == 'ru' ? 'Ваш заказ ${order.id} доставлен.' : 'Your order ${order.id} has been delivered.';
-      case OrderStatus.cancelled:
-        return code == 'ar' ? 'تم إلغاء طلبك ${order.id}.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde storniert.' : code == 'ru' ? 'Ваш заказ ${order.id} был отменён.' : 'Your order ${order.id} was cancelled.';
-      case OrderStatus.pending:
-        return code == 'ar' ? 'طلبك ${order.id} ما زال قيد المراجعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wird noch geprüft.' : code == 'ru' ? 'Ваш заказ ${order.id} всё ещё на проверке.' : 'Your order ${order.id} is still under review.';
+    switch (item.type) {
+      case CavoNotificationType.orderApproved:
+      case CavoNotificationType.orderRejected:
+      case CavoNotificationType.orderProcessing:
+      case CavoNotificationType.orderShipped:
+      case CavoNotificationType.orderDelivered:
+      case CavoNotificationType.orderCancelled:
+        switch (order.status) {
+          case OrderStatus.approved:
+            return code == 'ar' ? 'تمت الموافقة على طلبك ${order.id}.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde bestätigt.' : code == 'ru' ? 'Ваш заказ ${order.id} подтвержден.' : 'Your order ${order.id} was approved.';
+          case OrderStatus.rejected:
+            return code == 'ar' ? 'تم رفض طلبك ${order.id}. يمكنك التواصل مع الدعم.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde abgelehnt.' : code == 'ru' ? 'Ваш заказ ${order.id} был отклонен.' : 'Your order ${order.id} was rejected.';
+          case OrderStatus.processing:
+            return code == 'ar' ? 'طلبك ${order.id} قيد التجهيز الآن.' : code == 'de' ? 'Deine Bestellung ${order.id} wird gerade vorbereitet.' : code == 'ru' ? 'Ваш заказ ${order.id} сейчас готовится.' : 'Your order ${order.id} is now being prepared.';
+          case OrderStatus.shipped:
+            return code == 'ar' ? 'طلبك ${order.id} في الطريق إلى ${order.city}, ${order.area}.' : code == 'de' ? 'Deine Bestellung ${order.id} ist auf dem Weg nach ${order.city}, ${order.area}.' : code == 'ru' ? 'Ваш заказ ${order.id} направляется в ${order.city}, ${order.area}.' : 'Your order ${order.id} is on the way to ${order.city}, ${order.area}.';
+          case OrderStatus.delivered:
+            return code == 'ar' ? 'تم تسليم طلبك ${order.id}. نتمنى لك تجربة رائعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde zugestellt.' : code == 'ru' ? 'Ваш заказ ${order.id} доставлен.' : 'Your order ${order.id} has been delivered.';
+          case OrderStatus.cancelled:
+            return code == 'ar' ? 'تم إلغاء طلبك ${order.id}.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde storniert.' : code == 'ru' ? 'Ваш заказ ${order.id} был отменён.' : 'Your order ${order.id} was cancelled.';
+          case OrderStatus.pending:
+            return code == 'ar' ? 'طلبك ${order.id} ما زال قيد المراجعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wird noch geprüft.' : code == 'ru' ? 'Ваш заказ ${order.id} всё ещё на проверке.' : 'Your order ${order.id} is still under review.';
+        }
+      case CavoNotificationType.paymentConfirmed:
+      case CavoNotificationType.paymentFailed:
+      case CavoNotificationType.adminUpdate:
+        return item.body;
+      case CavoNotificationType.orderCreated:
+      case CavoNotificationType.ratingReminder:
+        return item.body;
     }
   }
 
   IconData _iconForType() {
     switch (item.type) {
-      case 'rating':
+      case CavoNotificationType.ratingReminder:
         return Icons.star_rounded;
-      case 'status':
+      case CavoNotificationType.orderApproved:
+      case CavoNotificationType.orderRejected:
+      case CavoNotificationType.orderProcessing:
+      case CavoNotificationType.orderShipped:
+      case CavoNotificationType.orderDelivered:
+      case CavoNotificationType.orderCancelled:
         return Icons.local_shipping_rounded;
-      case 'created':
+      case CavoNotificationType.paymentConfirmed:
+      case CavoNotificationType.paymentFailed:
+        return Icons.credit_card_rounded;
+      case CavoNotificationType.adminUpdate:
+        return Icons.campaign_rounded;
+      case CavoNotificationType.orderCreated:
       default:
         return Icons.inventory_2_outlined;
     }

@@ -229,7 +229,7 @@ class ProfileScreen extends StatelessWidget {
               ValueListenableBuilder<List<CavoNotificationItem>>(
                 valueListenable: NotificationCenterController.instance,
                 builder: (context, notifications, _) {
-                  final unread = notifications.where((item) => !item.isRead).length;
+                  final unread = NotificationCenterController.instance.unreadCount;
                   return _ProfileActionTile(
                     title: localeCode == 'ar' ? 'الإشعارات' : localeCode == 'de' ? 'Benachrichtigungen' : localeCode == 'ru' ? 'Уведомления' : 'Notifications',
                     subtitle: unread == 0

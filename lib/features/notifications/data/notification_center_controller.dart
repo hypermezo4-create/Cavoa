@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../data/models/order.dart';
+import 'notification_types.dart';
 
 class CavoNotificationItem {
   final String id;
@@ -10,7 +11,8 @@ class CavoNotificationItem {
   final String body;
   final DateTime createdAt;
   final bool isRead;
-  final String type;
+  final CavoNotificationType type;
+  final NotificationChannel channel;
 
   const CavoNotificationItem({
     required this.id,
@@ -20,6 +22,7 @@ class CavoNotificationItem {
     required this.createdAt,
     required this.isRead,
     required this.type,
+    this.channel = NotificationChannel.inApp,
   });
 
   CavoNotificationItem copyWith({bool? isRead}) {
@@ -31,6 +34,7 @@ class CavoNotificationItem {
       createdAt: createdAt,
       isRead: isRead ?? this.isRead,
       type: type,
+      channel: channel,
     );
   }
 }
@@ -72,39 +76,29 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
   }
 
   void syncFromOrders(List<CavoOrder> orders) {
-    final notifications = <CavoNotificationItem>[];
+    final byId = <String, CavoNotificationItem>{};
 
     for (final order in orders) {
       final stamp = order.updatedAt ?? order.createdAt;
-      notifications.add(
+      _addNotification(
+        byId,
         CavoNotificationItem(
           id: '${order.id}:created',
           orderId: order.id,
-          title: _createdTitle(order),
+          title: _titleForType(CavoNotificationType.orderCreated),
           body: _createdBody(order),
           createdAt: order.createdAt,
           isRead: _readIds.contains('${order.id}:created'),
-          type: 'created',
+          type: CavoNotificationType.orderCreated,
         ),
       );
 
-      if (order.status != OrderStatus.pending) {
-        final statusId = '${order.id}:status:${order.status.key}';
-        notifications.add(
-          CavoNotificationItem(
-            id: statusId,
-            orderId: order.id,
-            title: _statusTitle(order.status),
-            body: _statusBody(order),
-            createdAt: stamp,
-            isRead: _readIds.contains(statusId),
-            type: 'status',
-          ),
-        );
-      }
-
+      final customTypes = <CavoNotificationType>{};
       for (final custom in order.userNotifications) {
-        notifications.add(
+        final resolvedType = CavoNotificationTypeX.tryFromKey(custom.type) ?? CavoNotificationType.adminUpdate;
+        customTypes.add(resolvedType);
+        _addNotification(
+          byId,
           CavoNotificationItem(
             id: custom.id,
             orderId: order.id,
@@ -112,54 +106,133 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
             body: custom.body,
             createdAt: custom.createdAt,
             isRead: _readIds.contains(custom.id),
-            type: 'admin_update',
+            type: resolvedType,
+          ),
+        );
+      }
+
+      final statusType = _statusToNotificationType(order.status);
+      if (statusType != null && !customTypes.contains(statusType)) {
+        final statusId = '${order.id}:status:${order.status.key}';
+        _addNotification(
+          byId,
+          CavoNotificationItem(
+            id: statusId,
+            orderId: order.id,
+            title: _titleForType(statusType),
+            body: _statusBody(order),
+            createdAt: stamp,
+            isRead: _readIds.contains(statusId),
+            type: statusType,
+          ),
+        );
+      }
+
+      final paymentType = _paymentToNotificationType(order.paymentStatus);
+      if (paymentType != null && !customTypes.contains(paymentType)) {
+        final paymentId = '${order.id}:payment:${order.paymentStatus.key}';
+        _addNotification(
+          byId,
+          CavoNotificationItem(
+            id: paymentId,
+            orderId: order.id,
+            title: _titleForType(paymentType),
+            body: _paymentBody(order),
+            createdAt: stamp,
+            isRead: _readIds.contains(paymentId),
+            type: paymentType,
           ),
         );
       }
 
       if (order.status == OrderStatus.delivered && !order.isRated) {
         final rateId = '${order.id}:rate';
-        notifications.add(
+        _addNotification(
+          byId,
           CavoNotificationItem(
             id: rateId,
             orderId: order.id,
-            title: 'Rate your order',
+            title: _titleForType(CavoNotificationType.ratingReminder),
             body: 'Your CAVO order ${order.id} was delivered. Tap to open tracking and leave your rating.',
             createdAt: stamp,
             isRead: _readIds.contains(rateId),
-            type: 'rating',
+            type: CavoNotificationType.ratingReminder,
           ),
         );
       }
     }
 
-    notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final notifications = byId.values.toList(growable: false)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     value = notifications;
   }
 
-  String _createdTitle(CavoOrder order) => 'Order ${order.id} was created';
+  void _addNotification(Map<String, CavoNotificationItem> byId, CavoNotificationItem candidate) {
+    final existing = byId[candidate.id];
+    if (existing == null || candidate.createdAt.isAfter(existing.createdAt)) {
+      byId[candidate.id] = candidate;
+    }
+  }
+
+  CavoNotificationType? _statusToNotificationType(OrderStatus status) {
+    switch (status) {
+      case OrderStatus.approved:
+        return CavoNotificationType.orderApproved;
+      case OrderStatus.rejected:
+        return CavoNotificationType.orderRejected;
+      case OrderStatus.processing:
+        return CavoNotificationType.orderProcessing;
+      case OrderStatus.shipped:
+        return CavoNotificationType.orderShipped;
+      case OrderStatus.delivered:
+        return CavoNotificationType.orderDelivered;
+      case OrderStatus.cancelled:
+        return CavoNotificationType.orderCancelled;
+      case OrderStatus.pending:
+        return null;
+    }
+  }
+
+  CavoNotificationType? _paymentToNotificationType(OrderPaymentStatus status) {
+    switch (status) {
+      case OrderPaymentStatus.confirmed:
+        return CavoNotificationType.paymentConfirmed;
+      case OrderPaymentStatus.failed:
+        return CavoNotificationType.paymentFailed;
+      case OrderPaymentStatus.pending:
+        return null;
+    }
+  }
+
+  String _titleForType(CavoNotificationType type) {
+    switch (type) {
+      case CavoNotificationType.orderCreated:
+        return 'Order created';
+      case CavoNotificationType.orderApproved:
+        return 'Order approved';
+      case CavoNotificationType.orderRejected:
+        return 'Order rejected';
+      case CavoNotificationType.orderProcessing:
+        return 'Order moved to processing';
+      case CavoNotificationType.orderShipped:
+        return 'Order shipped';
+      case CavoNotificationType.orderDelivered:
+        return 'Order delivered';
+      case CavoNotificationType.orderCancelled:
+        return 'Order cancelled';
+      case CavoNotificationType.paymentConfirmed:
+        return 'Payment confirmed';
+      case CavoNotificationType.paymentFailed:
+        return 'Payment failed';
+      case CavoNotificationType.adminUpdate:
+        return 'Order update';
+      case CavoNotificationType.ratingReminder:
+        return 'Rate your order';
+    }
+  }
 
   String _createdBody(CavoOrder order) =>
       'Your order total is ${order.total} EGP and it is now waiting for admin review.';
-
-  String _statusTitle(OrderStatus status) {
-    switch (status) {
-      case OrderStatus.approved:
-        return 'Order approved';
-      case OrderStatus.rejected:
-        return 'Order rejected';
-      case OrderStatus.processing:
-        return 'Order is being prepared';
-      case OrderStatus.shipped:
-        return 'Order shipped';
-      case OrderStatus.delivered:
-        return 'Order delivered';
-      case OrderStatus.cancelled:
-        return 'Order cancelled';
-      case OrderStatus.pending:
-        return 'Order under review';
-    }
-  }
 
   String _statusBody(CavoOrder order) {
     switch (order.status) {
@@ -177,6 +250,17 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
         return 'Your order ${order.id} was cancelled.';
       case OrderStatus.pending:
         return 'Your order ${order.id} is still waiting for review.';
+    }
+  }
+
+  String _paymentBody(CavoOrder order) {
+    switch (order.paymentStatus) {
+      case OrderPaymentStatus.confirmed:
+        return 'Payment for order ${order.id} is confirmed.';
+      case OrderPaymentStatus.failed:
+        return 'Payment for order ${order.id} failed. Please contact support.';
+      case OrderPaymentStatus.pending:
+        return 'Payment for order ${order.id} is pending.';
     }
   }
 }

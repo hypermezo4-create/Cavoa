@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../data/models/order.dart';
+import '../../notifications/data/notification_types.dart';
 
 class AdminOrdersController {
   AdminOrdersController._();
@@ -35,6 +36,7 @@ class AdminOrdersController {
       orderId: orderId,
       status: OrderStatus.approved,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.orderApproved,
       notificationTitle: 'Order approved',
       notificationBody:
           'Your order $orderId has been approved by the admin team.',
@@ -54,6 +56,7 @@ class AdminOrdersController {
       status: OrderStatus.rejected,
       rejectionReason: rejectionReason,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.orderRejected,
       notificationTitle: 'Order rejected',
       notificationBody:
           'Your order $orderId was rejected. Reason: ${rejectionReason.trim()}',
@@ -65,7 +68,8 @@ class AdminOrdersController {
       orderId: orderId,
       status: OrderStatus.processing,
       adminNote: adminNote,
-      notificationTitle: 'Order is being processed',
+      notificationType: CavoNotificationType.orderProcessing,
+      notificationTitle: 'Order moved to processing',
       notificationBody:
           'Your order $orderId is now being prepared by the CAVO team.',
     );
@@ -76,6 +80,7 @@ class AdminOrdersController {
       orderId: orderId,
       status: OrderStatus.shipped,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.orderShipped,
       notificationTitle: 'Order shipped',
       notificationBody:
           'Your order $orderId has been shipped and is on the way.',
@@ -87,6 +92,7 @@ class AdminOrdersController {
       orderId: orderId,
       status: OrderStatus.delivered,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.orderDelivered,
       notificationTitle: 'Order delivered',
       notificationBody: 'Your order $orderId has been marked as delivered.',
     );
@@ -97,6 +103,7 @@ class AdminOrdersController {
       orderId: orderId,
       status: OrderStatus.cancelled,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.orderCancelled,
       notificationTitle: 'Order cancelled',
       notificationBody: 'Your order $orderId was cancelled by admin.',
     );
@@ -107,13 +114,29 @@ class AdminOrdersController {
     required OrderPaymentStatus paymentStatus,
     String adminNote = '',
   }) {
+    final notificationType = switch (paymentStatus) {
+      OrderPaymentStatus.confirmed => CavoNotificationType.paymentConfirmed,
+      OrderPaymentStatus.failed => CavoNotificationType.paymentFailed,
+      OrderPaymentStatus.pending => CavoNotificationType.adminUpdate,
+    };
+    final notificationTitle = switch (paymentStatus) {
+      OrderPaymentStatus.confirmed => 'Payment confirmed',
+      OrderPaymentStatus.failed => 'Payment failed',
+      OrderPaymentStatus.pending => 'Payment pending',
+    };
+    final notificationBody = switch (paymentStatus) {
+      OrderPaymentStatus.confirmed => 'Payment for order $orderId has been confirmed.',
+      OrderPaymentStatus.failed => 'Payment for order $orderId failed. Please contact support.',
+      OrderPaymentStatus.pending => 'Payment for order $orderId is pending verification.',
+    };
+
     return _applyUpdate(
       orderId: orderId,
       paymentStatus: paymentStatus,
       adminNote: adminNote,
-      notificationTitle: 'Payment status updated',
-      notificationBody:
-          'Payment status for order $orderId is now ${paymentStatus.key}.',
+      notificationType: notificationType,
+      notificationTitle: notificationTitle,
+      notificationBody: notificationBody,
     );
   }
 
@@ -127,6 +150,7 @@ class AdminOrdersController {
     return _applyUpdate(
       orderId: orderId,
       adminNote: adminNote,
+      notificationType: CavoNotificationType.adminUpdate,
       notificationTitle: 'Order update',
       notificationBody:
           'There is a new update from admin on your order $orderId.',
@@ -139,6 +163,7 @@ class AdminOrdersController {
     OrderPaymentStatus? paymentStatus,
     String? adminNote,
     String? rejectionReason,
+    required CavoNotificationType notificationType,
     required String notificationTitle,
     required String notificationBody,
   }) async {
@@ -153,18 +178,21 @@ class AdminOrdersController {
       final existingRaw = data['userNotifications'];
       final existing = existingRaw is List
           ? existingRaw.map((entry) {
-              if (entry is Map<String, dynamic>) return Map<String, dynamic>.from(entry);
+              if (entry is Map<String, dynamic>) {
+                return Map<String, dynamic>.from(entry);
+              }
               if (entry is Map) return Map<String, dynamic>.from(entry);
               return <String, dynamic>{};
             }).toList(growable: true)
           : <Map<String, dynamic>>[];
 
       final notificationId =
-          '$orderId:admin:${now.millisecondsSinceEpoch}:${notificationTitle.toLowerCase().replaceAll(' ', '_')}';
+          '$orderId:admin:${notificationType.key}:${now.millisecondsSinceEpoch}';
 
       existing.add(
         {
           'id': notificationId,
+          'type': notificationType.key,
           'title': notificationTitle,
           'body': notificationBody,
           'createdAt': now,
@@ -182,7 +210,8 @@ class AdminOrdersController {
       if (paymentStatus != null) {
         payload['paymentStatus'] = paymentStatus.key;
         payload['payment'] = {
-          'method': (data['payment'] is Map ? (data['payment']['method'] ?? 'instaPay') : 'instaPay').toString(),
+          'method':
+              (data['payment'] is Map ? (data['payment']['method'] ?? 'instaPay') : 'instaPay').toString(),
           'status': paymentStatus.key,
         };
       }

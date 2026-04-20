@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ValueListenableBuilder<List<CavoNotificationItem>>(
                     valueListenable: NotificationCenterController.instance,
                     builder: (context, notifications, _) {
-                      final unread = notifications.where((item) => !item.isRead).length;
+                      final unread = NotificationCenterController.instance.unreadCount;
                       return Stack(
                         clipBehavior: Clip.none,
                         children: [
