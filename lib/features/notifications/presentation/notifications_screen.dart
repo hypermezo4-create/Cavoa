@@ -263,7 +263,7 @@ class _NotificationCard extends StatelessWidget {
         return code == 'ar' ? 'تم تسليم طلبك ${order.id}. نتمنى لك تجربة رائعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde zugestellt.' : code == 'ru' ? 'Ваш заказ ${order.id} доставлен.' : 'Your order ${order.id} has been delivered.';
       case OrderStatus.cancelled:
         return code == 'ar' ? 'تم إلغاء طلبك ${order.id}.' : code == 'de' ? 'Deine Bestellung ${order.id} wurde storniert.' : code == 'ru' ? 'Ваш заказ ${order.id} был отменён.' : 'Your order ${order.id} was cancelled.';
-      case OrderStatus.pendingReview:
+      case OrderStatus.pending:
         return code == 'ar' ? 'طلبك ${order.id} ما زال قيد المراجعة.' : code == 'de' ? 'Deine Bestellung ${order.id} wird noch geprüft.' : code == 'ru' ? 'Ваш заказ ${order.id} всё ещё на проверке.' : 'Your order ${order.id} is still under review.';
     }
   }

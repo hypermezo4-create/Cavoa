@@ -15,7 +15,8 @@ import '../../favorites/data/favorites_controller.dart';
 import '../../orders/data/order_controller.dart';
 import '../../notifications/data/notification_center_controller.dart';
 import '../../notifications/presentation/notifications_screen.dart';
-import '../../orders/presentation/delivery_tracking_screen.dart';
+import '../../orders/presentation/my_orders_screen.dart';
+import '../../orders/presentation/order_details_screen.dart';
 import '../../favorites/presentation/favorites_screen.dart';
 import '../data/profile_controller.dart';
 import '../../welcome/presentation/welcome_placeholder_screen.dart';
@@ -253,6 +254,14 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: user == null
                     ? (localeCode == 'ar' ? 'سجل الدخول لمتابعة حالة طلباتك.' : localeCode == 'de' ? 'Melde dich an, um deinen Bestellstatus zu verfolgen.' : localeCode == 'ru' ? 'Войдите, чтобы отслеживать статус заказов.' : 'Sign in to track your order status.')
                     : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы с актуальным статусом.' : 'Your recent orders appear here with their latest status.'),
+                action: user == null ? null : (localeCode == 'ar' ? 'عرض الكل' : 'View all'),
+                onActionTap: user == null
+                    ? null
+                    : () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MyOrdersScreen()),
+                        );
+                      },
                 isLight: isLight,
               ),
               const SizedBox(height: 12),
@@ -492,7 +501,7 @@ class _OrderCard extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => DeliveryTrackingScreen(order: order),
+            builder: (_) => OrderDetailsScreen(order: order),
           ),
         );
       },
@@ -546,7 +555,7 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    order.isRated ? 'Rated ${order.rating}/5' : 'Tap to track order',
+                    order.isRated ? 'Rated ${order.rating}/5' : 'Tap to view details',
                     style: TextStyle(
                       color: order.isRated ? const Color(0xFF2DBA71) : CavoColors.gold,
                       fontSize: 12,

@@ -174,7 +174,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             : '${_addressController.text.trim()}\n${addressSegments.join('\n')}'.trim(),
         notes: _notesController.text.trim(),
         paymentMethod: OrderPaymentMethod.instaPay,
-        pickupType: _isDelivery ? 'delivery' : 'branch_pickup',
+        fulfillmentType: _isDelivery ? OrderFulfillmentType.delivery : OrderFulfillmentType.branchPickup,
       );
 
       CartController.instance.clear();
