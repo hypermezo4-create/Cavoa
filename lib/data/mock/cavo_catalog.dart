@@ -2608,7 +2608,7 @@ class CavoCatalog {
   static List<String> brandsFor(ProductCategory category) {
     final brands = byCategory(category).map((e) => e.brand).toSet().toList();
     brands.sort();
-    return ['All', ...brands];
+    return brands;
   }
 
   static List<CavoProduct> filtered({
@@ -2616,7 +2616,7 @@ class CavoCatalog {
     required String brand,
   }) {
     final base = byCategory(category);
-    if (brand == 'All') return base;
+    if (brand == 'All' || brand == '__all__') return base;
     return base.where((e) => e.brand == brand).toList();
   }
 

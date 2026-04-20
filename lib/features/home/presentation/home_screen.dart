@@ -54,9 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final muted = isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
+    const isLight = false;
+    const primary = CavoColors.textPrimary;
+    const muted = CavoColors.textMuted;
 
     final showcase = CavoCatalog.homeShowcase().take(5).toList();
     if (showcase.isEmpty) {
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final brands = CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
 
     return Scaffold(
-      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      backgroundColor: CavoColors.background,
       body: CavoPremiumBackground(
         isLight: isLight,
         child: SafeArea(
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _SearchBar(isLight: isLight),
               const SizedBox(height: 22),
               SizedBox(
-                height: 422,
+                height: 358,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: showcase.length,
@@ -603,9 +603,8 @@ class _HeroShowcaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final title = context.l10n.premiumFootwearDesignedToStandApart.split('\n');
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
 
     return InkWell(
       onTap: onTap,
@@ -651,21 +650,15 @@ class _HeroShowcaseCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            TweenAnimationBuilder<Offset>(
-                              tween: Tween(begin: const Offset(0.16, 0), end: Offset.zero),
-                              duration: const Duration(milliseconds: 720),
-                              curve: Curves.easeOutCubic,
-                              builder: (context, offset, child) {
-                                return Transform.translate(
-                                  offset: Offset(offset.dx * 60, 0),
-                                  child: child,
-                                );
-                              },
-                              child: Cavo3DHeadline(
-                                lineOne: title.isNotEmpty ? title.first : context.l10n.premium,
-                                lineTwo: title.length > 1 ? title[1] : context.l10n.selected,
-                                isLight: isLight,
-                                fontSize: 28,
+                            Text(
+                              context.l10n.premiumFootwearDesignedToStandApart.replaceAll('\n', ' '),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: CavoColors.textPrimary,
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                height: 1.2,
                               ),
                             ),
                             const SizedBox(height: 16),

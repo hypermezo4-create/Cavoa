@@ -79,18 +79,20 @@ class NotificationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localeCode = Localizations.localeOf(context).languageCode;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    const isLight = false;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
 
     return Scaffold(
-      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      backgroundColor: CavoColors.background,
       body: CavoPremiumBackground(
         isLight: isLight,
         child: SafeArea(
           child: ValueListenableBuilder<List<CavoNotificationItem>>(
             valueListenable: NotificationCenterController.instance,
             builder: (context, notifications, _) {
+              final sorted = [...notifications]
+                ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
               return ListView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(20, 14, 20, 28),
@@ -130,9 +132,11 @@ class NotificationsScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 18),
-                  if (notifications.isNotEmpty)
+                  if (sorted.isNotEmpty)
                     Align(
-                      alignment: Alignment.centerRight,
+                      alignment: localeCode == 'ar'
+                          ? Alignment.centerLeft
+                          : Alignment.centerRight,
                       child: TextButton.icon(
                         onPressed: NotificationCenterController.instance.markAllRead,
                         icon: const Icon(Icons.done_all_rounded, color: CavoColors.gold),
@@ -142,7 +146,7 @@ class NotificationsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (notifications.isEmpty)
+                  if (sorted.isEmpty)
                     CavoGlassCard(
                       isLight: isLight,
                       borderRadius: const BorderRadius.all(Radius.circular(30)),
@@ -164,7 +168,7 @@ class NotificationsScreen extends StatelessWidget {
                       ),
                     )
                   else
-                    ...notifications.map((item) => Padding(
+                    ...sorted.map((item) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _NotificationCard(item: item, isLight: isLight),
                         )),
@@ -323,8 +327,8 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
     final order = OrderController.instance.findById(item.orderId);
     return InkWell(
       onTap: () async {
@@ -341,7 +345,7 @@ class _NotificationCard extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(28)),
         color: item.isRead
             ? null
-            : (isLight ? const Color(0xFFFFFBF2) : const Color(0xFF17130C).withValues(alpha: 0.98)),
+            : const Color(0xFF17130C).withValues(alpha: 0.98),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

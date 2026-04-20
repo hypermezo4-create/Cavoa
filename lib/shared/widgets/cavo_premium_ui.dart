@@ -15,17 +15,11 @@ class CavoPremiumBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseGradient = LinearGradient(
-      colors: isLight
-          ? const [
-              Color(0xFFF8F6F1),
-              Color(0xFFF0EBDF),
-              Color(0xFFE7DFC9),
-            ]
-          : const [
-              Color(0xFF020202),
-              Color(0xFF080808),
-              Color(0xFF0F0A04),
-            ],
+      colors: const [
+        Color(0xFF020202),
+        Color(0xFF080808),
+        Color(0xFF0F0A04),
+      ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
     );
@@ -42,7 +36,7 @@ class CavoPremiumBackground extends StatelessWidget {
           right: -20,
           child: _GlowOrb(
             size: 220,
-            color: CavoColors.gold.withValues(alpha: isLight ? 0.13 : 0.18),
+            color: CavoColors.gold.withValues(alpha: 0.18),
           ),
         ),
         Positioned(
@@ -50,7 +44,7 @@ class CavoPremiumBackground extends StatelessWidget {
           left: -60,
           child: _GlowOrb(
             size: 180,
-            color: CavoColors.goldLight.withValues(alpha: isLight ? 0.08 : 0.12),
+            color: CavoColors.goldLight.withValues(alpha: 0.12),
           ),
         ),
         Positioned(
@@ -58,7 +52,7 @@ class CavoPremiumBackground extends StatelessWidget {
           right: -80,
           child: _GlowOrb(
             size: 280,
-            color: CavoColors.gold.withValues(alpha: isLight ? 0.08 : 0.12),
+            color: CavoColors.gold.withValues(alpha: 0.12),
           ),
         ),
         Positioned.fill(
@@ -66,9 +60,9 @@ class CavoPremiumBackground extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.black.withValues(alpha: isLight ? 0.0 : 0.18),
+                  Colors.black.withValues(alpha: 0.18),
                   Colors.transparent,
-                  Colors.black.withValues(alpha: isLight ? 0.0 : 0.28),
+                  Colors.black.withValues(alpha: 0.28),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -102,26 +96,21 @@ class CavoGlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fill = color ??
-        (isLight
-            ? Colors.white.withValues(alpha: 0.92)
-            : const Color(0xFF111111).withValues(alpha: 0.94));
+    final fill = color ?? const Color(0xFF111111).withValues(alpha: 0.94);
 
     return Container(
       padding: padding,
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         border: Border.all(
-          color: isLight
-              ? Colors.white.withValues(alpha: 0.55)
-              : CavoColors.gold.withValues(alpha: 0.14),
+          color: CavoColors.gold.withValues(alpha: 0.14),
         ),
         color: fill,
         gradient: LinearGradient(
           colors: [
-            Colors.white.withValues(alpha: isLight ? 0.10 : 0.03),
-            Colors.white.withValues(alpha: isLight ? 0.04 : 0.0),
-            Colors.black.withValues(alpha: isLight ? 0.02 : 0.08),
+            Colors.white.withValues(alpha: 0.03),
+            Colors.white.withValues(alpha: 0.0),
+            Colors.black.withValues(alpha: 0.08),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -129,8 +118,7 @@ class CavoGlassCard extends StatelessWidget {
         boxShadow: boxShadow ??
             [
               BoxShadow(
-                color: (isLight ? CavoColors.lightShadow : Colors.black)
-                    .withValues(alpha: isLight ? 0.10 : 0.20),
+                color: Colors.black.withValues(alpha: 0.20),
                 blurRadius: 18,
                 offset: const Offset(0, 10),
               ),
@@ -163,13 +151,12 @@ class CavoPillTag extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         color: selected
-            ? CavoColors.gold.withValues(alpha: isLight ? 0.18 : 0.18)
-            : (isLight ? Colors.white : CavoColors.surfaceSoft)
-                .withValues(alpha: isLight ? 0.70 : 0.88),
+            ? CavoColors.gold.withValues(alpha: 0.18)
+            : CavoColors.surfaceSoft.withValues(alpha: 0.88),
         border: Border.all(
           color: selected
               ? CavoColors.gold.withValues(alpha: 0.32)
-              : (isLight ? CavoColors.lightBorder : CavoColors.border),
+              : CavoColors.border,
         ),
         boxShadow: [
           if (selected)
@@ -190,8 +177,8 @@ class CavoPillTag extends StatelessWidget {
             label,
             style: TextStyle(
               color: selected
-                  ? (isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary)
-                  : (isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary),
+                  ? CavoColors.textPrimary
+                  : CavoColors.textSecondary,
               fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
@@ -220,8 +207,8 @@ class CavoSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
 
     return Row(
       children: [
@@ -311,12 +298,9 @@ class CavoCircleIconButton extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: (isLight ? Colors.white : CavoColors.surface)
-                .withValues(alpha: isLight ? 0.84 : 0.90),
+            color: CavoColors.surface.withValues(alpha: 0.90),
             border: Border.all(
-              color: isLight
-                  ? CavoColors.lightBorder
-                  : CavoColors.gold.withValues(alpha: 0.16),
+              color: CavoColors.gold.withValues(alpha: 0.16),
             ),
             boxShadow: [
               BoxShadow(

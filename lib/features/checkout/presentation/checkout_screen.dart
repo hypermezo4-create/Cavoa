@@ -79,11 +79,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _showMessage(String message) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final surface = isLight ? CavoColors.lightSurface : CavoColors.surface;
-    final border = isLight ? CavoColors.lightBorder : CavoColors.border;
-    final textColor =
-        isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    const surface = CavoColors.surface;
+    const border = CavoColors.border;
+    const textColor = CavoColors.textPrimary;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -206,8 +204,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final order = await OrderController.instance.createOrderFromCart(
         customerName: _nameController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
-        city: _cityController.text.trim(),
-        area: _areaController.text.trim(),
+        city: _isDelivery ? _cityController.text.trim() : _fixedPickupBranchEnglish,
+        area: _isDelivery ? _areaController.text.trim() : _fixedPickupBranchArabic,
         addressLine: addressSegments.isEmpty
             ? _addressController.text.trim()
             : '${_addressController.text.trim()}\n${addressSegments.join('\n')}'.trim(),
@@ -221,11 +219,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       await showDialog<void>(
         context: context,
         builder: (dialogContext) {
-          final isLight = Theme.of(dialogContext).brightness == Brightness.light;
-          final primary =
-              isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-          final secondary =
-              isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+          const isLight = false;
+          const primary = CavoColors.textPrimary;
+          const secondary = CavoColors.textSecondary;
           return Dialog(
             backgroundColor: Colors.transparent,
             child: CavoGlassCard(
@@ -347,14 +343,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary =
-        isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    const isLight = false;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
     final localeCode = Localizations.localeOf(context).languageCode;
 
     return Scaffold(
-      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      backgroundColor: CavoColors.background,
       body: CavoPremiumBackground(
         isLight: isLight,
         child: SafeArea(
@@ -975,6 +970,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             value: _fulfillmentLabel(localeCode),
                             isLight: isLight,
                           ),
+                          if (!_isDelivery) ...[
+                            const SizedBox(height: 8),
+                            _SummaryRow(
+                              label: localeCode == 'ar'
+                                  ? 'فرع الاستلام'
+                                  : localeCode == 'de'
+                                      ? 'Abholfiliale'
+                                      : localeCode == 'ru'
+                                          ? 'Пункт самовывоза'
+                                          : 'Pickup branch',
+                              value: _fixedPickupBranchArabic,
+                              isLight: isLight,
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -997,17 +1006,31 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: _submitting ? null : _confirmOrder,
-                            child: Text(
-                              _submitting
-                                  ? context.l10n.loading
-                                  : (localeCode == 'ar'
-                                      ? 'تأكيد الطلب'
-                                      : localeCode == 'de'
-                                          ? 'Bestellung aufgeben'
-                                          : localeCode == 'ru'
-                                              ? 'Оформить заказ'
-                                              : 'Place order'),
-                            ),
+                            child: _submitting
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Text(context.l10n.loading),
+                                    ],
+                                  )
+                                : Text(
+                                    localeCode == 'ar'
+                                        ? 'تأكيد الطلب'
+                                        : localeCode == 'de'
+                                            ? 'Bestellung aufgeben'
+                                            : localeCode == 'ru'
+                                                ? 'Оформить заказ'
+                                                : 'Place order',
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -1068,9 +1091,9 @@ class _FulfillmentChoice extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           color: selected
               ? CavoColors.gold.withValues(alpha: 0.15)
-              : (isLight ? Colors.white : CavoColors.surfaceSoft),
+              : CavoColors.surfaceSoft,
           border: Border.all(
-            color: isLight && !selected ? CavoColors.lightBorder : borderColor,
+            color: borderColor,
           ),
         ),
         child: Row(
@@ -1081,15 +1104,13 @@ class _FulfillmentChoice extends StatelessWidget {
               size: 18,
               color: selected
                   ? CavoColors.gold
-                  : (isLight
-                      ? CavoColors.lightTextSecondary
-                      : CavoColors.textSecondary),
+                  : CavoColors.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary,
+                color: CavoColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -1140,7 +1161,7 @@ class _FieldLabel extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary,
+          color: CavoColors.textPrimary,
           fontSize: 13,
           fontWeight: FontWeight.w800,
         ),
@@ -1166,10 +1187,10 @@ class _SummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = highlight
         ? CavoColors.gold
-        : (isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary);
+        : CavoColors.textSecondary;
     final valueColor = highlight
         ? CavoColors.gold
-        : (isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary);
+        : CavoColors.textPrimary;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

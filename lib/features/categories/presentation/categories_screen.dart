@@ -26,6 +26,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   late ProductCategory _selectedCategory;
   late String _selectedBrand;
 
+  List<String> _brandsForCategory(ProductCategory category) =>
+      [_allBrandsValue, ...CavoCatalog.brandsFor(category)];
+
+  List<CavoProduct> _productsForSelection(ProductCategory category, String brand) =>
+      CavoCatalog.filtered(category: category, brand: brand);
+
   @override
   void initState() {
     super.initState();
@@ -36,22 +42,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isLight = Theme.of(context).brightness == Brightness.light;
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final brands = [_allBrandsValue, ...CavoCatalog.brandsFor(_selectedCategory)];
+    const isLight = false;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
+    final brands = _brandsForCategory(_selectedCategory);
 
     if (!brands.contains(_selectedBrand)) {
       _selectedBrand = _allBrandsValue;
     }
 
-    final products = CavoCatalog.filtered(
-      category: _selectedCategory,
-      brand: _selectedBrand,
-    );
+    final products = _productsForSelection(_selectedCategory, _selectedBrand);
+    final categoryProducts = CavoCatalog.byCategory(_selectedCategory);
+    final visibleBrandCount = categoryProducts.map((e) => e.brand).toSet().length;
 
     return Scaffold(
-      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
+      backgroundColor: CavoColors.background,
       body: CavoPremiumBackground(
         isLight: isLight,
         child: SafeArea(
@@ -199,7 +204,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     Expanded(
                       child: _InfoStat(
                         label: l10n.brandsTitle,
-                        value: '${brands.length - 1}',
+                        value: '$visibleBrandCount',
                         isLight: isLight,
                       ),
                     ),
@@ -251,7 +256,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 0.68,
+                    childAspectRatio: 0.62,
                   ),
                   itemBuilder: (context, index) {
                     final product = products[index];
@@ -268,6 +273,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     );
                   },
                 ),
+              const SizedBox(height: 8),
             ],
           ),
         ),
@@ -299,20 +305,20 @@ class _CategoryChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? CavoColors.gold.withValues(alpha: 0.18)
-              : (isLight ? Colors.white : CavoColors.surface).withValues(alpha: 0.86),
+              : CavoColors.surface.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
                 ? CavoColors.gold.withValues(alpha: 0.34)
-                : (isLight ? CavoColors.lightBorder : CavoColors.border),
+                : CavoColors.border,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
             color: selected
-                ? (isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary)
-                : (isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary),
+                ? CavoColors.textPrimary
+                : CavoColors.textSecondary,
             fontSize: 14,
             fontWeight: FontWeight.w800,
           ),
@@ -335,8 +341,8 @@ class _InfoStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
 
     return Column(
       children: [
@@ -375,42 +381,45 @@ class _BrowseProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final soft = isLight ? const Color(0xFFF7F3E9) : const Color(0xFF161616);
+    const primary = CavoColors.textPrimary;
+    const secondary = CavoColors.textSecondary;
+    const soft = Color(0xFF161616);
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(26),
-      child: CavoGlassCard(
-        isLight: isLight,
-        padding: const EdgeInsets.all(10),
+        child: CavoGlassCard(
+          isLight: isLight,
+        padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
         borderRadius: const BorderRadius.all(Radius.circular(26)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 126,
-              width: double.infinity,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: soft,
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Hero(
-                tag: 'browse-${product.id}',
-                child: CavoNetworkImage(
-                  imageUrl: product.thumbnailUrl ?? product.coverUrl,
-                  fit: BoxFit.contain,
-                  borderRadius: BorderRadius.circular(16),
+            AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: soft,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Hero(
+                  tag: 'browse-${product.id}',
+                  child: CavoNetworkImage(
+                    imageUrl: product.thumbnailUrl ?? product.coverUrl,
+                    fit: BoxFit.contain,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               product.brand,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              overflow: TextOverflow.fade,
+              softWrap: false,
               style: const TextStyle(
                 color: CavoColors.gold,
                 fontSize: 11,
@@ -424,9 +433,9 @@ class _BrowseProductCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: primary,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
-                height: 1.12,
+                height: 1.2,
               ),
             ),
             const SizedBox(height: 6),
@@ -442,20 +451,13 @@ class _BrowseProductCard extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '${product.price} EGP',
-                    style: const TextStyle(
-                      color: CavoColors.gold,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-                const Icon(Icons.arrow_forward_rounded, color: CavoColors.gold),
-              ],
+            Text(
+              '${product.price} EGP',
+              style: const TextStyle(
+                color: CavoColors.gold,
+                fontSize: 16,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ],
         ),
