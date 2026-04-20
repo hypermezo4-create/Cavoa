@@ -195,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     }
 
     if (!_acceptedTerms) {
-      _showMessage('Please accept the Terms of Service and Privacy Policy.');
+      _showMessage(l10n.agreeTermsPrivacy);
       return;
     }
 
@@ -240,8 +240,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                 children: [
                   AuthBackButton(onPressed: () => Navigator.pop(context)),
                   const Spacer(),
-                  const AuthBadge(
-                    text: 'Email account',
+                  AuthBadge(
+                    text: l10n.emailAccount,
                     icon: Icons.mark_email_read_outlined,
                   ),
                 ],
@@ -257,8 +257,8 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(height: 20),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Create Account',
+              child: Text(
+                l10n.createAccount,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 40,
@@ -270,8 +270,8 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(height: 10),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Create your account in seconds, then complete the rest of your profile later from the profile page.',
+              child: Text(
+                l10n.createAccountInSeconds,
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 16,
@@ -293,7 +293,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                   children: [
                     AuthTextField(
                       controller: _nameController,
-                      hintText: 'Full name',
+                      hintText: l10n.fullName,
                       icon: Icons.person_outline_rounded,
                       textInputAction: TextInputAction.next,
                     ),
@@ -401,9 +401,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'I agree to the Terms of Service and Privacy Policy.',
+                            l10n.agreeTermsPrivacy,
                             style: TextStyle(
                               color: Color(0xFFB8B1A3),
                               fontSize: 13,
@@ -431,8 +431,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 borderRadius: const BorderRadius.all(Radius.circular(24)),
                 child: AuthFooterLink(
-                  title: 'Already have an account?',
-                  actionLabel: 'Login',
+                  title: l10n.alreadyHaveAccount,
+                  actionLabel: l10n.login,
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
                       buildCavoFadeRoute(LoginScreen(redirectToCheckout: widget.redirectToCheckout)),
@@ -442,9 +442,9 @@ class _RegisterScreenState extends State<RegisterScreen>
               ),
             ),
             const SizedBox(height: 18),
-            const Center(
+            Center(
               child: Text(
-                'Fast sign up • finish profile later • premium feel',
+                l10n.fastSignupTagline,
                 style: TextStyle(
                   color: Color(0xFF7F786B),
                   fontSize: 12,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
@@ -12,6 +13,7 @@ class OrderDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLight = Theme.of(context).brightness == Brightness.light;
+    final l10n = context.l10n;
     final localeCode = Localizations.localeOf(context).languageCode;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
@@ -34,7 +36,7 @@ class OrderDetailsScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      localeCode == 'ar' ? 'تفاصيل الطلب' : 'Order Details',
+                      l10n.orderDetailsTitle,
                       style: TextStyle(color: primary, fontSize: 28, fontWeight: FontWeight.w900),
                     ),
                   ),
@@ -49,14 +51,14 @@ class OrderDetailsScreen extends StatelessWidget {
                   children: [
                     Text(order.id, style: TextStyle(color: primary, fontSize: 15, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 10),
-                    _meta('Status', order.status.labelForLocale(localeCode), primary, secondary),
-                    _meta('Payment', order.paymentMethod.labelForLocale(localeCode), primary, secondary),
-                    _meta('Payment status', order.paymentStatus.labelForLocale(localeCode), primary, secondary),
-                    _meta('Fulfillment', order.fulfillmentType.labelForLocale(localeCode), primary, secondary),
-                    _meta('Placed at', order.createdAt.toLocal().toString(), primary, secondary),
+                    _meta(l10n.statusLabel, order.status.labelForLocale(localeCode), primary, secondary),
+                    _meta(l10n.paymentLabel, order.paymentMethod.labelForLocale(localeCode), primary, secondary),
+                    _meta(l10n.paymentStatusLabel, order.paymentStatus.labelForLocale(localeCode), primary, secondary),
+                    _meta(l10n.fulfillmentLabel, order.fulfillmentType.labelForLocale(localeCode), primary, secondary),
+                    _meta(l10n.placedAtLabel, order.createdAt.toLocal().toString(), primary, secondary),
                     if (order.fulfillmentType == OrderFulfillmentType.branchPickup)
                       _meta(
-                        localeCode == 'ar' ? 'فرع الاستلام' : 'Pickup branch',
+                        l10n.pickupBranchLabel,
                         localeCode == 'ar' ? order.pickupBranchArabic : order.pickupBranchEnglish,
                         primary,
                         secondary,
@@ -71,7 +73,7 @@ class OrderDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(localeCode == 'ar' ? 'المنتجات' : 'Items', style: TextStyle(color: primary, fontSize: 18, fontWeight: FontWeight.w900)),
+                    Text(l10n.itemsLabel, style: TextStyle(color: primary, fontSize: 18, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 12),
                     ...order.items.map((item) => Padding(
                           padding: const EdgeInsets.only(bottom: 10),
@@ -96,15 +98,15 @@ class OrderDetailsScreen extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(30)),
                 child: Column(
                   children: [
-                    _meta('Customer', order.customerName, primary, secondary),
-                    _meta('Phone', order.phoneNumber, primary, secondary),
-                    _meta('City', order.city, primary, secondary),
-                    _meta('Area', order.area, primary, secondary),
-                    _meta('Address', order.addressLine, primary, secondary),
-                    if (order.notes.trim().isNotEmpty) _meta('Notes', order.notes, primary, secondary),
-                    _meta('Subtotal', '${order.subtotal} EGP', primary, secondary),
-                    _meta('Delivery/Pickup fee', '${order.pickupFee} EGP', primary, secondary),
-                    _meta('Total', '${order.total} EGP', primary, secondary),
+                    _meta(l10n.customerLabel, order.customerName, primary, secondary),
+                    _meta(l10n.phoneLabel, order.phoneNumber, primary, secondary),
+                    _meta(l10n.cityLabel, order.city, primary, secondary),
+                    _meta(l10n.areaLabel, order.area, primary, secondary),
+                    _meta(l10n.addressLabel, order.addressLine, primary, secondary),
+                    if (order.notes.trim().isNotEmpty) _meta(l10n.notesLabel, order.notes, primary, secondary),
+                    _meta(l10n.subtotal, '${order.subtotal} EGP', primary, secondary),
+                    _meta(l10n.deliveryPickupFeeLabel, '${order.pickupFee} EGP', primary, secondary),
+                    _meta(l10n.total, '${order.total} EGP', primary, secondary),
                   ],
                 ),
               ),

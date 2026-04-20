@@ -119,7 +119,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   child: const AuthLogoMedallion(size: 176),
                                 ),
                                 const SizedBox(height: 22),
-                                const AuthBadge(text: 'CAVO'),
+                                AuthBadge(text: l10n.cavoLabel),
                                 const SizedBox(height: 28),
                                 Text(
                                   l10n.mirrorOriginal,
@@ -136,7 +136,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   constraints:
                                       const BoxConstraints(maxWidth: 340),
                                   child: Text(
-                                    'Continue with your secure email account to shop and track orders with CAVO.',
+                                    l10n.welcomeSecureEmailSubtitle,
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: Color(0xFFB8B1A3),
@@ -147,7 +147,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 22),
-                                const AuthGlassCard(
+                                AuthGlassCard(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 18,
                                     vertical: 16,
@@ -164,7 +164,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                       SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
-                                          'English default  •  Arabic  •  Russian  •  German',
+                                          l10n.languageSupportSummary,
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                             color: Color(0xFFF5F1E8),
@@ -208,8 +208,8 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 26),
-                                const Text(
-                                  'Refined by CAVO',
+                                Text(
+                                  l10n.refinedByCavo,
                                   style: TextStyle(
                                     color: Color(0xFF7F786B),
                                     fontSize: 13,

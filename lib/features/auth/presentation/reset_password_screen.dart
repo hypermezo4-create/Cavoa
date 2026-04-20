@@ -59,11 +59,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
       case 'invalid-email':
         return l10n.authInvalidEmail;
       case 'user-not-found':
-        return 'No account was found for this email.';
+        return l10n.noAccountFoundForEmail;
       case 'too-many-requests':
         return l10n.authTooManyRequests;
       default:
-        return error.message ?? 'Could not send the reset email right now.';
+        return error.message ?? l10n.couldNotSendResetEmail;
     }
   }
 
@@ -83,7 +83,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (!mounted) return;
       setState(() => _success = true);
-      _showMessage('Reset email sent. Check your inbox and spam folder.');
+      _showMessage(context.l10n.resetEmailSentInboxSpam);
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
       _showMessage(_mapError(error));
@@ -106,8 +106,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                 children: [
                   AuthBackButton(onPressed: () => Navigator.of(context).maybePop()),
                   const Spacer(),
-                  const AuthBadge(
-                    text: 'Reset password',
+                  AuthBadge(
+                    text: context.l10n.resetPassword,
                     icon: Icons.mark_email_read_outlined,
                   ),
                 ],
@@ -116,8 +116,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
             const SizedBox(height: 34),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Reset your password',
+              child: Text(
+                context.l10n.resetYourPasswordTitle,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 36,
@@ -129,8 +129,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
             const SizedBox(height: 10),
             FadeTransition(
               opacity: _fade,
-              child: const Text(
-                'Enter the email address linked to your CAVO account and we will send you a real password reset link.',
+              child: Text(
+                context.l10n.resetPasswordDescription,
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 15,
@@ -156,11 +156,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                     child: _success
                         ? Column(
                             key: const ValueKey('success'),
-                            children: const [
-                              _SuccessPulse(),
+                            children: [
+                              const _SuccessPulse(),
                               SizedBox(height: 12),
                               Text(
-                                'Reset email sent successfully.',
+                                context.l10n.resetEmailSentSuccessfully,
                                 style: TextStyle(
                                   color: Color(0xFF7FF1A8),
                                   fontWeight: FontWeight.w800,
@@ -172,7 +172,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
                   ),
                   const SizedBox(height: 18),
                   AuthPrimaryButton(
-                    label: _loading ? 'Sending...' : 'Send Reset Link',
+                    label: _loading ? context.l10n.sending : context.l10n.sendResetLink,
                     onPressed: _loading ? null : _sendReset,
                     loading: _loading,
                   ),
