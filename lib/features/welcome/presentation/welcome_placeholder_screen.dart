@@ -4,7 +4,6 @@ import '../../../core/localization/l10n_ext.dart';
 import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../auth/presentation/auth_premium_widgets.dart';
 import '../../auth/presentation/login_screen.dart';
-import '../../auth/presentation/phone_auth_screen.dart';
 import '../../auth/presentation/register_screen.dart';
 import '../../main_navigation/presentation/main_navigation_controller.dart';
 import '../../main_navigation/presentation/main_shell.dart';
@@ -137,7 +136,7 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   constraints:
                                       const BoxConstraints(maxWidth: 340),
                                   child: Text(
-                                    'Choose how you want to continue with CAVO.',
+                                    'Continue with your secure email account to shop and track orders with CAVO.',
                                     textAlign: TextAlign.center,
                                     style: const TextStyle(
                                       color: Color(0xFFB8B1A3),
@@ -195,16 +194,6 @@ class _WelcomePlaceholderScreenState extends State<WelcomePlaceholderScreen>
                                   label: l10n.createAccount,
                                   onPressed: _goToRegister,
                                   leadingIcon: Icons.person_add_alt_1_rounded,
-                                ),
-                                const SizedBox(height: 14),
-                                AuthOutlineButton(
-                                  label: 'Continue with phone',
-                                  onPressed: () {
-                                    Navigator.of(context).push(
-                                      buildCavoFadeRoute(const PhoneAuthScreen()),
-                                    );
-                                  },
-                                  leadingIcon: Icons.phone_iphone_rounded,
                                 ),
                                 const SizedBox(height: 18),
                                 TextButton(
