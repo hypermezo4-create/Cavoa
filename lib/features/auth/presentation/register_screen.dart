@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../core/localization/l10n_ext.dart';
 import '../../checkout/presentation/checkout_screen.dart';
@@ -25,14 +22,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _cityController = TextEditingController(text: 'Hurghada');
-  final _areaController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _bioController = TextEditingController(text: 'Premium CAVO member');
 
   late final AnimationController _controller;
   late final Animation<double> _fade;
@@ -43,9 +34,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   bool _loading = false;
   bool _acceptedTerms = true;
   bool _passwordsMatch = false;
-  String _gender = 'male';
-  bool _visitedBefore = false;
-  String? _avatarPath;
 
   @override
   void initState() {
@@ -82,14 +70,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     _controller.dispose();
     _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _ageController.dispose();
-    _cityController.dispose();
-    _areaController.dispose();
-    _addressController.dispose();
-    _bioController.dispose();
     super.dispose();
   }
 
@@ -120,7 +102,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(
-            color: const Color(0xFFD4AF37).withOpacity(0.16),
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
           ),
         ),
       ),
@@ -157,17 +139,6 @@ class _RegisterScreenState extends State<RegisterScreen>
     );
   }
 
-  Future<void> _pickAvatar(ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 1200,
-    );
-    if (file == null || !mounted) return;
-    setState(() => _avatarPath = file.path);
-  }
-
   bool _isValidEmail(String email) {
     final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
     return regex.hasMatch(email);
@@ -177,21 +148,10 @@ class _RegisterScreenState extends State<RegisterScreen>
     final l10n = context.l10n;
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
-    final phone = _phoneController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
-    final city = _cityController.text.trim();
-    final area = _areaController.text.trim();
-    final address = _addressController.text.trim();
-    final bio = _bioController.text.trim();
 
-    if (name.isEmpty ||
-        email.isEmpty ||
-        phone.isEmpty ||
-        password.isEmpty ||
-        confirmPassword.isEmpty ||
-        city.isEmpty ||
-        address.isEmpty) {
+    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       _showMessage(l10n.completeAllFields);
       return;
     }
@@ -219,8 +179,7 @@ class _RegisterScreenState extends State<RegisterScreen>
     try {
       setState(() => _loading = true);
 
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -228,15 +187,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       await credential.user?.updateDisplayName(name);
       await ProfileController.instance.seedBasicProfile(
         fullName: name,
-        phone: phone,
-        gender: _gender,
-        age: int.tryParse(_ageController.text.trim()),
-        visitedBefore: _visitedBefore,
-        city: city,
-        area: area,
-        addressLine: address,
-        bio: bio,
-        avatarPath: _avatarPath,
+        phone: '',
+        gender: '',
+        age: null,
+        visitedBefore: false,
       );
 
       if (!mounted) return;
@@ -253,27 +207,6 @@ class _RegisterScreenState extends State<RegisterScreen>
         setState(() => _loading = false);
       }
     }
-  }
-
-  InputDecoration _dropdownDecoration(String label) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: const TextStyle(color: Color(0xFFB8B1A3)),
-      filled: true,
-      fillColor: const Color(0xFF141416),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.16)),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.16)),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 1.2),
-      ),
-    );
   }
 
   @override
@@ -323,7 +256,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             FadeTransition(
               opacity: _fade,
               child: const Text(
-                'Create your full CAVO account with your real details so checkout, profile, and future orders stay synced.',
+                'Create your account in seconds, then complete the rest of your profile later from the profile page.',
                 style: TextStyle(
                   color: Color(0xFFB8B1A3),
                   fontSize: 16,
@@ -356,43 +289,6 @@ class _RegisterScreenState extends State<RegisterScreen>
                       icon: Icons.mail_outline_rounded,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 14),
-                    AuthTextField(
-                      controller: _phoneController,
-                      hintText: 'Phone number',
-                      icon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _cityController,
-                            textInputAction: TextInputAction.next,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                            decoration: _dropdownDecoration('City'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: _areaController,
-                            textInputAction: TextInputAction.next,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                            decoration: _dropdownDecoration('Area'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    TextField(
-                      controller: _addressController,
-                      textInputAction: TextInputAction.next,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                      decoration: _dropdownDecoration('Address details'),
                     ),
                     const SizedBox(height: 14),
                     AuthTextField(
@@ -432,7 +328,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               margin: const EdgeInsets.only(right: 4),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFF3DDC97).withOpacity(0.18),
+                                color: const Color(0xFF3DDC97).withValues(alpha: 0.18),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -456,80 +352,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _pickAvatar(ImageSource.gallery),
-                          child: CircleAvatar(
-                            radius: 34,
-                            backgroundColor: const Color(0x1FD4AF37),
-                            backgroundImage: _avatarPath == null ? null : FileImage(File(_avatarPath!)),
-                            child: _avatarPath == null ? const Icon(Icons.photo_camera_back_rounded, color: Color(0xFFD4AF37)) : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Profile photo', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(child: AuthOutlineButton(label: 'Gallery', onPressed: () => _pickAvatar(ImageSource.gallery), compact: true)),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: AuthOutlineButton(label: 'Camera', onPressed: () => _pickAvatar(ImageSource.camera), compact: true)),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DropdownButtonFormField<String>(
-                            value: _gender,
-                            dropdownColor: const Color(0xFF171717),
-                            decoration: _dropdownDecoration('Gender'),
-                            items: const [
-                              DropdownMenuItem(value: 'male', child: Text('Male')),
-                              DropdownMenuItem(value: 'female', child: Text('Female')),
-                            ],
-                            onChanged: (value) => setState(() => _gender = value ?? 'male'),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: _ageController,
-                            keyboardType: TextInputType.number,
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                            decoration: _dropdownDecoration('Age'),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    SwitchListTile.adaptive(
-                      value: _visitedBefore,
-                      contentPadding: EdgeInsets.zero,
-                      activeColor: const Color(0xFFD4AF37),
-                      title: const Text('Have you visited CAVO before?', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14)),
-                      subtitle: const Text('This helps personalize recommendations and account details.', style: TextStyle(color: Color(0xFFB8B1A3), fontSize: 12)),
-                      onChanged: (value) => setState(() => _visitedBefore = value),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _bioController,
-                      maxLines: 2,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
-                      decoration: _dropdownDecoration('Bio'),
-                    ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -550,7 +373,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   ? const Color(0xFFD4AF37)
                                   : Colors.transparent,
                               border: Border.all(
-                                color: const Color(0xFFD4AF37).withOpacity(0.42),
+                                color: const Color(0xFFD4AF37).withValues(alpha: 0.42),
                               ),
                             ),
                             child: _acceptedTerms
@@ -606,7 +429,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             const SizedBox(height: 18),
             const Center(
               child: Text(
-                'Email-first onboarding • full profile • premium feel',
+                'Fast sign up • finish profile later • premium feel',
                 style: TextStyle(
                   color: Color(0xFF7F786B),
                   fontSize: 12,

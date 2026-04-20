@@ -91,7 +91,8 @@ class _LoginScreenState extends State<LoginScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(
-            color: const Color(0xFFD4AF37).withOpacity(0.16),
+            // FIX: withOpacity() deprecated sejak Flutter 3.27 → withValues(alpha:)
+            color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
           ),
         ),
       ),
@@ -133,6 +134,14 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  // FIX BUG 1: Fungsi ini ada di register_screen tapi HILANG di login_screen.
+  // Tanpa ini, email format salah (mis. "user@" atau "abc") langsung dikirim
+  // ke Firebase dan menghasilkan error yang kurang informatif bagi user.
+  bool _isValidEmail(String email) {
+    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return regex.hasMatch(email);
+  }
+
   Future<void> _login() async {
     final l10n = context.l10n;
     final email = _emailController.text.trim();
@@ -140,6 +149,12 @@ class _LoginScreenState extends State<LoginScreen>
 
     if (email.isEmpty || password.isEmpty) {
       _showMessage(l10n.completeAllFields);
+      return;
+    }
+
+    // FIX BUG 1: Tambahkan validasi format email (konsisten dengan register_screen)
+    if (!_isValidEmail(email)) {
+      _showMessage(l10n.authInvalidEmail);
       return;
     }
 
@@ -286,7 +301,8 @@ class _LoginScreenState extends State<LoginScreen>
                       onPressed: _loading ? null : _login,
                       loading: _loading,
                     ),
-                    const SizedBox(height: 16),
+                    // FIX BUG 2: Sebelumnya ada dua SizedBox(height: 16) berturut-turut
+                    // (baris 289–290) → gap jadi 32px. Satu sudah dihapus.
                     const SizedBox(height: 16),
                     AuthOutlineButton(
                       label: l10n.continueAsGuest,

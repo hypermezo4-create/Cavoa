@@ -53,11 +53,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
     );
   }
 
+  // FIX BUG 3: format email sebelum dikirim ke Firebase
+  bool _isValidEmail(String email) {
+    final regex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    return regex.hasMatch(email);
+  }
+
   String _mapError(FirebaseAuthException error) {
     final l10n = context.l10n;
     switch (error.code) {
       case 'invalid-email':
         return l10n.authInvalidEmail;
+      // FIX BUG 3: Firebase tidak lagi mengembalikan 'user-not-found' pada
+      // sendPasswordResetEmail demi alasan privasi (sejak Firebase Auth 2022+).
+      // Kode ini tidak akan pernah terpicu, tapi tetap dipertahankan
+      // sebagai fallback defensif jika perilaku Firebase berubah lagi.
       case 'user-not-found':
         return 'No account was found for this email.';
       case 'too-many-requests':
@@ -69,7 +79,16 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen>
 
   Future<void> _sendReset() async {
     final email = _emailController.text.trim();
+
+    // FIX BUG 3: Sebelumnya, email kosong menampilkan "Email tidak valid"
+    // (authInvalidEmail). Sekarang dibedakan: kosong vs format salah.
     if (email.isEmpty) {
+      _showMessage('Please enter your email address.');
+      return;
+    }
+
+    // FIX BUG 3: Tambah validasi format email sebelum hit Firebase
+    if (!_isValidEmail(email)) {
       _showMessage(context.l10n.authInvalidEmail);
       return;
     }
@@ -226,11 +245,16 @@ class _SuccessPulseState extends State<_SuccessPulse>
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: LinearGradient(
-            colors: [const Color(0xFF6D5DFF), const Color(0xFF915CFF).withOpacity(0.84)],
+            colors: [
+              const Color(0xFF6D5DFF),
+              // FIX: withOpacity() deprecated → withValues(alpha:)
+              const Color(0xFF915CFF).withValues(alpha: 0.84),
+            ],
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF7E61FF).withOpacity(0.36),
+              // FIX: withOpacity() deprecated → withValues(alpha:)
+              color: const Color(0xFF7E61FF).withValues(alpha: 0.36),
               blurRadius: 28,
             ),
           ],
