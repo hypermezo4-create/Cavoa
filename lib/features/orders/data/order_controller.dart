@@ -67,6 +67,7 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
     required String addressLine,
     required String notes,
     required OrderPaymentMethod paymentMethod,
+    String pickupType = 'delivery',
   }) async {
     final cartItems = CartController.instance.value;
     final user = FirebaseAuth.instance.currentUser;
@@ -99,7 +100,7 @@ class OrderController extends ValueNotifier<List<CavoOrder>> {
       subtotal: CartController.instance.subtotal,
       pickupFee: CartController.instance.delivery,
       total: CartController.instance.total,
-      pickupType: 'delivery',
+      pickupType: pickupType,
       status: OrderStatus.pendingReview,
       createdAt: DateTime.now(),
     );
