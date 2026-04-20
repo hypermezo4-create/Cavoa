@@ -272,7 +272,7 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: user == null
                     ? (localeCode == 'ar' ? 'سجل الدخول لمتابعة حالة طلباتك.' : localeCode == 'de' ? 'Melde dich an, um deinen Bestellstatus zu verfolgen.' : localeCode == 'ru' ? 'Войдите, чтобы отслеживать статус заказов.' : 'Sign in to track your order status.')
                     : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы с актуальным статусом.' : 'Your recent orders appear here with their latest status.'),
-                action: user == null ? null : (localeCode == 'ar' ? 'عرض الكل' : 'View all'),
+                action: user == null ? null : (localeCode == 'ar' ? 'عرض الكل' : localeCode == 'de' ? 'Alle anzeigen' : localeCode == 'ru' ? 'Показать все' : 'View all'),
                 onActionTap: user == null
                     ? null
                     : () {
@@ -470,6 +470,7 @@ class _OrdersPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeCode = Localizations.localeOf(context).languageCode;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     return CavoGlassCard(
@@ -480,7 +481,13 @@ class _OrdersPlaceholder extends StatelessWidget {
           const Icon(Icons.inventory_2_outlined, color: CavoColors.gold, size: 38),
           const SizedBox(height: 12),
           Text(
-            'No saved orders yet',
+            localeCode == 'ar'
+                ? 'لا توجد طلبات محفوظة بعد'
+                : localeCode == 'de'
+                    ? 'Noch keine gespeicherten Bestellungen'
+                    : localeCode == 'ru'
+                        ? 'Пока нет сохранённых заказов'
+                        : 'No saved orders yet',
             style: TextStyle(
               color: primary,
               fontSize: 18,
@@ -489,7 +496,13 @@ class _OrdersPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Once checkout is completed, your orders will appear here with the latest status.',
+            localeCode == 'ar'
+                ? 'بعد إتمام الطلب، ستظهر هنا طلباتك مع أحدث حالة.'
+                : localeCode == 'de'
+                    ? 'Sobald der Checkout abgeschlossen ist, erscheinen deine Bestellungen hier mit dem neuesten Status.'
+                    : localeCode == 'ru'
+                        ? 'После завершения оформления ваши заказы появятся здесь с актуальным статусом.'
+                        : 'Once checkout is completed, your orders will appear here with the latest status.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: secondary,
@@ -514,6 +527,7 @@ class _OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
+    final localeCode = Localizations.localeOf(context).languageCode;
 
     return InkWell(
       onTap: () {
@@ -551,7 +565,7 @@ class _OrderCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              '${order.total} EGP • ${order.items.length} item(s) • ${order.paymentMethod.labelForLocale(Localizations.localeOf(context).languageCode)}',
+              '${order.total} EGP • ${order.items.length} ${localeCode == 'ar' ? 'عنصر' : localeCode == 'de' ? 'Artikel' : localeCode == 'ru' ? 'товар(ов)' : 'item(s)'} • ${order.paymentMethod.labelForLocale(localeCode)}',
               style: TextStyle(
                 color: secondary,
                 fontSize: 13,
@@ -573,7 +587,21 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    order.isRated ? 'Rated ${order.rating}/5' : 'Tap to view details',
+                    order.isRated
+                        ? (localeCode == 'ar'
+                            ? 'تم التقييم ${order.rating}/5'
+                            : localeCode == 'de'
+                                ? 'Bewertet ${order.rating}/5'
+                                : localeCode == 'ru'
+                                    ? 'Оценка ${order.rating}/5'
+                                    : 'Rated ${order.rating}/5')
+                        : (localeCode == 'ar'
+                            ? 'اضغط لعرض التفاصيل'
+                            : localeCode == 'de'
+                                ? 'Tippe für Details'
+                                : localeCode == 'ru'
+                                    ? 'Нажмите, чтобы открыть детали'
+                                    : 'Tap to view details'),
                     style: TextStyle(
                       color: order.isRated ? const Color(0xFF2DBA71) : CavoColors.gold,
                       fontSize: 12,

@@ -13,7 +13,26 @@ class DeliveryTrackingScreen extends StatelessWidget {
 
   final CavoOrder order;
 
-  List<_TrackingStep> _buildSteps() {
+  String _tr(
+    String localeCode, {
+    required String en,
+    required String ar,
+    required String de,
+    required String ru,
+  }) {
+    switch (localeCode) {
+      case 'ar':
+        return ar;
+      case 'de':
+        return de;
+      case 'ru':
+        return ru;
+      default:
+        return en;
+    }
+  }
+
+  List<_TrackingStep> _buildSteps(String localeCode) {
     final statuses = [
       OrderStatus.pending,
       OrderStatus.approved,
@@ -28,14 +47,26 @@ class DeliveryTrackingScreen extends StatelessWidget {
     return [
       _TrackingStep(
         status: OrderStatus.pending,
-        title: 'Order placed',
-        subtitle: 'Your order has been received and is waiting for review.',
+        title: _tr(localeCode, en: 'Order placed', ar: 'تم إنشاء الطلب', de: 'Bestellung erstellt', ru: 'Заказ создан'),
+        subtitle: _tr(
+          localeCode,
+          en: 'Your order has been received and is waiting for review.',
+          ar: 'تم استلام طلبك وهو الآن بانتظار المراجعة.',
+          de: 'Deine Bestellung wurde empfangen und wartet auf Prüfung.',
+          ru: 'Ваш заказ получен и ожидает проверки.',
+        ),
         state: safeIndex >= 0 ? _StepState.done : _StepState.todo,
       ),
       _TrackingStep(
         status: OrderStatus.approved,
-        title: 'Approved',
-        subtitle: 'The order was approved from the admin side.',
+        title: _tr(localeCode, en: 'Approved', ar: 'تمت الموافقة', de: 'Bestätigt', ru: 'Подтверждено'),
+        subtitle: _tr(
+          localeCode,
+          en: 'The order was approved from the admin side.',
+          ar: 'تمت الموافقة على الطلب من جانب الإدارة.',
+          de: 'Die Bestellung wurde von der Verwaltung bestätigt.',
+          ru: 'Заказ был подтверждён со стороны администратора.',
+        ),
         state: safeIndex > 1
             ? _StepState.done
             : safeIndex == 1
@@ -44,8 +75,14 @@ class DeliveryTrackingScreen extends StatelessWidget {
       ),
       _TrackingStep(
         status: OrderStatus.processing,
-        title: 'Preparing your order',
-        subtitle: 'Your pair is being checked and packed carefully.',
+        title: _tr(localeCode, en: 'Preparing your order', ar: 'جارٍ تجهيز طلبك', de: 'Deine Bestellung wird vorbereitet', ru: 'Ваш заказ готовится'),
+        subtitle: _tr(
+          localeCode,
+          en: 'Your pair is being checked and packed carefully.',
+          ar: 'يتم فحص طلبك وتغليفه بعناية.',
+          de: 'Dein Paar wird sorgfältig geprüft und verpackt.',
+          ru: 'Вашу пару проверяют и аккуратно упаковывают.',
+        ),
         state: safeIndex > 2
             ? _StepState.done
             : safeIndex == 2
@@ -54,8 +91,14 @@ class DeliveryTrackingScreen extends StatelessWidget {
       ),
       _TrackingStep(
         status: OrderStatus.shipped,
-        title: 'On the way',
-        subtitle: 'Your order has left and is moving to the delivery stage.',
+        title: _tr(localeCode, en: 'On the way', ar: 'في الطريق', de: 'Unterwegs', ru: 'В пути'),
+        subtitle: _tr(
+          localeCode,
+          en: 'Your order has left and is moving to the delivery stage.',
+          ar: 'خرج طلبك وأصبح الآن في مرحلة التوصيل.',
+          de: 'Deine Bestellung hat das Lager verlassen und befindet sich in der Lieferung.',
+          ru: 'Ваш заказ отправлен и находится на этапе доставки.',
+        ),
         state: safeIndex > 3
             ? _StepState.done
             : safeIndex == 3
@@ -64,8 +107,14 @@ class DeliveryTrackingScreen extends StatelessWidget {
       ),
       _TrackingStep(
         status: OrderStatus.delivered,
-        title: 'Delivered',
-        subtitle: 'Your order arrived successfully. Enjoy your pair.',
+        title: _tr(localeCode, en: 'Delivered', ar: 'تم التسليم', de: 'Zugestellt', ru: 'Доставлен'),
+        subtitle: _tr(
+          localeCode,
+          en: 'Your order arrived successfully. Enjoy your pair.',
+          ar: 'وصل طلبك بنجاح. نتمنى لك تجربة رائعة.',
+          de: 'Deine Bestellung wurde erfolgreich zugestellt. Viel Freude mit deinem Paar.',
+          ru: 'Ваш заказ успешно доставлен. Приятного пользования.',
+        ),
         state: safeIndex >= 4 ? _StepState.done : _StepState.todo,
       ),
     ];
@@ -91,7 +140,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final accent = _statusTint(order.status);
-    final steps = _buildSteps();
+    final steps = _buildSteps(localeCode);
 
     return Scaffold(
       backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
@@ -177,7 +226,7 @@ class DeliveryTrackingScreen extends StatelessWidget {
                         Expanded(
                           child: _MetaBlock(
                             label: localeCode == 'ar' ? 'من' : localeCode == 'de' ? 'Von' : localeCode == 'ru' ? 'Откуда' : 'From',
-                            value: 'CAVO, Hurghada',
+                            value: _tr(localeCode, en: 'CAVO, Hurghada', ar: 'CAVO، الغردقة', de: 'CAVO, Hurghada', ru: 'CAVO, Хургада'),
                             primary: primary,
                             secondary: secondary,
                           ),
@@ -318,7 +367,12 @@ class DeliveryTrackingScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     _detailRow(localeCode == 'ar' ? 'العميل' : localeCode == 'de' ? 'Kunde' : localeCode == 'ru' ? 'Клиент' : 'Customer', order.customerName, primary, secondary),
                     _detailRow(localeCode == 'ar' ? 'الهاتف' : localeCode == 'de' ? 'Telefon' : localeCode == 'ru' ? 'Телефон' : 'Phone', order.phoneNumber, primary, secondary),
-                    _detailRow('Address', '${order.city}, ${order.area}\n${order.addressLine}', primary, secondary),
+                    _detailRow(
+                      localeCode == 'ar' ? 'العنوان' : localeCode == 'de' ? 'Adresse' : localeCode == 'ru' ? 'Адрес' : 'Address',
+                      '${order.city}, ${order.area}\n${order.addressLine}',
+                      primary,
+                      secondary,
+                    ),
                     _detailRow(localeCode == 'ar' ? 'الدفع' : localeCode == 'de' ? 'Zahlung' : localeCode == 'ru' ? 'Оплата' : 'Payment', order.paymentMethod.labelForLocale(localeCode), primary, secondary),
                     _detailRow(localeCode == 'ar' ? 'الإجمالي' : localeCode == 'de' ? 'Gesamt' : localeCode == 'ru' ? 'Итого' : 'Total', '${order.total} EGP', primary, secondary),
                   ],
@@ -409,21 +463,81 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet>
   late final Animation<double> _scale;
   int _rating = 5;
   bool _saving = false;
-  final Set<String> _tags = {'On time'};
+  final Set<String> _tags = {'on_time'};
 
   static const _choices = [
-    'On time',
-    'Friendly',
-    'Careful',
-    'Communicative',
-    'Above & beyond',
+    'on_time',
+    'friendly',
+    'careful',
+    'communicative',
+    'above_beyond',
   ];
+
+  String get _localeCode => Localizations.localeOf(context).languageCode;
+
+  String _tr({
+    required String en,
+    required String ar,
+    required String de,
+    required String ru,
+  }) {
+    switch (_localeCode) {
+      case 'ar':
+        return ar;
+      case 'de':
+        return de;
+      case 'ru':
+        return ru;
+      default:
+        return en;
+    }
+  }
+
+  String _choiceLabel(String key) {
+    switch (key) {
+      case 'on_time':
+        return _tr(en: 'On time', ar: 'في الموعد', de: 'Pünktlich', ru: 'Вовремя');
+      case 'friendly':
+        return _tr(en: 'Friendly', ar: 'تعامل راقٍ', de: 'Freundlich', ru: 'Дружелюбно');
+      case 'careful':
+        return _tr(en: 'Careful', ar: 'تغليف بعناية', de: 'Sorgfältig', ru: 'Аккуратно');
+      case 'communicative':
+        return _tr(en: 'Communicative', ar: 'تواصل ممتاز', de: 'Gute Kommunikation', ru: 'Хорошая связь');
+      case 'above_beyond':
+        return _tr(en: 'Above & beyond', ar: 'تجربة استثنائية', de: 'Über den Erwartungen', ru: 'Выше ожиданий');
+      default:
+        return key;
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _rating = widget.order.rating ?? 5;
-    _tags.addAll(widget.order.ratingTags);
+    for (final tag in widget.order.ratingTags) {
+      switch (tag) {
+        case 'On time':
+        case 'on_time':
+          _tags.add('on_time');
+          break;
+        case 'Friendly':
+        case 'friendly':
+          _tags.add('friendly');
+          break;
+        case 'Careful':
+        case 'careful':
+          _tags.add('careful');
+          break;
+        case 'Communicative':
+        case 'communicative':
+          _tags.add('communicative');
+          break;
+        case 'Above & beyond':
+        case 'above_beyond':
+          _tags.add('above_beyond');
+          break;
+      }
+    }
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 520),
@@ -471,7 +585,12 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet>
               ),
               const SizedBox(height: 12),
               Text(
-                'How was your delivery?',
+                _tr(
+                  en: 'How was your delivery?',
+                  ar: 'كيف كانت تجربة التوصيل؟',
+                  de: 'Wie war deine Lieferung?',
+                  ru: 'Как прошла доставка?',
+                ),
                 style: TextStyle(
                   color: primary,
                   fontSize: 22,
@@ -480,7 +599,12 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet>
               ),
               const SizedBox(height: 8),
               Text(
-                'Rate the CAVO experience for order ${widget.order.id}.',
+                _tr(
+                  en: 'Rate the CAVO experience for order ${widget.order.id}.',
+                  ar: 'قيّم تجربة CAVO للطلب ${widget.order.id}.',
+                  de: 'Bewerte dein CAVO-Erlebnis für Bestellung ${widget.order.id}.',
+                  ru: 'Оцените опыт CAVO по заказу ${widget.order.id}.',
+                ),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: secondary,
@@ -512,7 +636,7 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet>
                 children: _choices.map((choice) {
                   final selected = _tags.contains(choice);
                   return ChoiceChip(
-                    label: Text(choice),
+                    label: Text(_choiceLabel(choice)),
                     selected: selected,
                     onSelected: (_) {
                       setState(() {
@@ -554,19 +678,49 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet>
                             if (!mounted) return;
                             Navigator.of(context).pop();
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Thanks — your rating was saved.')),
+                              SnackBar(
+                                content: Text(
+                                  _tr(
+                                    en: 'Thanks — your rating was saved.',
+                                    ar: 'شكرًا لك — تم حفظ تقييمك.',
+                                    de: 'Danke — deine Bewertung wurde gespeichert.',
+                                    ru: 'Спасибо — ваша оценка сохранена.',
+                                  ),
+                                ),
+                              ),
                             );
                           } finally {
                             if (mounted) setState(() => _saving = false);
                           }
                         },
-                  child: Text(_saving ? 'Saving...' : 'Submit rating'),
+                  child: Text(
+                    _saving
+                        ? _tr(
+                            en: 'Saving...',
+                            ar: 'جارٍ الحفظ...',
+                            de: 'Wird gespeichert...',
+                            ru: 'Сохранение...',
+                          )
+                        : _tr(
+                            en: 'Submit rating',
+                            ar: 'إرسال التقييم',
+                            de: 'Bewertung senden',
+                            ru: 'Отправить оценку',
+                          ),
+                  ),
                 ),
               ),
               const SizedBox(height: 6),
               TextButton(
                 onPressed: _saving ? null : () => Navigator.of(context).pop(),
-                child: const Text('Maybe later'),
+                child: Text(
+                  _tr(
+                    en: 'Maybe later',
+                    ar: 'لاحقًا',
+                    de: 'Vielleicht später',
+                    ru: 'Позже',
+                  ),
+                ),
               ),
             ],
           ),

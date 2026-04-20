@@ -102,7 +102,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _requireSignIn() async {
-    _showMessage('Sign in first to place your order.');
+    final localeCode = Localizations.localeOf(context).languageCode;
+    _showMessage(
+      localeCode == 'ar'
+          ? 'سجّل الدخول أولًا لإتمام طلبك.'
+          : localeCode == 'de'
+              ? 'Melde dich zuerst an, um deine Bestellung aufzugeben.'
+              : localeCode == 'ru'
+                  ? 'Сначала войдите, чтобы оформить заказ.'
+                  : 'Sign in first to place your order.',
+    );
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const LoginScreen(redirectToCheckout: true),
@@ -150,18 +159,48 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final addressSegments = <String>[];
       if (_governorateController.text.trim().isNotEmpty) {
-        addressSegments.add('Governorate: ${_governorateController.text.trim()}');
+        addressSegments.add(
+          localeCode == 'ar'
+              ? 'المحافظة: ${_governorateController.text.trim()}'
+              : localeCode == 'de'
+                  ? 'Gouvernement: ${_governorateController.text.trim()}'
+                  : localeCode == 'ru'
+                      ? 'Губернаторство: ${_governorateController.text.trim()}'
+                      : 'Governorate: ${_governorateController.text.trim()}',
+        );
       }
       if (_landmarkController.text.trim().isNotEmpty) {
-        addressSegments.add('Landmark: ${_landmarkController.text.trim()}');
+        addressSegments.add(
+          localeCode == 'ar'
+              ? 'العلامة المميزة: ${_landmarkController.text.trim()}'
+              : localeCode == 'de'
+                  ? 'Orientierungspunkt: ${_landmarkController.text.trim()}'
+                  : localeCode == 'ru'
+                      ? 'Ориентир: ${_landmarkController.text.trim()}'
+                      : 'Landmark: ${_landmarkController.text.trim()}',
+        );
       }
       if (!_isDelivery) {
         addressSegments.add(
-          'Pickup branch: $_fixedPickupBranchArabic ($_fixedPickupBranchEnglish)',
+          localeCode == 'ar'
+              ? 'فرع الاستلام: $_fixedPickupBranchArabic ($_fixedPickupBranchEnglish)'
+              : localeCode == 'de'
+                  ? 'Abholfiliale: $_fixedPickupBranchArabic ($_fixedPickupBranchEnglish)'
+                  : localeCode == 'ru'
+                      ? 'Филиал самовывоза: $_fixedPickupBranchArabic ($_fixedPickupBranchEnglish)'
+                      : 'Pickup branch: $_fixedPickupBranchArabic ($_fixedPickupBranchEnglish)',
         );
       }
       if (_addressController.text.trim().isNotEmpty && !_isDelivery) {
-        addressSegments.add('Extra address note: ${_addressController.text.trim()}');
+        addressSegments.add(
+          localeCode == 'ar'
+              ? 'ملاحظة عنوان إضافية: ${_addressController.text.trim()}'
+              : localeCode == 'de'
+                  ? 'Zusätzliche Adressnotiz: ${_addressController.text.trim()}'
+                  : localeCode == 'ru'
+                      ? 'Дополнительная заметка к адресу: ${_addressController.text.trim()}'
+                      : 'Extra address note: ${_addressController.text.trim()}',
+        );
       }
 
       final order = await OrderController.instance.createOrderFromCart(
@@ -498,7 +537,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           _CheckoutTextField(
                             controller: _nameController,
-                            hintText: localeCode == 'ar' ? 'أحمد محمد' : 'Ahmed Mohamed',
+                            hintText: localeCode == 'ar'
+                                ? 'أحمد محمد'
+                                : localeCode == 'de'
+                                    ? 'Ahmed Mohamed'
+                                    : localeCode == 'ru'
+                                        ? 'Ахмед Мохамед'
+                                        : 'Ahmed Mohamed',
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
                                 return localeCode == 'ar'
@@ -525,7 +570,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           _CheckoutTextField(
                             controller: _phoneController,
-                            hintText: '01xxxxxxxxx',
+                            hintText: localeCode == 'ar'
+                                ? '01xxxxxxxxx'
+                                : localeCode == 'de'
+                                    ? '01xxxxxxxxx'
+                                    : localeCode == 'ru'
+                                        ? '01xxxxxxxxx'
+                                        : '01xxxxxxxxx',
                             keyboardType: TextInputType.phone,
                             validator: (value) {
                               if (value == null || value.trim().length < 10) {
@@ -553,7 +604,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           _CheckoutTextField(
                             controller: _governorateController,
-                            hintText: localeCode == 'ar' ? 'البحر الأحمر' : 'Red Sea',
+                            hintText: localeCode == 'ar'
+                                ? 'البحر الأحمر'
+                                : localeCode == 'de'
+                                    ? 'Rotes Meer'
+                                    : localeCode == 'ru'
+                                        ? 'Красное море'
+                                        : 'Red Sea',
                             validator: (value) {
                               if (!_isDelivery) return null;
                               if (value == null || value.trim().isEmpty) {
@@ -587,7 +644,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     ),
                                     _CheckoutTextField(
                                       controller: _cityController,
-                                      hintText: 'Hurghada',
+                                      hintText: localeCode == 'ar'
+                                          ? 'الغردقة'
+                                          : localeCode == 'de'
+                                              ? 'Hurghada'
+                                              : localeCode == 'ru'
+                                                  ? 'Хургада'
+                                                  : 'Hurghada',
                                       validator: (value) {
                                         if (!_isDelivery) return null;
                                         if (value == null || value.trim().isEmpty) {
@@ -622,7 +685,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     ),
                                     _CheckoutTextField(
                                       controller: _areaController,
-                                      hintText: 'Arabia / El Kawther',
+                                      hintText: localeCode == 'ar'
+                                          ? 'العربية / الكوثر'
+                                          : localeCode == 'de'
+                                              ? 'Arabia / El Kawther'
+                                              : localeCode == 'ru'
+                                                  ? 'Арабия / Эль-Каусер'
+                                                  : 'Arabia / El Kawther',
                                       validator: (value) {
                                         if (!_isDelivery) return null;
                                         if (value == null || value.trim().isEmpty) {
@@ -655,7 +724,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           ),
                           _CheckoutTextField(
                             controller: _addressController,
-                            hintText: 'Street, building, floor, apartment',
+                            hintText: localeCode == 'ar'
+                                ? 'الشارع، العمارة، الدور، الشقة'
+                                : localeCode == 'de'
+                                    ? 'Straße, Gebäude, Etage, Wohnung'
+                                    : localeCode == 'ru'
+                                        ? 'Улица, дом, этаж, квартира'
+                                        : 'Street, building, floor, apartment',
                             validator: (value) {
                               if (!_isDelivery) return null;
                               if (value == null || value.trim().isEmpty) {
@@ -685,7 +760,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             controller: _landmarkController,
                             hintText: localeCode == 'ar'
                                 ? 'بجوار ...'
-                                : 'Near ...',
+                                : localeCode == 'de'
+                                    ? 'In der Nähe von ...'
+                                    : localeCode == 'ru'
+                                        ? 'Рядом с ...'
+                                        : 'Near ...',
                           ),
                           const SizedBox(height: 12),
                           _FieldLabel(
@@ -702,7 +781,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             controller: _notesController,
                             hintText: localeCode == 'ar'
                                 ? 'اختياري'
-                                : 'Optional notes',
+                                : localeCode == 'de'
+                                    ? 'Optionale Notizen'
+                                    : localeCode == 'ru'
+                                        ? 'Необязательные заметки'
+                                        : 'Optional notes',
                             maxLines: 3,
                           ),
                         ],
