@@ -233,6 +233,89 @@ class AppLocalizationsAr extends AppLocalizations {
   String get signedInSecurely => 'تم تسجيل الدخول بنجاح';
 
   @override
+  String get edit => 'تعديل';
+
+  @override
+  String get guestMode => 'وضع الضيف';
+
+  @override
+  String get cavoAccount => 'حساب كافو';
+
+  @override
+  String get itemsSavedLabel => 'عناصر محفوظة';
+
+  @override
+  String get localOnly => 'محلي فقط';
+
+  @override
+  String get securelySynced => 'متزامنة بأمان';
+
+  @override
+  String currentLanguageCode(String code) {
+    return 'الحالية: $code';
+  }
+
+  @override
+  String get lightModePremiumOn => 'الوضع الفاتح • لمسات بريميوم';
+
+  @override
+  String get darkModePremiumOn => 'الوضع الداكن • تباين فاخر';
+
+  @override
+  String get adminOrders => 'طلبات الإدارة';
+
+  @override
+  String get adminOrdersSubtitle => 'افتح لوحة الطلبات وقم بإدارة الحالات';
+
+  @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get noUnreadUpdates => 'لا توجد تحديثات غير مقروءة';
+
+  @override
+  String unreadUpdatesCount(int count) {
+    return '$count تحديثات غير مقروءة';
+  }
+
+  @override
+  String get signInToTrackOrders => 'سجل الدخول لمتابعة حالة طلباتك.';
+
+  @override
+  String get recentOrdersLatestStatus =>
+      'ستظهر طلباتك الأخيرة هنا مع أحدث حالة.';
+
+  @override
+  String get noSavedOrdersYet => 'لا توجد طلبات محفوظة بعد';
+
+  @override
+  String get ordersPlaceholderSubtitle =>
+      'بعد إتمام الطلب، ستظهر هنا طلباتك مع أحدث حالة.';
+
+  @override
+  String ratedOutOfFive(int rating) {
+    return 'تم التقييم $rating/5';
+  }
+
+  @override
+  String get tapToViewDetails => 'اضغط لعرض التفاصيل';
+
+  @override
+  String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get bio => 'نبذة';
+
+  @override
+  String get profileSaved => 'تم حفظ الملف الشخصي';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
   String get loggedOutSuccessfully => 'تم تسجيل الخروج بنجاح.';
 
   @override

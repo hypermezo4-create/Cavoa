@@ -77,6 +77,52 @@
   "myAccount": "حسابي",
   "accountStatus": "حالة الحساب",
   "signedInSecurely": "تم تسجيل الدخول بنجاح",
+  "edit": "تعديل",
+  "guestMode": "وضع الضيف",
+  "cavoAccount": "حساب كافو",
+  "itemsSavedLabel": "عناصر محفوظة",
+  "localOnly": "محلي فقط",
+  "securelySynced": "متزامنة بأمان",
+  "currentLanguageCode": "الحالية: {code}",
+  "@currentLanguageCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "lightModePremiumOn": "الوضع الفاتح • لمسات بريميوم",
+  "darkModePremiumOn": "الوضع الداكن • تباين فاخر",
+  "adminOrders": "طلبات الإدارة",
+  "adminOrdersSubtitle": "افتح لوحة الطلبات وقم بإدارة الحالات",
+  "notifications": "الإشعارات",
+  "noUnreadUpdates": "لا توجد تحديثات غير مقروءة",
+  "unreadUpdatesCount": "{count} تحديثات غير مقروءة",
+  "@unreadUpdatesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signInToTrackOrders": "سجل الدخول لمتابعة حالة طلباتك.",
+  "recentOrdersLatestStatus": "ستظهر طلباتك الأخيرة هنا مع أحدث حالة.",
+  "noSavedOrdersYet": "لا توجد طلبات محفوظة بعد",
+  "ordersPlaceholderSubtitle": "بعد إتمام الطلب، ستظهر هنا طلباتك مع أحدث حالة.",
+  "ratedOutOfFive": "تم التقييم {rating}/5",
+  "@ratedOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToViewDetails": "اضغط لعرض التفاصيل",
+  "editProfile": "تعديل الملف الشخصي",
+  "location": "الموقع",
+  "bio": "نبذة",
+  "profileSaved": "تم حفظ الملف الشخصي",
+  "saveChanges": "حفظ التغييرات",
   "loggedOutSuccessfully": "تم تسجيل الخروج بنجاح.",
   "checkout": "إتمام الشراء",
   "linksIntro": "كل وسائل تواصل CAVO في مكان واحد",

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../core/localization/app_locale_controller.dart';
 import '../../../core/localization/l10n_ext.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/theme_mode_controller.dart';
 import '../../../data/models/order.dart';
 import '../../../shared/widgets/cavo_language_picker.dart';
 import '../../../shared/widgets/cavo_premium_ui.dart';
@@ -31,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final user = FirebaseAuth.instance.currentUser;
-    final localeCode = Localizations.localeOf(context).languageCode;
+    final l10n = context.l10n;
     final profile = ProfileController.instance.value;
 
     return Scaffold(
@@ -46,9 +47,9 @@ class ProfileScreen extends StatelessWidget {
               CavoSectionHeader(
                 title: context.l10n.profile,
                 subtitle: user == null
-                    ? context.l10n.guestModeSignInForFullAccess
-                    : context.l10n.signedInSecurely,
-                action: user == null ? null : (localeCode == 'ar' ? 'تعديل' : localeCode == 'de' ? 'Bearbeiten' : localeCode == 'ru' ? 'Изменить' : 'Edit'),
+                    ? l10n.guestModeSignInForFullAccess
+                    : l10n.signedInSecurely,
+                action: user == null ? null : l10n.edit,
                 onActionTap: user == null
                     ? null
                     : () async {
@@ -90,7 +91,7 @@ class ProfileScreen extends StatelessWidget {
                           Text(
                             profile?.fullName.trim().isNotEmpty == true
                                 ? profile!.fullName
-                                : (user?.displayName?.trim().isNotEmpty == true ? user!.displayName! : (user?.email ?? 'CAVO Member')),
+                                : (user?.displayName?.trim().isNotEmpty == true ? user!.displayName! : (user?.email ?? l10n.cavoMember)),
                             style: TextStyle(
                               color: primary,
                               fontSize: 20,
@@ -108,7 +109,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           CavoPillTag(
-                            label: user == null ? (localeCode == 'ar' ? 'وضع الضيف' : localeCode == 'de' ? 'Gastmodus' : localeCode == 'ru' ? 'Гостевой режим' : 'Guest mode') : (localeCode == 'ar' ? 'حساب كافو' : localeCode == 'de' ? 'CAVO-Konto' : localeCode == 'ru' ? 'Аккаунт CAVO' : 'CAVO account'),
+                            label: user == null ? l10n.guestMode : l10n.cavoAccount,
                             isLight: isLight,
                             selected: true,
                           ),
@@ -128,7 +129,7 @@ class ProfileScreen extends StatelessWidget {
                         return _CountCard(
                           title: context.l10n.cart,
                           value: '${cartItems.length}',
-                          subtitle: localeCode == 'ar' ? 'عناصر محفوظة' : localeCode == 'de' ? 'Artikel gespeichert' : localeCode == 'ru' ? 'товаров сохранено' : 'items saved',
+                          subtitle: l10n.itemsSavedLabel,
                           icon: Icons.shopping_bag_outlined,
                           isLight: isLight,
                         );
@@ -141,7 +142,7 @@ class ProfileScreen extends StatelessWidget {
                         ? _CountCard(
                             title: context.l10n.orders,
                             value: '${OrderController.instance.value.length}',
-                            subtitle: localeCode == 'ar' ? 'محلي فقط' : localeCode == 'de' ? 'Nur lokal' : localeCode == 'ru' ? 'только локально' : 'local only',
+                            subtitle: l10n.localOnly,
                             icon: Icons.receipt_long_outlined,
                             isLight: isLight,
                           )
@@ -152,7 +153,7 @@ class ProfileScreen extends StatelessWidget {
                               return _CountCard(
                                 title: context.l10n.orders,
                                 value: '$value',
-                                subtitle: localeCode == 'ar' ? 'متزامنة بأمان' : localeCode == 'de' ? 'sicher synchronisiert' : localeCode == 'ru' ? 'безопасно синхронизировано' : 'securely synced',
+                                subtitle: l10n.securelySynced,
                                 icon: Icons.cloud_done_outlined,
                                 isLight: isLight,
                               );
@@ -170,16 +171,27 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 12),
               _ProfileActionTile(
                 title: context.l10n.language,
-                subtitle: localeCode == 'ar' ? 'الحالية: ${AppLocaleController.instance.code}' : localeCode == 'de' ? 'Aktuell: ${AppLocaleController.instance.code}' : localeCode == 'ru' ? 'Текущий: ${AppLocaleController.instance.code}' : 'Current: ${AppLocaleController.instance.code}',
+                subtitle: l10n.currentLanguageCode(AppLocaleController.instance.code),
                 isLight: isLight,
-                trailing: const CavoLanguagePicker(isLight: false, expanded: false),
+                trailing: CavoLanguagePicker(isLight: isLight, expanded: false),
               ),
               const SizedBox(height: 12),
-              _ProfileActionTile(
-                title: context.l10n.appearance,
-                subtitle: context.l10n.dark,
-                isLight: isLight,
-                trailing: const Icon(Icons.dark_mode_rounded, color: CavoColors.gold),
+              ValueListenableBuilder<ThemeMode>(
+                valueListenable: ThemeModeController.instance,
+                builder: (context, mode, _) {
+                  final isCurrentlyLight = mode == ThemeMode.light;
+                  return _ProfileActionTile(
+                    title: l10n.appearance,
+                    subtitle: isCurrentlyLight ? l10n.lightModePremiumOn : l10n.darkModePremiumOn,
+                    isLight: isLight,
+                    trailing: Switch.adaptive(
+                      value: isCurrentlyLight,
+                      activeColor: CavoColors.gold,
+                      onChanged: (_) => ThemeModeController.instance.toggle(),
+                    ),
+                    onTap: ThemeModeController.instance.toggle,
+                  );
+                },
               ),
               const SizedBox(height: 12),
               ValueListenableBuilder<Set<String>>(
@@ -203,8 +215,8 @@ class ProfileScreen extends StatelessWidget {
                 Column(
                   children: [
                     _ProfileActionTile(
-                      title: 'Admin orders',
-                      subtitle: 'Open orders dashboard and manage statuses',
+                      title: l10n.adminOrders,
+                      subtitle: l10n.adminOrdersSubtitle,
                       isLight: isLight,
                       trailing: const Icon(Icons.admin_panel_settings_outlined, color: CavoColors.gold),
                       onTap: () {
@@ -221,10 +233,10 @@ class ProfileScreen extends StatelessWidget {
                 builder: (context, notifications, _) {
                   final unread = NotificationCenterController.instance.unreadCount;
                   return _ProfileActionTile(
-                    title: localeCode == 'ar' ? 'الإشعارات' : localeCode == 'de' ? 'Benachrichtigungen' : localeCode == 'ru' ? 'Уведомления' : 'Notifications',
+                    title: l10n.notifications,
                     subtitle: unread == 0
-                        ? (localeCode == 'ar' ? 'لا توجد تحديثات غير مقروءة' : localeCode == 'de' ? 'Keine ungelesenen Updates' : localeCode == 'ru' ? 'Нет непрочитанных обновлений' : 'No unread updates')
-                        : '$unread ${localeCode == 'ar' ? 'تحديث غير مقروء' : localeCode == 'de' ? 'ungelesene Updates' : localeCode == 'ru' ? 'непрочитанных обновлений' : 'unread updates'}',
+                        ? l10n.noUnreadUpdates
+                        : l10n.unreadUpdatesCount(unread),
                     isLight: isLight,
                     trailing: Stack(
                       clipBehavior: Clip.none,
@@ -260,9 +272,9 @@ class ProfileScreen extends StatelessWidget {
               CavoSectionHeader(
                 title: context.l10n.orders,
                 subtitle: user == null
-                    ? (localeCode == 'ar' ? 'سجل الدخول لمتابعة حالة طلباتك.' : localeCode == 'de' ? 'Melde dich an, um deinen Bestellstatus zu verfolgen.' : localeCode == 'ru' ? 'Войдите, чтобы отслеживать статус заказов.' : 'Sign in to track your order status.')
-                    : (localeCode == 'ar' ? 'ستظهر طلباتك الأخيرة هنا مع أحدث حالة.' : localeCode == 'de' ? 'Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.' : localeCode == 'ru' ? 'Здесь появятся ваши последние заказы с актуальным статусом.' : 'Your recent orders appear here with their latest status.'),
-                action: user == null ? null : (localeCode == 'ar' ? 'عرض الكل' : localeCode == 'de' ? 'Alle anzeigen' : localeCode == 'ru' ? 'Показать все' : 'View all'),
+                    ? l10n.signInToTrackOrders
+                    : l10n.recentOrdersLatestStatus,
+                action: user == null ? null : l10n.viewAll,
                 onActionTap: user == null
                     ? null
                     : () {
@@ -460,7 +472,7 @@ class _OrdersPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localeCode = Localizations.localeOf(context).languageCode;
+    final l10n = context.l10n;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     return CavoGlassCard(
@@ -471,13 +483,7 @@ class _OrdersPlaceholder extends StatelessWidget {
           const Icon(Icons.inventory_2_outlined, color: CavoColors.gold, size: 38),
           const SizedBox(height: 12),
           Text(
-            localeCode == 'ar'
-                ? 'لا توجد طلبات محفوظة بعد'
-                : localeCode == 'de'
-                    ? 'Noch keine gespeicherten Bestellungen'
-                    : localeCode == 'ru'
-                        ? 'Пока нет сохранённых заказов'
-                        : 'No saved orders yet',
+            l10n.noSavedOrdersYet,
             style: TextStyle(
               color: primary,
               fontSize: 18,
@@ -486,13 +492,7 @@ class _OrdersPlaceholder extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            localeCode == 'ar'
-                ? 'بعد إتمام الطلب، ستظهر هنا طلباتك مع أحدث حالة.'
-                : localeCode == 'de'
-                    ? 'Sobald der Checkout abgeschlossen ist, erscheinen deine Bestellungen hier mit dem neuesten Status.'
-                    : localeCode == 'ru'
-                        ? 'После завершения оформления ваши заказы появятся здесь с актуальным статусом.'
-                        : 'Once checkout is completed, your orders will appear here with the latest status.',
+            l10n.ordersPlaceholderSubtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: secondary,
@@ -518,6 +518,7 @@ class _OrderCard extends StatelessWidget {
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final localeCode = Localizations.localeOf(context).languageCode;
+    final l10n = context.l10n;
 
     return InkWell(
       onTap: () {
@@ -555,7 +556,7 @@ class _OrderCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              '${order.total} EGP • ${order.items.length} ${localeCode == 'ar' ? 'عنصر' : localeCode == 'de' ? 'Artikel' : localeCode == 'ru' ? 'товар(ов)' : 'item(s)'} • ${order.paymentMethod.labelForLocale(localeCode)}',
+              '${order.total} EGP • ${order.items.length} ${l10n.itemsShortLabel} • ${order.paymentMethod.labelForLocale(localeCode)}',
               style: TextStyle(
                 color: secondary,
                 fontSize: 13,
@@ -578,20 +579,8 @@ class _OrderCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     order.isRated
-                        ? (localeCode == 'ar'
-                            ? 'تم التقييم ${order.rating}/5'
-                            : localeCode == 'de'
-                                ? 'Bewertet ${order.rating}/5'
-                                : localeCode == 'ru'
-                                    ? 'Оценка ${order.rating}/5'
-                                    : 'Rated ${order.rating}/5')
-                        : (localeCode == 'ar'
-                            ? 'اضغط لعرض التفاصيل'
-                            : localeCode == 'de'
-                                ? 'Tippe für Details'
-                                : localeCode == 'ru'
-                                    ? 'Нажмите, чтобы открыть детали'
-                                    : 'Tap to view details'),
+                        ? l10n.ratedOutOfFive(order.rating)
+                        : l10n.tapToViewDetails,
                     style: TextStyle(
                       color: order.isRated ? const Color(0xFF2DBA71) : CavoColors.gold,
                       fontSize: 12,
@@ -626,7 +615,7 @@ Future<void> _showEditProfileSheet(
     useSafeArea: true,
     backgroundColor: Colors.transparent,
     builder: (context) {
-      final localeCode = Localizations.localeOf(context).languageCode;
+      final l10n = context.l10n;
       final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
       final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
       bool saving = false;
@@ -661,7 +650,7 @@ Future<void> _showEditProfileSheet(
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      localeCode == 'ar' ? 'تعديل الملف الشخصي' : localeCode == 'de' ? 'Profil bearbeiten' : localeCode == 'ru' ? 'Редактировать профиль' : 'Edit Profile',
+                      l10n.editProfile,
                       style: TextStyle(
                         color: primary,
                         fontSize: 24,
@@ -675,15 +664,15 @@ Future<void> _showEditProfileSheet(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _SheetField(controller: nameController, label: localeCode == 'ar' ? 'الاسم الكامل' : localeCode == 'de' ? 'Vollständiger Name' : localeCode == 'ru' ? 'Полное имя' : 'Full name', icon: Icons.person_outline_rounded, primary: primary, secondary: secondary),
+                            _SheetField(controller: nameController, label: l10n.fullName, icon: Icons.person_outline_rounded, primary: primary, secondary: secondary),
                             const SizedBox(height: 12),
-                            _SheetField(controller: emailController, label: localeCode == 'ar' ? 'البريد الإلكتروني' : localeCode == 'de' ? 'E-Mail' : localeCode == 'ru' ? 'Электронная почта' : 'Email', icon: Icons.mail_outline_rounded, primary: primary, secondary: secondary, enabled: false),
+                            _SheetField(controller: emailController, label: l10n.emailAddress, icon: Icons.mail_outline_rounded, primary: primary, secondary: secondary, enabled: false),
                             const SizedBox(height: 12),
-                            _SheetField(controller: phoneController, label: localeCode == 'ar' ? 'الهاتف' : localeCode == 'de' ? 'Telefon' : localeCode == 'ru' ? 'Телефон' : 'Phone', icon: Icons.phone_outlined, primary: primary, secondary: secondary),
+                            _SheetField(controller: phoneController, label: l10n.phoneNumber, icon: Icons.phone_outlined, primary: primary, secondary: secondary),
                             const SizedBox(height: 12),
-                            _SheetField(controller: locationController, label: localeCode == 'ar' ? 'الموقع' : localeCode == 'de' ? 'Standort' : localeCode == 'ru' ? 'Местоположение' : 'Location', icon: Icons.location_on_outlined, primary: primary, secondary: secondary),
+                            _SheetField(controller: locationController, label: l10n.location, icon: Icons.location_on_outlined, primary: primary, secondary: secondary),
                             const SizedBox(height: 12),
-                            _SheetField(controller: bioController, label: localeCode == 'ar' ? 'نبذة' : localeCode == 'de' ? 'Info' : localeCode == 'ru' ? 'О себе' : 'Bio', icon: Icons.info_outline_rounded, primary: primary, secondary: secondary, maxLines: 2),
+                            _SheetField(controller: bioController, label: l10n.bio, icon: Icons.info_outline_rounded, primary: primary, secondary: secondary, maxLines: 2),
                             const SizedBox(height: 18),
                             AnimatedSwitcher(
                               duration: const Duration(milliseconds: 220),
@@ -694,7 +683,7 @@ Future<void> _showEditProfileSheet(
                                       children: [
                                         const Icon(Icons.check_circle_rounded, color: Color(0xFF2DBA71)),
                                         const SizedBox(width: 8),
-                                        Text(localeCode == 'ar' ? 'تم حفظ الملف الشخصي' : localeCode == 'de' ? 'Profil gespeichert' : localeCode == 'ru' ? 'Профиль сохранен' : 'Profile saved', style: const TextStyle(color: Color(0xFF2DBA71), fontWeight: FontWeight.w800)),
+                                        Text(l10n.profileSaved, style: const TextStyle(color: Color(0xFF2DBA71), fontWeight: FontWeight.w800)),
                                       ],
                                     )
                                   : const SizedBox.shrink(key: ValueKey('idle')),
@@ -709,7 +698,7 @@ Future<void> _showEditProfileSheet(
                         Expanded(
                           child: OutlinedButton(
                             onPressed: saving ? null : () => Navigator.of(context).pop(),
-                            child: Text(localeCode == 'ar' ? 'إلغاء' : localeCode == 'de' ? 'Abbrechen' : localeCode == 'ru' ? 'Отмена' : 'Cancel'),
+                            child: Text(l10n.cancel),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -729,7 +718,7 @@ Future<void> _showEditProfileSheet(
                                       if (context.mounted) Navigator.of(context).pop();
                                     }
                                   },
-                            child: Text(saving ? (localeCode == 'ar' ? 'جارٍ الحفظ...' : localeCode == 'de' ? 'Wird gespeichert...' : localeCode == 'ru' ? 'Сохранение...' : 'Saving...') : (localeCode == 'ar' ? 'حفظ التغييرات' : localeCode == 'de' ? 'Änderungen speichern' : localeCode == 'ru' ? 'Сохранить изменения' : 'Save Changes')),
+                            child: Text(saving ? l10n.sending : l10n.saveChanges),
                           ),
                         ),
                       ],

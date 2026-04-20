@@ -522,6 +522,156 @@ abstract class AppLocalizations {
   /// **'Signed in securely'**
   String get signedInSecurely;
 
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @guestMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest mode'**
+  String get guestMode;
+
+  /// No description provided for @cavoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'CAVO account'**
+  String get cavoAccount;
+
+  /// No description provided for @itemsSavedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'items saved'**
+  String get itemsSavedLabel;
+
+  /// No description provided for @localOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'local only'**
+  String get localOnly;
+
+  /// No description provided for @securelySynced.
+  ///
+  /// In en, this message translates to:
+  /// **'securely synced'**
+  String get securelySynced;
+
+  /// No description provided for @currentLanguageCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {code}'**
+  String currentLanguageCode(String code);
+
+  /// No description provided for @lightModePremiumOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Light mode • premium surfaces'**
+  String get lightModePremiumOn;
+
+  /// No description provided for @darkModePremiumOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark mode • premium contrast'**
+  String get darkModePremiumOn;
+
+  /// No description provided for @adminOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin orders'**
+  String get adminOrders;
+
+  /// No description provided for @adminOrdersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open orders dashboard and manage statuses'**
+  String get adminOrdersSubtitle;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @noUnreadUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'No unread updates'**
+  String get noUnreadUpdates;
+
+  /// No description provided for @unreadUpdatesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread updates'**
+  String unreadUpdatesCount(int count);
+
+  /// No description provided for @signInToTrackOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to track your order status.'**
+  String get signInToTrackOrders;
+
+  /// No description provided for @recentOrdersLatestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Your recent orders appear here with their latest status.'**
+  String get recentOrdersLatestStatus;
+
+  /// No description provided for @noSavedOrdersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved orders yet'**
+  String get noSavedOrdersYet;
+
+  /// No description provided for @ordersPlaceholderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Once checkout is completed, your orders will appear here with the latest status.'**
+  String get ordersPlaceholderSubtitle;
+
+  /// No description provided for @ratedOutOfFive.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated {rating}/5'**
+  String ratedOutOfFive(int rating);
+
+  /// No description provided for @tapToViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view details'**
+  String get tapToViewDetails;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @bio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get bio;
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get profileSaved;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
   /// No description provided for @loggedOutSuccessfully.
   ///
   /// In en, this message translates to:

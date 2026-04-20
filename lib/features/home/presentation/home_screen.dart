@@ -54,9 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    const isLight = false;
-    const primary = CavoColors.textPrimary;
-    const muted = CavoColors.textMuted;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final muted = isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
     final showcase = CavoCatalog.homeShowcase().take(5).toList();
     if (showcase.isEmpty) {
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final brands = CavoCatalog.products.map((e) => e.brand).toSet().take(8).toList();
 
     return Scaffold(
-      backgroundColor: CavoColors.background,
+      backgroundColor: isLight ? CavoColors.lightBackground : CavoColors.background,
       body: CavoPremiumBackground(
         isLight: isLight,
         child: SafeArea(
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _BrandHeader(isLight: isLight),
                   const Spacer(),
-                  const CavoLanguagePicker(isLight: false),
+                  CavoLanguagePicker(isLight: isLight),
                   const SizedBox(width: 10),
                   ValueListenableBuilder<List<CavoNotificationItem>>(
                     valueListenable: NotificationCenterController.instance,
@@ -132,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 18),
               CavoGlassCard(
                 isLight: isLight,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 borderRadius: const BorderRadius.all(Radius.circular(24)),
                 child: Row(
                   children: [
@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             l10n.homePremiumSpotlightSubtitle,
                             style: TextStyle(
                               color: muted,
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.w600,
                               height: 1.45,
                             ),
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _SearchBar(isLight: isLight),
               const SizedBox(height: 22),
               SizedBox(
-                height: 358,
+                height: 326,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: showcase.length,
@@ -225,27 +225,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 26),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
+              Row(
                 children: [
-                  CavoMetricChip(
-                    value: '${CavoCatalog.products.length}+',
-                    label: l10n.itemsCountLabel,
-                    icon: Icons.auto_awesome_rounded,
-                    isLight: isLight,
+                  Expanded(
+                    child: CavoMetricChip(
+                      value: '${CavoCatalog.products.length}+',
+                      label: l10n.itemsCountLabel,
+                      icon: Icons.auto_awesome_rounded,
+                      isLight: isLight,
+                    ),
                   ),
-                  CavoMetricChip(
-                    value: brands.length.toString(),
-                    label: l10n.topBrands,
-                    icon: Icons.workspace_premium_rounded,
-                    isLight: isLight,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: CavoMetricChip(
+                      value: brands.length.toString(),
+                      label: l10n.topBrands,
+                      icon: Icons.workspace_premium_rounded,
+                      isLight: isLight,
+                    ),
                   ),
-                  CavoMetricChip(
-                    value: '24/7',
-                    label: l10n.links,
-                    icon: Icons.support_agent_rounded,
-                    isLight: isLight,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: CavoMetricChip(
+                      value: '24/7',
+                      label: l10n.links,
+                      icon: Icons.support_agent_rounded,
+                      isLight: isLight,
+                    ),
                   ),
                 ],
               ),
@@ -263,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 14),
               SizedBox(
-                height: 206,
+                height: 182,
                 child: Row(
                   children: [
                     Expanded(
@@ -603,8 +609,8 @@ class _HeroShowcaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primary = CavoColors.textPrimary;
-    const secondary = CavoColors.textSecondary;
+    final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
+    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
     return InkWell(
       onTap: onTap,
@@ -637,7 +643,7 @@ class _HeroShowcaseCard extends StatelessWidget {
               children: [
                 CavoPillTag(
                   label: context.l10n.newCollection.toUpperCase(),
-                  isLight: false,
+                  isLight: isLight,
                   icon: Icons.auto_awesome_rounded,
                   selected: true,
                 ),
@@ -654,9 +660,9 @@ class _HeroShowcaseCard extends StatelessWidget {
                               context.l10n.premiumFootwearDesignedToStandApart.replaceAll('\n', ' '),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: CavoColors.textPrimary,
-                                fontSize: 24,
+                              style: TextStyle(
+                                color: primary,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w900,
                                 height: 1.2,
                               ),
@@ -702,12 +708,13 @@ class _HeroShowcaseCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(28),
                               border: Border.all(
-                                color: CavoColors.gold.withValues(alpha: 0.18),
+                                color: (isLight ? CavoColors.lightBorder : CavoColors.gold)
+                                    .withValues(alpha: isLight ? 0.7 : 0.18),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: CavoColors.gold.withValues(alpha: 0.12),
-                                  blurRadius: 30,
+                                  color: CavoColors.gold.withValues(alpha: isLight ? 0.09 : 0.12),
+                                  blurRadius: 24,
                                 ),
                               ],
                             ),
@@ -833,10 +840,12 @@ class _CategoryShowcaseCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: secondary,
+                    color: isLight ? CavoColors.lightTextPrimary : secondary,
                     fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -845,7 +854,7 @@ class _CategoryShowcaseCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         product.brand,
-                        style: const TextStyle(
+                      style: const TextStyle(
                           color: CavoColors.gold,
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
@@ -909,7 +918,8 @@ class _BrandShowcaseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
-                  color: CavoColors.gold.withValues(alpha: 0.18),
+                  color: (isLight ? CavoColors.lightBorder : CavoColors.gold)
+                      .withValues(alpha: isLight ? 0.72 : 0.18),
                 ),
               ),
               child: CavoNetworkImage(
@@ -1025,7 +1035,7 @@ class _FeaturedProductCard extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              product.shortDescription,
+              product.localizedShortDescription(context),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(

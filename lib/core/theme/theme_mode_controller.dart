@@ -11,13 +11,26 @@ class ThemeModeController extends ValueNotifier<ThemeMode> {
 
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    value = ThemeMode.dark;
-    await _prefs?.setString(_storageKey, 'dark');
+    final stored = _prefs?.getString(_storageKey);
+    switch (stored) {
+      case 'light':
+        value = ThemeMode.light;
+        break;
+      case 'dark':
+        value = ThemeMode.dark;
+        break;
+      case 'system':
+        value = ThemeMode.system;
+        break;
+      default:
+        value = ThemeMode.dark;
+        await _prefs?.setString(_storageKey, 'dark');
+    }
   }
 
   void setLight() {
-    value = ThemeMode.dark;
-    _prefs?.setString(_storageKey, 'dark');
+    value = ThemeMode.light;
+    _prefs?.setString(_storageKey, 'light');
   }
 
   void setDark() {
@@ -26,6 +39,10 @@ class ThemeModeController extends ValueNotifier<ThemeMode> {
   }
 
   void toggle() {
-    setDark();
+    if (value == ThemeMode.light) {
+      setDark();
+    } else {
+      setLight();
+    }
   }
 }
