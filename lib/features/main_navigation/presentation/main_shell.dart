@@ -25,8 +25,8 @@ class MainShell extends StatelessWidget {
 
     final isLight = Theme.of(context).brightness == Brightness.light;
     final navBackground = isLight
-        ? CavoColors.bottomBarLight.withValues(alpha: 0.90)
-        : CavoColors.bottomBarDark.withValues(alpha: 0.92);
+        ? CavoColors.bottomBarLight.withValues(alpha: 0.97)
+        : CavoColors.bottomBarDark.withValues(alpha: 0.95);
     final navBorder = isLight ? CavoColors.lightBorder : CavoColors.border;
     final activeText = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final inactiveText = isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
@@ -60,17 +60,30 @@ class MainShell extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: navBackground,
-            borderRadius: BorderRadius.circular(34),
-            border: Border.all(color: navBorder),
+            gradient: LinearGradient(
+              colors: isLight
+                  ? [
+                      Colors.white.withValues(alpha: 0.98),
+                      const Color(0xFFEFF4FE).withValues(alpha: 0.98),
+                    ]
+                  : [
+                      const Color(0xFF191919).withValues(alpha: 0.98),
+                      const Color(0xFF121212).withValues(alpha: 0.98),
+                    ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(36),
+            border: Border.all(color: navBorder.withValues(alpha: isLight ? 0.9 : 0.7)),
             boxShadow: [
               BoxShadow(
                 color: (isLight ? CavoColors.lightShadow : Colors.black)
-                    .withValues(alpha: isLight ? 0.10 : 0.24),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                    .withValues(alpha: isLight ? 0.14 : 0.32),
+                blurRadius: 28,
+                offset: const Offset(0, 14),
               ),
             ],
           ),
@@ -90,27 +103,28 @@ class MainShell extends StatelessWidget {
                             curve: Curves.easeOutCubic,
                             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(26),
                               gradient: active
                                   ? LinearGradient(
                                       colors: [
-                                        CavoColors.gold.withValues(alpha: isLight ? 0.24 : 0.20),
-                                        CavoColors.gold.withValues(alpha: isLight ? 0.10 : 0.08),
+                                        CavoColors.gold.withValues(alpha: isLight ? 0.30 : 0.24),
+                                        CavoColors.gold.withValues(alpha: isLight ? 0.16 : 0.10),
                                       ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
                                     )
                                   : null,
                               border: active
                                   ? Border.all(
-                                      color: CavoColors.gold.withValues(alpha: 0.22),
+                                      color: CavoColors.gold.withValues(alpha: isLight ? 0.32 : 0.24),
                                     )
                                   : null,
                               boxShadow: active
                                   ? [
                                       BoxShadow(
-                                        color: CavoColors.gold.withValues(alpha: 0.12),
-                                        blurRadius: 22,
+                                        color: CavoColors.gold.withValues(alpha: isLight ? 0.20 : 0.14),
+                                        blurRadius: 24,
+                                        offset: const Offset(0, 8),
                                       ),
                                     ]
                                   : null,
@@ -134,7 +148,7 @@ class MainShell extends StatelessWidget {
                                   style: TextStyle(
                                     color: active ? activeText : inactiveText,
                                     fontSize: 11,
-                                    fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+                                    fontWeight: active ? FontWeight.w900 : FontWeight.w600,
                                   ),
                                 ),
                               ],

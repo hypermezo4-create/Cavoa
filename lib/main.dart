@@ -43,11 +43,34 @@ Future<void> main() async {
 class CavoApp extends StatelessWidget {
   const CavoApp({super.key});
 
+  SystemUiOverlayStyle _overlayForTheme(
+    BuildContext context,
+    ThemeMode mode,
+  ) {
+    final platformBrightness = MediaQuery.platformBrightnessOf(context);
+    final resolvedBrightness = switch (mode) {
+      ThemeMode.light => Brightness.light,
+      ThemeMode.dark => Brightness.dark,
+      ThemeMode.system => platformBrightness,
+    };
+
+    final isLight = resolvedBrightness == Brightness.light;
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
+      statusBarBrightness: isLight ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: isLight ? const Color(0xFFF4F7FF) : Colors.black,
+      systemNavigationBarIconBrightness: isLight ? Brightness.dark : Brightness.light,
+      systemNavigationBarDividerColor: isLight ? const Color(0xFFDDE3EE) : const Color(0xFF1D1D1D),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: ThemeModeController.instance,
       builder: (context, themeMode, __) {
+        SystemChrome.setSystemUIOverlayStyle(_overlayForTheme(context, themeMode));
         return ValueListenableBuilder<Locale>(
           valueListenable: AppLocaleController.instance,
           builder: (context, locale, ___) {

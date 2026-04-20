@@ -129,53 +129,141 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 22),
               CavoGlassCard(
                 isLight: isLight,
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                borderRadius: const BorderRadius.all(Radius.circular(24)),
-                child: Row(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                borderRadius: const BorderRadius.all(Radius.circular(30)),
+                child: Stack(
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.homePremiumSpotlightTitle,
-                            style: TextStyle(
-                              color: primary,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w900,
-                            ),
+                    Positioned(
+                      right: -22,
+                      top: -30,
+                      child: Container(
+                        width: 140,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              CavoColors.gold.withValues(alpha: isLight ? 0.22 : 0.26),
+                              Colors.transparent,
+                            ],
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            l10n.homePremiumSpotlightSubtitle,
-                            style: TextStyle(
-                              color: muted,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              height: 1.45,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CavoPillTag(
+                                label: l10n.curated,
+                                isLight: isLight,
+                                selected: true,
+                                icon: Icons.workspace_premium_rounded,
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                l10n.homePremiumSpotlightTitle,
+                                style: TextStyle(
+                                  color: primary,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.homePremiumSpotlightSubtitle,
+                                style: TextStyle(
+                                  color: muted,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        SizedBox(
+                          width: 118,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                              );
+                            },
+                            child: Text(l10n.browseCollection),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: CavoGlassCard(
+                      isLight: isLight,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.local_shipping_rounded, color: CavoColors.gold, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.securelySynced,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const CategoriesScreen()),
-                        );
-                      },
-                      child: Text(l10n.browseCollection),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: CavoGlassCard(
+                      isLight: isLight,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.verified_rounded, color: CavoColors.gold, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.premium,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: primary,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               _SearchBar(isLight: isLight),
-              const SizedBox(height: 22),
+              const SizedBox(height: 24),
               SizedBox(
                 height: 326,
                 child: PageView.builder(
@@ -224,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 26),
+              const SizedBox(height: 30),
               Row(
                 children: [
                   Expanded(
@@ -255,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
               CavoSectionHeader(
                 title: l10n.shopByCategory,
                 subtitle: l10n.mirrorOriginalPremiumFootwear,
@@ -327,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 30),
               CavoSectionHeader(
                 title: l10n.topBrands,
                 subtitle: l10n.homeTopBrandsSubtitle,
@@ -617,7 +705,7 @@ class _HeroShowcaseCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(34),
       child: CavoGlassCard(
         isLight: isLight,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(20),
         borderRadius: const BorderRadius.all(Radius.circular(34)),
         child: Stack(
           children: [
@@ -647,7 +735,7 @@ class _HeroShowcaseCard extends StatelessWidget {
                   icon: Icons.auto_awesome_rounded,
                   selected: true,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: 14),
                 Expanded(
                   child: Row(
                     children: [
@@ -662,7 +750,7 @@ class _HeroShowcaseCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: primary,
-                                fontSize: 22,
+                                fontSize: 24,
                                 fontWeight: FontWeight.w900,
                                 height: 1.2,
                               ),
@@ -674,7 +762,7 @@ class _HeroShowcaseCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 color: secondary,
-                                fontSize: 15,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 height: 1.55,
                               ),
@@ -688,7 +776,7 @@ class _HeroShowcaseCard extends StatelessWidget {
                                     child: Text(context.l10n.shopNow),
                                   ),
                                 ),
-                                const SizedBox(width: 12),
+                                const SizedBox(width: 10),
                                 CavoCircleIconButton(
                                   icon: Icons.arrow_forward_rounded,
                                   isLight: isLight,
@@ -706,21 +794,21 @@ class _HeroShowcaseCard extends StatelessWidget {
                           tag: 'home-hero-${product.id}',
                           child: Container(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(30),
                               border: Border.all(
                                 color: (isLight ? CavoColors.lightBorder : CavoColors.gold)
                                     .withValues(alpha: isLight ? 0.7 : 0.18),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: CavoColors.gold.withValues(alpha: isLight ? 0.09 : 0.12),
-                                  blurRadius: 24,
+                                  color: CavoColors.gold.withValues(alpha: isLight ? 0.11 : 0.14),
+                                  blurRadius: 28,
                                 ),
                               ],
                             ),
                             child: CavoNetworkImage(
                               imageUrl: product.thumbnailUrl ?? product.coverUrl,
-                              borderRadius: BorderRadius.circular(28),
+                              borderRadius: BorderRadius.circular(30),
                             ),
                           ),
                         ),
@@ -781,13 +869,13 @@ class _CategoryShowcaseCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(30),
       child: CavoGlassCard(
         isLight: isLight,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         borderRadius: const BorderRadius.all(Radius.circular(30)),
         child: Stack(
           children: [
             Positioned.fill(
               child: Opacity(
-                opacity: 0.28,
+                opacity: isLight ? 0.34 : 0.28,
                 child: CavoNetworkImage(
                   imageUrl: product.coverUrl,
                   borderRadius: BorderRadius.circular(24),
@@ -800,9 +888,9 @@ class _CategoryShowcaseCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   gradient: LinearGradient(
                     colors: [
-                      Colors.black.withValues(alpha: 0.64),
+                      Colors.black.withValues(alpha: isLight ? 0.52 : 0.64),
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.74),
+                      Colors.black.withValues(alpha: isLight ? 0.66 : 0.74),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -816,8 +904,8 @@ class _CategoryShowcaseCard extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child: Container(
-                    width: 40,
-                    height: 40,
+                    width: 42,
+                    height: 42,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.black.withValues(alpha: 0.42),
@@ -905,10 +993,10 @@ class _BrandShowcaseCard extends StatelessWidget {
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
 
     return SizedBox(
-      width: 170,
+      width: 176,
       child: CavoGlassCard(
         isLight: isLight,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(13),
         borderRadius: const BorderRadius.all(Radius.circular(24)),
         child: Row(
           children: [
@@ -999,13 +1087,13 @@ class _FeaturedProductCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(30),
       child: CavoGlassCard(
         isLight: isLight,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         borderRadius: const BorderRadius.all(Radius.circular(30)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 168,
+              height: 160,
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
