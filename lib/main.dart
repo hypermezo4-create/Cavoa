@@ -47,16 +47,16 @@ class CavoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: ThemeModeController.instance,
-      builder: (context, _, __) {
+      builder: (context, themeMode, __) {
         return ValueListenableBuilder<Locale>(
           valueListenable: AppLocaleController.instance,
           builder: (context, locale, ___) {
             return MaterialApp(
               title: 'CAVO',
               debugShowCheckedModeBanner: false,
-              theme: AppTheme.dark(),
+              theme: AppTheme.light(),
               darkTheme: AppTheme.dark(),
-              themeMode: ThemeMode.dark,
+              themeMode: themeMode,
               locale: locale,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,

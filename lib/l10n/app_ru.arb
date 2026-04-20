@@ -77,6 +77,52 @@
   "myAccount": "Мой аккаунт",
   "accountStatus": "Статус аккаунта",
   "signedInSecurely": "Вход выполнен",
+  "edit": "Изменить",
+  "guestMode": "Гостевой режим",
+  "cavoAccount": "Аккаунт CAVO",
+  "itemsSavedLabel": "товаров сохранено",
+  "localOnly": "только локально",
+  "securelySynced": "безопасно синхронизировано",
+  "currentLanguageCode": "Текущий: {code}",
+  "@currentLanguageCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "lightModePremiumOn": "Светлая тема • премиальные поверхности",
+  "darkModePremiumOn": "Тёмная тема • премиальный контраст",
+  "adminOrders": "Админ-заказы",
+  "adminOrdersSubtitle": "Откройте панель заказов и управляйте статусами",
+  "notifications": "Уведомления",
+  "noUnreadUpdates": "Нет непрочитанных обновлений",
+  "unreadUpdatesCount": "{count} непрочитанных обновлений",
+  "@unreadUpdatesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signInToTrackOrders": "Войдите, чтобы отслеживать статус заказов.",
+  "recentOrdersLatestStatus": "Здесь появятся ваши последние заказы с актуальным статусом.",
+  "noSavedOrdersYet": "Пока нет сохранённых заказов",
+  "ordersPlaceholderSubtitle": "После завершения оформления ваши заказы появятся здесь с актуальным статусом.",
+  "ratedOutOfFive": "Оценка {rating}/5",
+  "@ratedOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToViewDetails": "Нажмите, чтобы открыть детали",
+  "editProfile": "Редактировать профиль",
+  "location": "Местоположение",
+  "bio": "О себе",
+  "profileSaved": "Профиль сохранен",
+  "saveChanges": "Сохранить изменения",
   "loggedOutSuccessfully": "Вы успешно вышли.",
   "checkout": "Оформление",
   "linksIntro": "Все контакты CAVO в одном месте",

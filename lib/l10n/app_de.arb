@@ -77,6 +77,52 @@
   "myAccount": "Mein Konto",
   "accountStatus": "Kontostatus",
   "signedInSecurely": "Sicher angemeldet",
+  "edit": "Bearbeiten",
+  "guestMode": "Gastmodus",
+  "cavoAccount": "CAVO-Konto",
+  "itemsSavedLabel": "Artikel gespeichert",
+  "localOnly": "Nur lokal",
+  "securelySynced": "sicher synchronisiert",
+  "currentLanguageCode": "Aktuell: {code}",
+  "@currentLanguageCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "lightModePremiumOn": "Heller Modus • Premium-Flächen",
+  "darkModePremiumOn": "Dunkler Modus • Premium-Kontrast",
+  "adminOrders": "Admin-Bestellungen",
+  "adminOrdersSubtitle": "Bestellübersicht öffnen und Status verwalten",
+  "notifications": "Benachrichtigungen",
+  "noUnreadUpdates": "Keine ungelesenen Updates",
+  "unreadUpdatesCount": "{count} ungelesene Updates",
+  "@unreadUpdatesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signInToTrackOrders": "Melde dich an, um deinen Bestellstatus zu verfolgen.",
+  "recentOrdersLatestStatus": "Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.",
+  "noSavedOrdersYet": "Noch keine gespeicherten Bestellungen",
+  "ordersPlaceholderSubtitle": "Sobald der Checkout abgeschlossen ist, erscheinen deine Bestellungen hier mit dem neuesten Status.",
+  "ratedOutOfFive": "Bewertet {rating}/5",
+  "@ratedOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToViewDetails": "Tippe für Details",
+  "editProfile": "Profil bearbeiten",
+  "location": "Standort",
+  "bio": "Info",
+  "profileSaved": "Profil gespeichert",
+  "saveChanges": "Änderungen speichern",
   "loggedOutSuccessfully": "Erfolgreich abgemeldet.",
   "checkout": "Checkout",
   "linksIntro": "Alle CAVO-Kontaktpunkte an einem Ort",

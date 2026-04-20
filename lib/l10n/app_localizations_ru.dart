@@ -234,6 +234,91 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signedInSecurely => 'Вход выполнен';
 
   @override
+  String get edit => 'Изменить';
+
+  @override
+  String get guestMode => 'Гостевой режим';
+
+  @override
+  String get cavoAccount => 'Аккаунт CAVO';
+
+  @override
+  String get itemsSavedLabel => 'товаров сохранено';
+
+  @override
+  String get localOnly => 'только локально';
+
+  @override
+  String get securelySynced => 'безопасно синхронизировано';
+
+  @override
+  String currentLanguageCode(String code) {
+    return 'Текущий: $code';
+  }
+
+  @override
+  String get lightModePremiumOn => 'Светлая тема • премиальные поверхности';
+
+  @override
+  String get darkModePremiumOn => 'Тёмная тема • премиальный контраст';
+
+  @override
+  String get adminOrders => 'Админ-заказы';
+
+  @override
+  String get adminOrdersSubtitle =>
+      'Откройте панель заказов и управляйте статусами';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get noUnreadUpdates => 'Нет непрочитанных обновлений';
+
+  @override
+  String unreadUpdatesCount(int count) {
+    return '$count непрочитанных обновлений';
+  }
+
+  @override
+  String get signInToTrackOrders =>
+      'Войдите, чтобы отслеживать статус заказов.';
+
+  @override
+  String get recentOrdersLatestStatus =>
+      'Здесь появятся ваши последние заказы с актуальным статусом.';
+
+  @override
+  String get noSavedOrdersYet => 'Пока нет сохранённых заказов';
+
+  @override
+  String get ordersPlaceholderSubtitle =>
+      'После завершения оформления ваши заказы появятся здесь с актуальным статусом.';
+
+  @override
+  String ratedOutOfFive(int rating) {
+    return 'Оценка $rating/5';
+  }
+
+  @override
+  String get tapToViewDetails => 'Нажмите, чтобы открыть детали';
+
+  @override
+  String get editProfile => 'Редактировать профиль';
+
+  @override
+  String get location => 'Местоположение';
+
+  @override
+  String get bio => 'О себе';
+
+  @override
+  String get profileSaved => 'Профиль сохранен';
+
+  @override
+  String get saveChanges => 'Сохранить изменения';
+
+  @override
   String get loggedOutSuccessfully => 'Вы успешно вышли.';
 
   @override

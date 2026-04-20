@@ -22,18 +22,18 @@ abstract final class CavoColors {
   static const Color error = Color(0xFFE35D5D);
 
   // New light palette
-  static const Color lightBackground = Color(0xFFF6F4EF);
-  static const Color lightBackgroundSecondary = Color(0xFFEDE8DE);
+  static const Color lightBackground = Color(0xFFF5F7FB);
+  static const Color lightBackgroundSecondary = Color(0xFFEDF1F8);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightSurfaceSoft = Color(0xFFF1EEE7);
-  static const Color lightSurfaceMuted = Color(0xFFE7E2D7);
+  static const Color lightSurfaceSoft = Color(0xFFF7F9FD);
+  static const Color lightSurfaceMuted = Color(0xFFE9EEF8);
 
-  static const Color lightTextPrimary = Color(0xFF171717);
-  static const Color lightTextSecondary = Color(0xFF5F5A50);
-  static const Color lightTextMuted = Color(0xFF8C8578);
+  static const Color lightTextPrimary = Color(0xFF111827);
+  static const Color lightTextSecondary = Color(0xFF4B5565);
+  static const Color lightTextMuted = Color(0xFF7A8597);
 
-  static const Color lightBorder = Color(0xFFE1DACA);
-  static const Color lightDivider = Color(0xFFD9D1C1);
+  static const Color lightBorder = Color(0xFFDDE3EE);
+  static const Color lightDivider = Color(0xFFD5DCE8);
 
   // Glass / blur helpers
   static const Color glassLight = Color(0xCCFFFFFF);
@@ -49,7 +49,7 @@ abstract final class CavoColors {
   static const Color heroLightGlow = Color(0x26D4AF37);
 
   static const Color darkShadow = Color(0x40000000);
-  static const Color lightShadow = Color(0x14000000);
+  static const Color lightShadow = Color(0x1A1C2330);
 
   static const Color productImageLight = Color(0xFFF4F1EA);
   static const Color productImageDark = Color(0xFF111111);

@@ -77,6 +77,52 @@
   "myAccount": "My Account",
   "accountStatus": "Account status",
   "signedInSecurely": "Signed in securely",
+  "edit": "Edit",
+  "guestMode": "Guest mode",
+  "cavoAccount": "CAVO account",
+  "itemsSavedLabel": "items saved",
+  "localOnly": "local only",
+  "securelySynced": "securely synced",
+  "currentLanguageCode": "Current: {code}",
+  "@currentLanguageCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "lightModePremiumOn": "Light mode • premium surfaces",
+  "darkModePremiumOn": "Dark mode • premium contrast",
+  "adminOrders": "Admin orders",
+  "adminOrdersSubtitle": "Open orders dashboard and manage statuses",
+  "notifications": "Notifications",
+  "noUnreadUpdates": "No unread updates",
+  "unreadUpdatesCount": "{count} unread updates",
+  "@unreadUpdatesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signInToTrackOrders": "Sign in to track your order status.",
+  "recentOrdersLatestStatus": "Your recent orders appear here with their latest status.",
+  "noSavedOrdersYet": "No saved orders yet",
+  "ordersPlaceholderSubtitle": "Once checkout is completed, your orders will appear here with the latest status.",
+  "ratedOutOfFive": "Rated {rating}/5",
+  "@ratedOutOfFive": {
+    "placeholders": {
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "tapToViewDetails": "Tap to view details",
+  "editProfile": "Edit Profile",
+  "location": "Location",
+  "bio": "Bio",
+  "profileSaved": "Profile saved",
+  "saveChanges": "Save Changes",
   "loggedOutSuccessfully": "Logged out successfully.",
   "checkout": "Checkout",
   "linksIntro": "All CAVO contact points in one place",

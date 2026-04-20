@@ -237,6 +237,91 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signedInSecurely => 'Sicher angemeldet';
 
   @override
+  String get edit => 'Bearbeiten';
+
+  @override
+  String get guestMode => 'Gastmodus';
+
+  @override
+  String get cavoAccount => 'CAVO-Konto';
+
+  @override
+  String get itemsSavedLabel => 'Artikel gespeichert';
+
+  @override
+  String get localOnly => 'Nur lokal';
+
+  @override
+  String get securelySynced => 'sicher synchronisiert';
+
+  @override
+  String currentLanguageCode(String code) {
+    return 'Aktuell: $code';
+  }
+
+  @override
+  String get lightModePremiumOn => 'Heller Modus • Premium-Flächen';
+
+  @override
+  String get darkModePremiumOn => 'Dunkler Modus • Premium-Kontrast';
+
+  @override
+  String get adminOrders => 'Admin-Bestellungen';
+
+  @override
+  String get adminOrdersSubtitle =>
+      'Bestellübersicht öffnen und Status verwalten';
+
+  @override
+  String get notifications => 'Benachrichtigungen';
+
+  @override
+  String get noUnreadUpdates => 'Keine ungelesenen Updates';
+
+  @override
+  String unreadUpdatesCount(int count) {
+    return '$count ungelesene Updates';
+  }
+
+  @override
+  String get signInToTrackOrders =>
+      'Melde dich an, um deinen Bestellstatus zu verfolgen.';
+
+  @override
+  String get recentOrdersLatestStatus =>
+      'Deine letzten Bestellungen erscheinen hier mit dem neuesten Status.';
+
+  @override
+  String get noSavedOrdersYet => 'Noch keine gespeicherten Bestellungen';
+
+  @override
+  String get ordersPlaceholderSubtitle =>
+      'Sobald der Checkout abgeschlossen ist, erscheinen deine Bestellungen hier mit dem neuesten Status.';
+
+  @override
+  String ratedOutOfFive(int rating) {
+    return 'Bewertet $rating/5';
+  }
+
+  @override
+  String get tapToViewDetails => 'Tippe für Details';
+
+  @override
+  String get editProfile => 'Profil bearbeiten';
+
+  @override
+  String get location => 'Standort';
+
+  @override
+  String get bio => 'Info';
+
+  @override
+  String get profileSaved => 'Profil gespeichert';
+
+  @override
+  String get saveChanges => 'Änderungen speichern';
+
+  @override
   String get loggedOutSuccessfully => 'Erfolgreich abgemeldet.';
 
   @override

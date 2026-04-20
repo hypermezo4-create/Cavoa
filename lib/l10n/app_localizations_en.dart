@@ -235,6 +235,89 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signedInSecurely => 'Signed in securely';
 
   @override
+  String get edit => 'Edit';
+
+  @override
+  String get guestMode => 'Guest mode';
+
+  @override
+  String get cavoAccount => 'CAVO account';
+
+  @override
+  String get itemsSavedLabel => 'items saved';
+
+  @override
+  String get localOnly => 'local only';
+
+  @override
+  String get securelySynced => 'securely synced';
+
+  @override
+  String currentLanguageCode(String code) {
+    return 'Current: $code';
+  }
+
+  @override
+  String get lightModePremiumOn => 'Light mode • premium surfaces';
+
+  @override
+  String get darkModePremiumOn => 'Dark mode • premium contrast';
+
+  @override
+  String get adminOrders => 'Admin orders';
+
+  @override
+  String get adminOrdersSubtitle => 'Open orders dashboard and manage statuses';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get noUnreadUpdates => 'No unread updates';
+
+  @override
+  String unreadUpdatesCount(int count) {
+    return '$count unread updates';
+  }
+
+  @override
+  String get signInToTrackOrders => 'Sign in to track your order status.';
+
+  @override
+  String get recentOrdersLatestStatus =>
+      'Your recent orders appear here with their latest status.';
+
+  @override
+  String get noSavedOrdersYet => 'No saved orders yet';
+
+  @override
+  String get ordersPlaceholderSubtitle =>
+      'Once checkout is completed, your orders will appear here with the latest status.';
+
+  @override
+  String ratedOutOfFive(int rating) {
+    return 'Rated $rating/5';
+  }
+
+  @override
+  String get tapToViewDetails => 'Tap to view details';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get profileSaved => 'Profile saved';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
   String get loggedOutSuccessfully => 'Logged out successfully.';
 
   @override
