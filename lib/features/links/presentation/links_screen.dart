@@ -82,7 +82,7 @@ class LinksScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'All direct contact points for CAVO in one premium hub, including WhatsApp, social, maps, and the website.',
+                            context.l10n.linksHubDescription,
                             style: TextStyle(
                               color: secondary,
                               fontSize: 13,
@@ -98,7 +98,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               _LinkTile(
-                title: 'WhatsApp',
+                title: context.l10n.whatsAppTitle,
                 subtitle: context.l10n.whatsAppSubtitle,
                 icon: Icons.chat_rounded,
                 accent: const Color(0xFF25D366),
@@ -126,12 +126,12 @@ class LinksScreen extends StatelessWidget {
               const SizedBox(height: 18),
               CavoSectionHeader(
                 title: context.l10n.social,
-                subtitle: 'Native brand colors are preserved inside the cards for a more premium identity.',
+                subtitle: context.l10n.socialCardsSubtitle,
                 isLight: isLight,
               ),
               const SizedBox(height: 12),
               _LinkTile(
-                title: 'Instagram',
+                title: context.l10n.instagramTitle,
                 subtitle: '@Cavo_mirror',
                 icon: Icons.camera_alt_rounded,
                 accent: const Color(0xFFE4405F),
@@ -140,7 +140,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _LinkTile(
-                title: 'Telegram',
+                title: context.l10n.telegramTitle,
                 subtitle: context.l10n.telegramSubtitle,
                 icon: Icons.send_rounded,
                 accent: const Color(0xFF229ED9),
@@ -149,7 +149,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _LinkTile(
-                title: 'Facebook',
+                title: context.l10n.facebookTitle,
                 subtitle: context.l10n.facebookSubtitle,
                 icon: Icons.facebook_rounded,
                 accent: const Color(0xFF1877F2),
@@ -158,7 +158,7 @@ class LinksScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               _LinkTile(
-                title: 'TikTok',
+                title: context.l10n.tiktokTitle,
                 subtitle: '@cavo6159',
                 icon: Icons.music_note_rounded,
                 accent: const Color(0xFFFE2C55),

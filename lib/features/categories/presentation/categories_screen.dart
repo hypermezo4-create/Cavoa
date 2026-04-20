@@ -22,6 +22,7 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
+  static const String _allBrandsValue = '__all__';
   late ProductCategory _selectedCategory;
   late String _selectedBrand;
 
@@ -29,7 +30,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     super.initState();
     _selectedCategory = widget.initialCategory;
-    _selectedBrand = 'All';
+    _selectedBrand = _allBrandsValue;
   }
 
   @override
@@ -38,10 +39,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final isLight = Theme.of(context).brightness == Brightness.light;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
     final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
-    final brands = ['All', ...CavoCatalog.brandsFor(_selectedCategory)];
+    final brands = [_allBrandsValue, ...CavoCatalog.brandsFor(_selectedCategory)];
 
     if (!brands.contains(_selectedBrand)) {
-      _selectedBrand = 'All';
+      _selectedBrand = _allBrandsValue;
     }
 
     final products = CavoCatalog.filtered(
@@ -136,7 +137,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       isLight: isLight,
                       onTap: () => setState(() {
                         _selectedCategory = ProductCategory.men;
-                        _selectedBrand = 'All';
+                        _selectedBrand = _allBrandsValue;
                       }),
                     ),
                     const SizedBox(width: 10),
@@ -146,7 +147,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       isLight: isLight,
                       onTap: () => setState(() {
                         _selectedCategory = ProductCategory.women;
-                        _selectedBrand = 'All';
+                        _selectedBrand = _allBrandsValue;
                       }),
                     ),
                     const SizedBox(width: 10),
@@ -156,7 +157,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                       isLight: isLight,
                       onTap: () => setState(() {
                         _selectedCategory = ProductCategory.kids;
-                        _selectedBrand = 'All';
+                        _selectedBrand = _allBrandsValue;
                       }),
                     ),
                   ],
@@ -174,7 +175,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     return GestureDetector(
                       onTap: () => setState(() => _selectedBrand = brand),
                       child: CavoPillTag(
-                        label: brand,
+                        label: brand == _allBrandsValue ? l10n.allBrands : brand,
                         isLight: isLight,
                         selected: _selectedBrand == brand,
                       ),
@@ -190,21 +191,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   children: [
                     Expanded(
                       child: _InfoStat(
-                        label: 'Products',
+                        label: l10n.productsLabel,
                         value: '${products.length}',
                         isLight: isLight,
                       ),
                     ),
                     Expanded(
                       child: _InfoStat(
-                        label: 'Brands',
+                        label: l10n.brandsTitle,
                         value: '${brands.length - 1}',
                         isLight: isLight,
                       ),
                     ),
                     Expanded(
                       child: _InfoStat(
-                        label: 'Category',
+                        label: l10n.category,
                         value: _selectedCategory.localizedLabel(context),
                         isLight: isLight,
                       ),
@@ -215,9 +216,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               const SizedBox(height: 20),
               CavoSectionHeader(
                 title: '${products.length} ${l10n.itemsCountLabel}',
-                subtitle: _selectedBrand == 'All'
-                    ? 'Showing all premium pieces in ${_selectedCategory.localizedLabel(context)}'
-                    : 'Showing ${_selectedCategory.localizedLabel(context)} • $_selectedBrand',
+                subtitle: _selectedBrand == _allBrandsValue
+                    ? l10n.showingAllPremiumPieces(_selectedCategory.localizedLabel(context))
+                    : l10n.showingCategoryByBrand(_selectedCategory.localizedLabel(context), _selectedBrand),
                 isLight: isLight,
               ),
               const SizedBox(height: 14),

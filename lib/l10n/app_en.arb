@@ -148,5 +148,39 @@
   "savedForLater": "saved for later",
   "favoritesEmptyTitle": "No favorites yet",
   "addedToFavorites": "Added to favorites.",
-  "removedFromFavorites": "Removed from favorites."
+  "removedFromFavorites": "Removed from favorites.",
+  "homePremiumSpotlightTitle": "Your premium edit is ready",
+  "homePremiumSpotlightSubtitle": "Browse the latest CAVO picks, discover fresh arrivals, and jump into shopping in one tap.",
+  "homeCategoryMenSubtitle": "Modern essentials",
+  "homeCategoryWomenSubtitle": "Elegant statement",
+  "homeCategoryKidsSubtitle": "Next-gen icons",
+  "homeTopBrandsSubtitle": "Curated labels for your premium rotation",
+  "homeFooterLine": "Refined luxury, smooth browsing, and a product-first rhythm made for real CAVO shopping.",
+  "productsLabel": "Products",
+  "showingAllPremiumPieces": "Showing all premium pieces in {category}",
+  "@showingAllPremiumPieces": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "showingCategoryByBrand": "Showing {category} • {brand}",
+  "@showingCategoryByBrand": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "brand": {
+        "type": "String"
+      }
+    }
+  },
+  "linksHubDescription": "All direct CAVO contact points in one premium hub, including WhatsApp, social platforms, maps, and website access.",
+  "socialCardsSubtitle": "Brand-native colors are preserved inside each card for a polished, premium identity.",
+  "whatsAppTitle": "WhatsApp",
+  "instagramTitle": "Instagram",
+  "telegramTitle": "Telegram",
+  "facebookTitle": "Facebook",
+  "tiktokTitle": "TikTok"
 }

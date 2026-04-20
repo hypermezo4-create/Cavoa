@@ -833,6 +833,63 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Size'**
   String get size;
+
+  /// No description provided for @homePremiumSpotlightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your premium edit is ready'**
+  String get homePremiumSpotlightTitle;
+
+  /// No description provided for @homePremiumSpotlightSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the latest CAVO picks, discover fresh arrivals, and jump into shopping in one tap.'**
+  String get homePremiumSpotlightSubtitle;
+
+  /// No description provided for @homeCategoryMenSubtitle.
+  String get homeCategoryMenSubtitle;
+
+  /// No description provided for @homeCategoryWomenSubtitle.
+  String get homeCategoryWomenSubtitle;
+
+  /// No description provided for @homeCategoryKidsSubtitle.
+  String get homeCategoryKidsSubtitle;
+
+  /// No description provided for @homeTopBrandsSubtitle.
+  String get homeTopBrandsSubtitle;
+
+  /// No description provided for @homeFooterLine.
+  String get homeFooterLine;
+
+  /// No description provided for @productsLabel.
+  String get productsLabel;
+
+  /// No description provided for @showingAllPremiumPieces.
+  String showingAllPremiumPieces(String category);
+
+  /// No description provided for @showingCategoryByBrand.
+  String showingCategoryByBrand(String category, String brand);
+
+  /// No description provided for @linksHubDescription.
+  String get linksHubDescription;
+
+  /// No description provided for @socialCardsSubtitle.
+  String get socialCardsSubtitle;
+
+  /// No description provided for @whatsAppTitle.
+  String get whatsAppTitle;
+
+  /// No description provided for @instagramTitle.
+  String get instagramTitle;
+
+  /// No description provided for @telegramTitle.
+  String get telegramTitle;
+
+  /// No description provided for @facebookTitle.
+  String get facebookTitle;
+
+  /// No description provided for @tiktokTitle.
+  String get tiktokTitle;
 }
 
 class _AppLocalizationsDelegate

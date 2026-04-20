@@ -392,4 +392,64 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get size => 'Размер';
+
+  @override
+  String get homePremiumSpotlightTitle => 'Ваша премиальная подборка готова';
+
+  @override
+  String get homePremiumSpotlightSubtitle =>
+      'Откройте свежие подборки CAVO, новые поступления и начните покупки одним касанием.';
+
+  @override
+  String get homeCategoryMenSubtitle => 'Современная база';
+
+  @override
+  String get homeCategoryWomenSubtitle => 'Элегантный акцент';
+
+  @override
+  String get homeCategoryKidsSubtitle => 'Иконы нового поколения';
+
+  @override
+  String get homeTopBrandsSubtitle =>
+      'Бренды, отобранные для вашей премиальной ротации';
+
+  @override
+  String get homeFooterLine =>
+      'Выверенная роскошь, плавный просмотр и акцент на товаре — так ощущается настоящий шопинг в CAVO.';
+
+  @override
+  String get productsLabel => 'Товары';
+
+  @override
+  String showingAllPremiumPieces(String category) {
+    return 'Показаны все премиальные позиции в категории $category';
+  }
+
+  @override
+  String showingCategoryByBrand(String category, String brand) {
+    return 'Показ: $category • $brand';
+  }
+
+  @override
+  String get linksHubDescription =>
+      'Все прямые контакты CAVO в одном премиальном хабе: WhatsApp, соцсети, карты и сайт.';
+
+  @override
+  String get socialCardsSubtitle =>
+      'Фирменные цвета платформ сохранены в карточках для более премиального и цельного вида.';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get instagramTitle => 'Instagram';
+
+  @override
+  String get telegramTitle => 'Telegram';
+
+  @override
+  String get facebookTitle => 'Facebook';
+
+  @override
+  String get tiktokTitle => 'TikTok';
 }

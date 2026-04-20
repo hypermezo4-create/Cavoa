@@ -396,4 +396,64 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get size => 'Größe';
+
+  @override
+  String get homePremiumSpotlightTitle => 'Deine Premium-Auswahl ist bereit';
+
+  @override
+  String get homePremiumSpotlightSubtitle =>
+      'Entdecke die neuesten CAVO-Picks, frische Neuheiten und starte dein Shopping mit nur einem Tipp.';
+
+  @override
+  String get homeCategoryMenSubtitle => 'Moderne Essentials';
+
+  @override
+  String get homeCategoryWomenSubtitle => 'Elegantes Statement';
+
+  @override
+  String get homeCategoryKidsSubtitle => 'Icons der nächsten Generation';
+
+  @override
+  String get homeTopBrandsSubtitle =>
+      'Kuratiert für deine Premium-Rotation';
+
+  @override
+  String get homeFooterLine =>
+      'Raffinierter Luxus, flüssiges Browsing und ein produktfokussierter Rhythmus für echtes CAVO-Shopping.';
+
+  @override
+  String get productsLabel => 'Produkte';
+
+  @override
+  String showingAllPremiumPieces(String category) {
+    return 'Alle Premium-Artikel in $category werden angezeigt';
+  }
+
+  @override
+  String showingCategoryByBrand(String category, String brand) {
+    return 'Anzeige: $category • $brand';
+  }
+
+  @override
+  String get linksHubDescription =>
+      'Alle direkten CAVO-Kontaktpunkte in einem Premium-Hub – inklusive WhatsApp, Social, Karten und Website.';
+
+  @override
+  String get socialCardsSubtitle =>
+      'Plattformfarben bleiben in den Karten erhalten für eine hochwertige, markentreue Darstellung.';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get instagramTitle => 'Instagram';
+
+  @override
+  String get telegramTitle => 'Telegram';
+
+  @override
+  String get facebookTitle => 'Facebook';
+
+  @override
+  String get tiktokTitle => 'TikTok';
 }

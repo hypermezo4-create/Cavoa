@@ -148,5 +148,39 @@
   "savedForLater": "сохранено на потом",
   "favoritesEmptyTitle": "Избранного пока нет",
   "addedToFavorites": "Добавлено в избранное.",
-  "removedFromFavorites": "Удалено из избранного."
+  "removedFromFavorites": "Удалено из избранного.",
+  "homePremiumSpotlightTitle": "Ваша премиальная подборка готова",
+  "homePremiumSpotlightSubtitle": "Откройте свежие подборки CAVO, новые поступления и начните покупки одним касанием.",
+  "homeCategoryMenSubtitle": "Современная база",
+  "homeCategoryWomenSubtitle": "Элегантный акцент",
+  "homeCategoryKidsSubtitle": "Иконы нового поколения",
+  "homeTopBrandsSubtitle": "Бренды, отобранные для вашей премиальной ротации",
+  "homeFooterLine": "Выверенная роскошь, плавный просмотр и акцент на товаре — так ощущается настоящий шопинг в CAVO.",
+  "productsLabel": "Товары",
+  "showingAllPremiumPieces": "Показаны все премиальные позиции в категории {category}",
+  "@showingAllPremiumPieces": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "showingCategoryByBrand": "Показ: {category} • {brand}",
+  "@showingCategoryByBrand": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "brand": {
+        "type": "String"
+      }
+    }
+  },
+  "linksHubDescription": "Все прямые контакты CAVO в одном премиальном хабе: WhatsApp, соцсети, карты и сайт.",
+  "socialCardsSubtitle": "Фирменные цвета платформ сохранены в карточках для более премиального и цельного вида.",
+  "whatsAppTitle": "WhatsApp",
+  "instagramTitle": "Instagram",
+  "telegramTitle": "Telegram",
+  "facebookTitle": "Facebook",
+  "tiktokTitle": "TikTok"
 }

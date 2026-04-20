@@ -56,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final l10n = context.l10n;
     final isLight = Theme.of(context).brightness == Brightness.light;
     final primary = isLight ? CavoColors.lightTextPrimary : CavoColors.textPrimary;
-    final secondary = isLight ? CavoColors.lightTextSecondary : CavoColors.textSecondary;
     final muted = isLight ? CavoColors.lightTextMuted : CavoColors.textMuted;
 
     final showcase = CavoCatalog.homeShowcase().take(5).toList();
@@ -130,7 +129,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
+              CavoGlassCard(
+                isLight: isLight,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                borderRadius: const BorderRadius.all(Radius.circular(24)),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.homePremiumSpotlightTitle,
+                            style: TextStyle(
+                              color: primary,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            l10n.homePremiumSpotlightSubtitle,
+                            style: TextStyle(
+                              color: muted,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              height: 1.45,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const CategoriesScreen()),
+                        );
+                      },
+                      child: Text(l10n.browseCollection),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               _SearchBar(isLight: isLight),
               const SizedBox(height: 22),
               SizedBox(
@@ -226,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: _CategoryShowcaseCard(
                         title: l10n.men,
-                        subtitle: 'Premium style',
+                        subtitle: l10n.homeCategoryMenSubtitle,
                         product: _productForCategory(ProductCategory.men),
                         icon: Icons.man_rounded,
                         isLight: isLight,
@@ -244,7 +287,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: _CategoryShowcaseCard(
                               title: l10n.women,
-                              subtitle: 'Elegant & bold',
+                              subtitle: l10n.homeCategoryWomenSubtitle,
                               product: _productForCategory(ProductCategory.women),
                               icon: Icons.woman_rounded,
                               isLight: isLight,
@@ -260,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: _CategoryShowcaseCard(
                               title: l10n.kids,
-                              subtitle: 'Future icons',
+                              subtitle: l10n.homeCategoryKidsSubtitle,
                               product: _productForCategory(ProductCategory.kids),
                               icon: Icons.child_care_rounded,
                               isLight: isLight,
@@ -281,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 28),
               CavoSectionHeader(
                 title: l10n.topBrands,
-                subtitle: 'Curated for your premium rotation',
+                subtitle: l10n.homeTopBrandsSubtitle,
                 action: l10n.curated,
                 isLight: isLight,
               ),
@@ -338,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 18),
               Text(
-                'Refined luxury, premium motion, and a product-first experience designed to feel like a real CAVO app.',
+                l10n.homeFooterLine,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: muted,
@@ -413,7 +456,7 @@ class _BrandHeader extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              'Mirror Original',
+              context.l10n.mirrorOriginal,
               style: TextStyle(
                 color: secondary,
                 fontSize: 14,
@@ -593,8 +636,8 @@ class _HeroShowcaseCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CavoPillTag(
-                  label: 'NEW COLLECTION',
+                CavoPillTag(
+                  label: context.l10n.newCollection.toUpperCase(),
                   isLight: false,
                   icon: Icons.auto_awesome_rounded,
                   selected: true,
@@ -619,8 +662,8 @@ class _HeroShowcaseCard extends StatelessWidget {
                                 );
                               },
                               child: Cavo3DHeadline(
-                                lineOne: title.isNotEmpty ? title.first : 'Premium Footwear',
-                                lineTwo: title.length > 1 ? title[1] : 'Stand Apart',
+                                lineOne: title.isNotEmpty ? title.first : context.l10n.premium,
+                                lineTwo: title.length > 1 ? title[1] : context.l10n.selected,
                                 isLight: isLight,
                                 fontSize: 28,
                               ),

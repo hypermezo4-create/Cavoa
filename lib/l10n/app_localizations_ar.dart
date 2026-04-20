@@ -390,4 +390,63 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get size => 'المقاس';
+
+  @override
+  String get homePremiumSpotlightTitle => 'اختياراتك الفاخرة جاهزة';
+
+  @override
+  String get homePremiumSpotlightSubtitle =>
+      'تصفّح أحدث ترشيحات CAVO، واكتشف الإضافات الجديدة، وابدأ التسوّق بخطوة واحدة.';
+
+  @override
+  String get homeCategoryMenSubtitle => 'أساسيات عصرية';
+
+  @override
+  String get homeCategoryWomenSubtitle => 'أناقة لافتة';
+
+  @override
+  String get homeCategoryKidsSubtitle => 'أيقونات الجيل القادم';
+
+  @override
+  String get homeTopBrandsSubtitle => 'ماركات مختارة لتجربة فاخرة ومتجددة';
+
+  @override
+  String get homeFooterLine =>
+      'فخامة متقنة، تصفح سلس، وتجربة تركّز على المنتج لتشعر أنك داخل تطبيق CAVO الحقيقي.';
+
+  @override
+  String get productsLabel => 'المنتجات';
+
+  @override
+  String showingAllPremiumPieces(String category) {
+    return 'نعرض كل القطع الفاخرة ضمن قسم $category';
+  }
+
+  @override
+  String showingCategoryByBrand(String category, String brand) {
+    return 'نعرض $category • $brand';
+  }
+
+  @override
+  String get linksHubDescription =>
+      'كل قنوات التواصل المباشر مع CAVO في مكان واحد أنيق، من واتساب والسوشيال إلى الخرائط والموقع.';
+
+  @override
+  String get socialCardsSubtitle =>
+      'ألوان كل منصة محفوظة داخل البطاقات لهوية أرقى وأكثر احترافية.';
+
+  @override
+  String get whatsAppTitle => 'واتساب';
+
+  @override
+  String get instagramTitle => 'إنستجرام';
+
+  @override
+  String get telegramTitle => 'تيليجرام';
+
+  @override
+  String get facebookTitle => 'فيسبوك';
+
+  @override
+  String get tiktokTitle => 'تيك توك';
 }

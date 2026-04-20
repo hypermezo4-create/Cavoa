@@ -393,4 +393,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get size => 'Size';
+
+  @override
+  String get homePremiumSpotlightTitle => 'Your premium edit is ready';
+
+  @override
+  String get homePremiumSpotlightSubtitle =>
+      'Browse the latest CAVO picks, discover fresh arrivals, and jump into shopping in one tap.';
+
+  @override
+  String get homeCategoryMenSubtitle => 'Modern essentials';
+
+  @override
+  String get homeCategoryWomenSubtitle => 'Elegant statement';
+
+  @override
+  String get homeCategoryKidsSubtitle => 'Next-gen icons';
+
+  @override
+  String get homeTopBrandsSubtitle =>
+      'Curated labels for your premium rotation';
+
+  @override
+  String get homeFooterLine =>
+      'Refined luxury, smooth browsing, and a product-first rhythm made for real CAVO shopping.';
+
+  @override
+  String get productsLabel => 'Products';
+
+  @override
+  String showingAllPremiumPieces(String category) {
+    return 'Showing all premium pieces in $category';
+  }
+
+  @override
+  String showingCategoryByBrand(String category, String brand) {
+    return 'Showing $category • $brand';
+  }
+
+  @override
+  String get linksHubDescription =>
+      'All direct CAVO contact points in one premium hub, including WhatsApp, social platforms, maps, and website access.';
+
+  @override
+  String get socialCardsSubtitle =>
+      'Brand-native colors are preserved inside each card for a polished, premium identity.';
+
+  @override
+  String get whatsAppTitle => 'WhatsApp';
+
+  @override
+  String get instagramTitle => 'Instagram';
+
+  @override
+  String get telegramTitle => 'Telegram';
+
+  @override
+  String get facebookTitle => 'Facebook';
+
+  @override
+  String get tiktokTitle => 'TikTok';
 }

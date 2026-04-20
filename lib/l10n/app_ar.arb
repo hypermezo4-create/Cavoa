@@ -148,5 +148,39 @@
   "savedForLater": "محفوظة لوقت لاحق",
   "favoritesEmptyTitle": "لا توجد مفضلة بعد",
   "addedToFavorites": "تمت الإضافة إلى المفضلة.",
-  "removedFromFavorites": "تمت الإزالة من المفضلة."
+  "removedFromFavorites": "تمت الإزالة من المفضلة.",
+  "homePremiumSpotlightTitle": "اختياراتك الفاخرة جاهزة",
+  "homePremiumSpotlightSubtitle": "تصفّح أحدث ترشيحات CAVO، واكتشف الإضافات الجديدة، وابدأ التسوّق بخطوة واحدة.",
+  "homeCategoryMenSubtitle": "أساسيات عصرية",
+  "homeCategoryWomenSubtitle": "أناقة لافتة",
+  "homeCategoryKidsSubtitle": "أيقونات الجيل القادم",
+  "homeTopBrandsSubtitle": "ماركات مختارة لتجربة فاخرة ومتجددة",
+  "homeFooterLine": "فخامة متقنة، تصفح سلس، وتجربة تركّز على المنتج لتشعر أنك داخل تطبيق CAVO الحقيقي.",
+  "productsLabel": "المنتجات",
+  "showingAllPremiumPieces": "نعرض كل القطع الفاخرة ضمن قسم {category}",
+  "@showingAllPremiumPieces": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      }
+    }
+  },
+  "showingCategoryByBrand": "نعرض {category} • {brand}",
+  "@showingCategoryByBrand": {
+    "placeholders": {
+      "category": {
+        "type": "String"
+      },
+      "brand": {
+        "type": "String"
+      }
+    }
+  },
+  "linksHubDescription": "كل قنوات التواصل المباشر مع CAVO في مكان واحد أنيق، من واتساب والسوشيال إلى الخرائط والموقع.",
+  "socialCardsSubtitle": "ألوان كل منصة محفوظة داخل البطاقات لهوية أرقى وأكثر احترافية.",
+  "whatsAppTitle": "واتساب",
+  "instagramTitle": "إنستجرام",
+  "telegramTitle": "تيليجرام",
+  "facebookTitle": "فيسبوك",
+  "tiktokTitle": "تيك توك"
 }
