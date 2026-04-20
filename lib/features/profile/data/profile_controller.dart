@@ -90,10 +90,17 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
     }
 
     try {
-      await _firestore.collection('users').doc(user.uid).set(
-        merged.toFirestoreMap(),
-        SetOptions(merge: true),
-      );
+      // FIX: Tambah timeout 10 detik pada Firestore write.
+      // Tanpa ini, jika koneksi lambat/Firestore rules bermasalah,
+      // await ini bisa hang selamanya → spinner Register tidak berhenti.
+      await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .set(merged.toFirestoreMap(), SetOptions(merge: true))
+          .timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      // Gagal silent — data sudah disimpan lokal via _saveLocal().
+      // Firestore akan sync otomatis ketika koneksi pulih.
     } catch (_) {}
   }
 

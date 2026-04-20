@@ -185,13 +185,20 @@ class _RegisterScreenState extends State<RegisterScreen>
       );
 
       await credential.user?.updateDisplayName(name);
-      await ProfileController.instance.seedBasicProfile(
+
+      // FIX BUG UTAMA: Jangan await seedBasicProfile.
+      // Sebelumnya: await ProfileController.instance.seedBasicProfile(...)
+      // → Firestore set() di dalamnya bisa hang selamanya jika koneksi lambat
+      //   → spinner tidak berhenti → user tidak bisa melanjutkan.
+      // Sekarang: fire-and-forget. Akun Firebase Auth sudah berhasil dibuat.
+      // Profile akan sync ke Firestore di background via authStateChanges listener.
+      unawaited(ProfileController.instance.seedBasicProfile(
         fullName: name,
         phone: '',
         gender: '',
         age: null,
         visitedBefore: false,
-      );
+      ));
 
       if (!mounted) return;
       _showMessage('Your account is ready. Welcome to CAVO.');
