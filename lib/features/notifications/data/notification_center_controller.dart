@@ -103,6 +103,20 @@ class NotificationCenterController extends ValueNotifier<List<CavoNotificationIt
         );
       }
 
+      for (final custom in order.userNotifications) {
+        notifications.add(
+          CavoNotificationItem(
+            id: custom.id,
+            orderId: order.id,
+            title: custom.title,
+            body: custom.body,
+            createdAt: custom.createdAt,
+            isRead: _readIds.contains(custom.id),
+            type: 'admin_update',
+          ),
+        );
+      }
+
       if (order.status == OrderStatus.delivered && !order.isRated) {
         final rateId = '${order.id}:rate';
         notifications.add(
