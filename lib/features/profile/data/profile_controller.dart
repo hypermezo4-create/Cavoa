@@ -18,6 +18,10 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
   StreamSubscription<User?>? _authSub;
   bool _ready = false;
 
+  static const Duration _firestoreReadTimeout = Duration(seconds: 3);
+  static const Duration _firestoreWriteTimeout = Duration(seconds: 4);
+  static const Duration _displayNameWriteTimeout = Duration(seconds: 3);
+
   Future<void> init() async {
     if (_ready) return;
     _prefs = await SharedPreferences.getInstance();
@@ -47,25 +51,38 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
       } catch (_) {}
     }
 
-    try {
-      final doc = await _firestore.collection('users').doc(user.uid).get();
-      if (doc.exists && doc.data() != null) {
-        profile = CavoUserProfile.fromMap({
-          ...profile.toMap(),
-          ...doc.data()!,
-          'avatarPath': profile.avatarPath,
-        });
-      }
-    } catch (_) {}
+    profile = _normalizeProfile(user, profile);
+    value = profile;
+    await _saveLocal(profile);
+    unawaited(_refreshProfileFromFirestore(user, profile));
+  }
 
-    profile = profile.copyWith(
+  CavoUserProfile _normalizeProfile(User user, CavoUserProfile profile) {
+    return profile.copyWith(
       uid: user.uid,
       email: user.email ?? profile.email,
       fullName: (profile.fullName.trim().isNotEmpty ? profile.fullName : (user.displayName ?? '')).trim(),
     );
+  }
 
-    value = profile;
-    await _saveLocal(profile);
+  Future<void> _refreshProfileFromFirestore(User user, CavoUserProfile baseProfile) async {
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .get()
+          .timeout(_firestoreReadTimeout);
+      if (!doc.exists || doc.data() == null) return;
+
+      final refreshed = _normalizeProfile(user, CavoUserProfile.fromMap({
+        ...baseProfile.toMap(),
+        ...doc.data()!,
+        'avatarPath': baseProfile.avatarPath,
+      }));
+
+      value = refreshed;
+      await _saveLocal(refreshed);
+    } catch (_) {}
   }
 
   Future<void> _saveLocal(CavoUserProfile profile) async {
@@ -85,22 +102,21 @@ class ProfileController extends ValueNotifier<CavoUserProfile?> {
 
     if ((user.displayName ?? '') != merged.fullName && merged.fullName.trim().isNotEmpty) {
       try {
-        await user.updateDisplayName(merged.fullName.trim());
+        await user
+            .updateDisplayName(merged.fullName.trim())
+            .timeout(_displayNameWriteTimeout);
       } catch (_) {}
     }
 
     try {
-      // FIX: Tambah timeout 10 detik pada Firestore write.
-      // Tanpa ini, jika koneksi lambat/Firestore rules bermasalah,
-      // await ini bisa hang selamanya → spinner Register tidak berhenti.
       await _firestore
           .collection('users')
           .doc(user.uid)
-          .set(merged.toFirestoreMap(), SetOptions(merge: true))
-          .timeout(const Duration(seconds: 10));
-    } on TimeoutException {
-      // Gagal silent — data sudah disimpan lokal via _saveLocal().
-      // Firestore akan sync otomatis ketika koneksi pulih.
+          .set(
+            merged.toFirestoreMap(),
+            SetOptions(merge: true),
+          )
+          .timeout(_firestoreWriteTimeout);
     } catch (_) {}
   }
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -102,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(
-            color: const Color(0xFFD4AF37).withValues(alpha: 0.16),
+            color: const Color(0xFFD4AF37).withOpacity(0.16),
           ),
         ),
       ),
@@ -144,12 +145,34 @@ class _RegisterScreenState extends State<RegisterScreen>
     return regex.hasMatch(email);
   }
 
+
+  Future<void> _finishAccountSetup({
+    required User? user,
+    required String fullName,
+  }) async {
+    if (user == null) return;
+
+    try {
+      await user.updateDisplayName(fullName).timeout(const Duration(seconds: 4));
+    } catch (_) {}
+
+    try {
+      await ProfileController.instance.seedBasicProfile(
+        fullName: fullName,
+        phone: '',
+        gender: '',
+        age: null,
+        visitedBefore: false,
+      ).timeout(const Duration(seconds: 6));
+    } catch (_) {}
+  }
+
   Future<void> _register() async {
     final l10n = context.l10n;
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-    final confirmPassword = _confirmPasswordController.text.trim();
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
 
     if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       _showMessage(l10n.completeAllFields);
@@ -184,24 +207,9 @@ class _RegisterScreenState extends State<RegisterScreen>
         password: password,
       );
 
-      await credential.user?.updateDisplayName(name);
-
-      // FIX BUG UTAMA: Jangan await seedBasicProfile.
-      // Sebelumnya: await ProfileController.instance.seedBasicProfile(...)
-      // → Firestore set() di dalamnya bisa hang selamanya jika koneksi lambat
-      //   → spinner tidak berhenti → user tidak bisa melanjutkan.
-      // Sekarang: fire-and-forget. Akun Firebase Auth sudah berhasil dibuat.
-      // Profile akan sync ke Firestore di background via authStateChanges listener.
-      unawaited(ProfileController.instance.seedBasicProfile(
-        fullName: name,
-        phone: '',
-        gender: '',
-        age: null,
-        visitedBefore: false,
-      ));
+      unawaited(_finishAccountSetup(user: credential.user, fullName: name));
 
       if (!mounted) return;
-      _showMessage('Your account is ready. Welcome to CAVO.');
       _goToApp();
     } on FirebaseAuthException catch (error) {
       if (!mounted) return;
@@ -335,7 +343,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                               margin: const EdgeInsets.only(right: 4),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: const Color(0xFF3DDC97).withValues(alpha: 0.18),
+                                color: const Color(0xFF3DDC97).withOpacity(0.18),
                               ),
                               child: const Icon(
                                 Icons.check_rounded,
@@ -380,7 +388,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   ? const Color(0xFFD4AF37)
                                   : Colors.transparent,
                               border: Border.all(
-                                color: const Color(0xFFD4AF37).withValues(alpha: 0.42),
+                                color: const Color(0xFFD4AF37).withOpacity(0.42),
                               ),
                             ),
                             child: _acceptedTerms
